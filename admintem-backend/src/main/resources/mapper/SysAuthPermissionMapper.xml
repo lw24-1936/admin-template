@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SysAuthPermissionMapper XML —— sys_auth_permission 权限表（菜单 type=0 / 按钮 type=1）
+  注意：`show` 为 MySQL 保留字，涉及该列均加反引号。
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthPermissionMapper">
+
+    <sql id="Base_Column_List">
+        id, name, parent_id, order_num, type, menu_url, component, backend_url,
+        status, `show`, icon, permission_key, created_by, created_time, update_by, update_time
+    </sql>
+
+    <!-- 按主键查询 -->
+    <select id="selectById" resultType="com.admintem.web.entity.SysAuthPermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_permission
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <!-- 按 ID 集合批量查询 -->
+    <select id="selectByIds" resultType="com.admintem.web.entity.SysAuthPermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_permission
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 按 permission_key 集合批量查询（会话构建：由已认证快照的权限标识直接取权限行，
+         用于装配菜单树，避免"全表扫描 + 内存过滤"或重复查角色关联） -->
+    <select id="selectByKeys" resultType="com.admintem.web.entity.SysAuthPermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_permission
+        WHERE is_deleted = 0
+        AND permission_key IN
+        <foreach collection="permissionKeys" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 全部权限（权限树 / 启用 key 集合均基于此结果按需过滤） -->
+    <select id="selectAllOrdered" resultType="com.admintem.web.entity.SysAuthPermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_permission
+        WHERE is_deleted = 0
+        ORDER BY order_num ASC, id ASC
+    </select>
+
+    <!-- 按父级查询直接子级（删除级联收集 / 同级排序号计算用） -->
+    <select id="selectByParentId" resultType="com.admintem.web.entity.SysAuthPermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_permission
+        WHERE parent_id = #{parentId} AND is_deleted = 0
+    </select>
+
+    <!-- 统计同 permission_key（支持排除自身） -->
+    <select id="countByKey" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_auth_permission
+        WHERE permission_key = #{key} AND is_deleted = 0
+        <if test="excludeId != null">
+            AND id &lt;&gt; #{excludeId}
+        </if>
+    </select>
+
+    <!-- 新增权限 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.admintem.web.entity.SysAuthPermission">
+        INSERT INTO sys_auth_permission
+        (name, parent_id, order_num, type, menu_url, component, backend_url, status,
+         `show`, icon, permission_key, created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{name}, #{parentId}, #{orderNum}, #{type}, #{menuUrl}, #{component}, #{backendUrl},
+         #{status}, #{show}, #{icon}, #{permissionKey}, #{createdBy}, #{createdTime},
+         #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 选择性更新权限 -->
+    <update id="updateSelective" parameterType="com.admintem.web.entity.SysAuthPermission">
+        UPDATE sys_auth_permission
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="menuUrl != null">menu_url = #{menuUrl},</if>
+            <if test="component != null">component = #{component},</if>
+            <if test="backendUrl != null">backend_url = #{backendUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="show != null">`show` = #{show},</if>
+            <if test="icon != null">icon = #{icon},</if>
+            <if test="permissionKey != null">permission_key = #{permissionKey},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 批量逻辑删除权限 -->
+    <update id="logicDeleteByIds">
+        UPDATE sys_auth_permission
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{updateTime}
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,61 @@
+/**
+ * 全局基础样式
+ *
+ * 视觉数值（色板/字号/间距/圆角/投影/字体）统一来自 src/styles/tokens.css，
+ * 本文件只保留全局重置与跨页面的通用工具类，不再写裸色值。
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--lc-font-sans);
+  font-size: var(--lc-fs-body);
+  color: var(--lc-ink-body);
+  background-color: var(--lc-paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 搜索/操作条（列表页顶部工具区） */
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lc-sp-3);
+  margin-bottom: var(--lc-sp-3);
+  align-items: center;
+}
+
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--lc-sp-3);
+}
+
+/* 文本工具类 */
+.text-muted {
+  color: var(--lc-ink-faint);
+}
+
+/* 滚动条美化（细、低对比，避免抢视觉重点） */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--lc-line-input);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #c3ccda;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}

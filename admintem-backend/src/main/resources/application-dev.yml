@@ -1,0 +1,75 @@
+# ============================================================================
+# admintem-backend 开发环境配置（profile: dev）
+# ----------------------------------------------------------------------------
+# 重要：
+#  数据库(admintem_new) 与 Redis 均沿用旧项目（demo/RandomSelectionSystem）线上配置，
+#  与旧系统共用同一套数据，请勿随意执行破坏性 DDL/DML。
+#  本工程对数据库的增量变更统一放在 docs/db/changelog/ 下的 SQL 脚本中并归档说明。
+# ============================================================================
+
+spring:
+  # Flyway：数据库版本化迁移（脚本唯一出处 admintem-docs/db/changelog，
+  # 构建时复制到 classpath:db/migration）。只在 dev/test 打开，
+  # 生产由运维显式执行脚本，避免"应用一启动就改结构"。
+  flyway:
+    enabled: true
+  # --------------------------------------------------------------------------
+  # 数据源：MySQL（HikariCP 连接池）
+  # 库名 admintem_new —— 与旧项目完全一致，内含 sys_auth_* 五张 RBAC 表
+  # --------------------------------------------------------------------------
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://100.71.112.119:3306/admintem_new?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: ${ADMINTEM_DB_PASSWORD:}
+    hikari:
+      # 连接池命名（便于监控日志区分数据源）
+      pool-name: AdmintemHikariPool
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 30
+      # 连接最大存活时间（毫秒）
+      max-lifetime: 1800000
+      # 获取连接超时（毫秒）
+      connection-timeout: 10000
+      # 空闲连接回收检测间隔（毫秒）
+      idle-timeout: 600000
+      # 连接测试语句（MySQL 语法）
+      connection-test-query: SELECT 1
+
+  # --------------------------------------------------------------------------
+  # Redis（与旧项目共用同一实例：database 0，客户端为 Redisson）
+  # 用途：JWT 白名单、登录失败锁定计数、当前用户权限快照缓存
+  # 连接参数见下方顶层 redisson:*；键前缀统一 admintem:auth:...，
+  # 与旧项目 security:jwt: 等前缀隔离、互不干扰
+  # --------------------------------------------------------------------------
+  # （spring.data.redis 块已移除，Redis 访问统一走 RedissonClient）
+
+# Redisson 客户端连接参数（RedissonConfig 读取）
+redisson:
+  address: redis://100.71.112.119:6379
+  password: ${ADMINTEM_REDIS_PASSWORD:}
+  database: 0
+  connect-timeout-ms: 5000
+  timeout-ms: 5000
+  connection-pool-size: 16
+  min-idle-size: 2
+
+# 开发环境更详细的业务日志级别
+logging:
+  level:
+    root: info
+    com.admintem.web: debug      # 业务包 debug（含切面请求日志）
+    org.springframework.security: warn
+
+# 业务级可调项：接口调用日志切面开关（沿用原项目 log.aspect.enable 设计）、
+# 免登录白名单（Ant 风格路径；框架文档类路径在 SecurityConfig 中自动追加）
+admintem:
+  log:
+    aspect:
+      enable: true
+  security:
+    permit-urls:
+      - "/auth/login"        # 登录
+      - "/auth/register"     # 自助注册

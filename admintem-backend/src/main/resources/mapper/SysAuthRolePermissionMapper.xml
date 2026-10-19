@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SysAuthRolePermissionMapper XML —— sys_auth_role_permission 角色-权限关联表
+  关联表“删除”均为逻辑删除（is_deleted=1），保留审计痕迹。
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthRolePermissionMapper">
+
+    <sql id="Base_Column_List">
+        id, role_id, permission_id, created_by, created_time, update_by, update_time
+    </sql>
+
+    <!-- 查询某角色已分配的权限关联（授权回显） -->
+    <select id="selectByRoleId" resultType="com.admintem.web.entity.SysAuthRolePermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role_permission
+        WHERE role_id = #{roleId} AND is_deleted = 0
+    </select>
+
+    <!-- 按角色 ID 集合查询关联（加载用户权限标识等） -->
+    <select id="selectByRoleIds" resultType="com.admintem.web.entity.SysAuthRolePermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role_permission
+        WHERE is_deleted = 0
+        AND role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 按权限 ID 查询关联（权限变更后清理受影响角色） -->
+    <select id="selectByPermissionId" resultType="com.admintem.web.entity.SysAuthRolePermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role_permission
+        WHERE permission_id = #{permissionId} AND is_deleted = 0
+    </select>
+
+    <!-- 按权限 ID 集合查询关联（删除权限级联清理） -->
+    <select id="selectByPermissionIds" resultType="com.admintem.web.entity.SysAuthRolePermission">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role_permission
+        WHERE is_deleted = 0
+        AND permission_id IN
+        <foreach collection="permissionIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 新增关联 -->
+    <insert id="insert" parameterType="com.admintem.web.entity.SysAuthRolePermission">
+        INSERT INTO sys_auth_role_permission
+        (role_id, permission_id, created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{roleId}, #{permissionId}, #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 逻辑删除某角色的全部关联（授权保存前清空；记录操作人便于审计） -->
+    <update id="logicDeleteByRoleId">
+        UPDATE sys_auth_role_permission
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = NOW()
+        WHERE role_id = #{roleId} AND is_deleted = 0
+    </update>
+
+    <!-- 逻辑删除指向这些权限的全部关联（删除权限时级联；记录操作人） -->
+    <update id="logicDeleteByPermissionIds">
+        UPDATE sys_auth_role_permission
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = NOW()
+        WHERE is_deleted = 0
+        AND permission_id IN
+        <foreach collection="permissionIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

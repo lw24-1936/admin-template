@@ -1,0 +1,102 @@
+# =============================================================================
+# CI：每次 push / PR 跑一遍"不需要中间件"的质量门槛
+#
+# 为什么这样切分：
+#   - 单元测试全部基于 Mockito（不连库），前端单测基于 node:test，文档检查是纯静态，
+#     因此这三类可以在 CI 里稳定跑、秒级反馈；
+#   - 接口回归（78 项）与两端 E2E 需要真实的 MySQL/Redis/浏览器，放在 nightly
+#     （见 e2e-nightly.yml），避免每次提交都拉起一套中间件。
+#
+# 对应文档：07-维护与文档同步约定（质量门槛清单）
+# =============================================================================
+name: ci
+
+on:
+  push:
+    branches: [ master, 'backup/**' ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 后端：编译 + 129 项单元测试
+  # ---------------------------------------------------------------------------
+  backend:
+    name: 后端（mvn verify，单测）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 迁移脚本在 admintem-docs/db/changelog，pom 通过 ../admintem-docs 引用，
+          # 因此必须完整检出整个仓库（本 workflow 就在仓库根，天然满足）
+          fetch-depth: 1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: 单元测试
+        run: mvn -B -f admintem-backend/pom.xml verify
+      - name: 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: admintem-backend/target/surefire-reports/
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # 前端：两端构建 + 前端单元测试
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: 前端（桌面端 + 移动端）
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [admintem-vue, admintem-mobile]
+    defaults:
+      run:
+        working-directory: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - name: 安装依赖
+        run: npm ci
+      - name: 代码检查（ESLint）
+        run: npm run lint --if-present
+      - name: 构建
+        run: npm run build
+      - name: 单元测试（桌面端有；移动端暂无 test 脚本则跳过）
+        run: npm test --if-present
+
+  # ---------------------------------------------------------------------------
+  # 文档与设计层静态检查（不需要服务）
+  # ---------------------------------------------------------------------------
+  docs:
+    name: 文档一致性（4 个检查器）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: 接口与权限标识对照（05 vs @PreAuthorize）
+        run: node admintem-docs/tests/check-permission-doc-consistency.cjs
+      - name: 角色可访问矩阵是否为最新
+        run: node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check
+      - name: 前端引用的权限标识是否都已定义
+        run: node admintem-docs/tests/check-perm-keys.cjs
+      - name: 文档配图与相对链接
+        run: node admintem-docs/tests/check-doc-images.cjs
+      - name: 设计 token 一致性（含"阴影 token 整值使用"规则）
+        run: node admintem-docs/tests/check-tokens.cjs

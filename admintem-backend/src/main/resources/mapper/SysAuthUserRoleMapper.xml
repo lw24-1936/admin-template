@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SysAuthUserRoleMapper XML —— sys_auth_user_role 用户-角色关联表
+  关联表“删除”均为逻辑删除（is_deleted=1），保留审计痕迹。
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthUserRoleMapper">
+
+    <sql id="Base_Column_List">
+        id, user_id, role_id, created_by, created_time, update_by, update_time
+    </sql>
+
+    <!-- 查询用户已分配的角色 ID 列表 -->
+    <select id="selectRoleIdsByUserId" resultType="long">
+        SELECT role_id
+        FROM sys_auth_user_role
+        WHERE user_id = #{userId} AND is_deleted = 0
+    </select>
+
+    <!-- 按用户 ID 集合查询全部关联（列表页批量装载角色使用） -->
+    <select id="selectByUserIds" resultType="com.admintem.web.entity.SysAuthUserRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_user_role
+        WHERE is_deleted = 0
+        AND user_id IN
+        <foreach collection="userIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 统计角色绑定的用户数 -->
+    <select id="countByRoleId" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_auth_user_role
+        WHERE role_id = #{roleId} AND is_deleted = 0
+    </select>
+
+    <!-- 反查拥有这些角色的用户 ID（去重） -->
+    <select id="selectUserIdsByRoleIds" resultType="long">
+        SELECT DISTINCT user_id
+        FROM sys_auth_user_role
+        WHERE is_deleted = 0
+        AND role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 新增关联 -->
+    <insert id="insert" parameterType="com.admintem.web.entity.SysAuthUserRole">
+        INSERT INTO sys_auth_user_role
+        (user_id, role_id, created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{userId}, #{roleId}, #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 逻辑删除某用户的全部关联（记录操作人，便于审计"谁在何时解除了关联"） -->
+    <update id="logicDeleteByUserId">
+        UPDATE sys_auth_user_role
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = NOW()
+        WHERE user_id = #{userId} AND is_deleted = 0
+    </update>
+
+    <!-- 逻辑删除某角色的全部关联（记录操作人） -->
+    <update id="logicDeleteByRoleId">
+        UPDATE sys_auth_user_role
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = NOW()
+        WHERE role_id = #{roleId} AND is_deleted = 0
+    </update>
+
+</mapper>

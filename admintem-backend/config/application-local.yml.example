@@ -1,0 +1,24 @@
+# ============================================================================
+# 本地私有配置示例（admintem-backend/config/application-local.yml.example）
+# ----------------------------------------------------------------------------
+# 用途：数据库 / Redis 口令等敏感项不进入版本库，集中放在本文件中。
+#
+# 使用步骤：
+#   1. 复制本文件为同目录下的 application-local.yml：
+#        copy config\application-local.yml.example config\application-local.yml
+#   2. 按实际环境填写下面的值（键名与代码中的占位符一致，勿改名）；
+#   3. 直接启动即可，application.yml 已通过
+#        spring.config.import: optional:file:./config/application-local.yml
+#      自动加载（文件不存在时忽略，不会报错）。
+#
+# 说明：application-{dev,test,pre,pro}.yml 中对应写法为
+#        password: ${ADMINTEM_DB_PASSWORD:}
+#        password: ${ADMINTEM_REDIS_PASSWORD:}
+#      引用下面两个键；生产也可改用系统环境变量 / 容器 Secret 注入同名变量。
+# ============================================================================
+
+# 数据库口令（MySQL）
+ADMINTEM_DB_PASSWORD: "your-mysql-password"
+
+# Redis 口令（Redisson 客户端）
+ADMINTEM_REDIS_PASSWORD: "your-redis-password"

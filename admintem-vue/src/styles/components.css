@@ -1,0 +1,258 @@
+/**
+ * 组件级精修（桌面端）—— 变量覆盖无法表达的结构与排版规则
+ *
+ * 定位：这里放"跨页面共用"的组件微调（表格、卡片、工具栏、分页、按钮、弹层），
+ *      页面私有样式仍写在各自 SFC 的 <style scoped> 中。
+ * 约定：只引用 tokens 变量，不写裸色值；不使用 !important。
+ * 维护：新增规则前先确认能否用 styles/theme.css 的变量覆盖解决——变量优先。
+ */
+
+/* ==================== 表格 ==================== */
+/* 编辑式表格：表头小号字距 + 纸面底、行高 44、仅横向细线、数字等宽
+ * 注意：Element Plus 会在组件根类上定义自己的变量（组件作用域优先于 :root），
+ *      因此表格/卡片的配色必须写在这里而不是只写 theme.css 的 :root。 */
+.el-table {
+  --el-table-border-color: var(--lc-line-soft);
+  --el-table-header-bg-color: var(--lc-paper);
+  --el-table-header-text-color: var(--lc-ink-muted);
+  --el-table-text-color: var(--lc-ink-body);
+  --el-table-row-hover-bg-color: #f8fafc;
+  --el-table-tr-bg-color: var(--lc-paper-card);
+  --el-table-bg-color: var(--lc-paper-card);
+  font-size: var(--lc-fs-body);
+}
+.el-table th.el-table__cell {
+  font-size: var(--lc-fs-hint);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 10px 0;
+}
+.el-table td.el-table__cell {
+  padding: 10px 0;
+}
+.el-table .cell {
+  line-height: 22px;
+  /* 编号/数量/时间等数字等宽对齐，便于纵向比对 */
+  font-variant-numeric: tabular-nums;
+}
+.el-table--border .el-table__inner-wrapper::after,
+.el-table--border::after,
+.el-table--border::before {
+  background-color: var(--lc-line-soft);
+}
+
+/* ==================== 卡片 ==================== */
+.el-card {
+  --el-card-border-color: var(--lc-line);
+  --el-card-border-radius: var(--lc-radius-card);
+  --el-card-padding: var(--lc-sp-5);
+  border-radius: var(--lc-radius-card);
+}
+.el-card__body {
+  padding: var(--lc-sp-5);
+}
+
+/* ==================== 列表页工具栏（TableToolbar） ==================== */
+/* 顶部信息区：kicker + 标题 + 一行说明，底部细线与表格分隔 */
+.table-toolbar__intro {
+  margin-bottom: var(--lc-sp-4);
+}
+.table-toolbar__kicker {
+  margin: 0 0 var(--lc-sp-2);
+  font-size: var(--lc-fs-kicker);
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  color: var(--lc-ink-faint);
+}
+.table-toolbar__title {
+  margin: 0 0 6px;
+  font-size: var(--lc-fs-page);
+  font-weight: 650;
+  letter-spacing: 0.4px;
+  color: var(--lc-ink);
+}
+.table-toolbar__desc {
+  margin: 0;
+  font-size: var(--lc-fs-label);
+  line-height: 1.7;
+  color: var(--lc-ink-muted);
+}
+
+/* ==================== 分页 ==================== */
+/* 细线按钮 + 当前页实心主色（替代默认的浅灰方块） */
+.el-pagination.is-background .btn-prev,
+.el-pagination.is-background .btn-next,
+.el-pagination.is-background .el-pager li {
+  background: transparent;
+  border: 1px solid var(--lc-line);
+  border-radius: 8px;
+  color: var(--lc-ink-body);
+  font-variant-numeric: tabular-nums;
+}
+.el-pagination.is-background .el-pager li:not(.is-active):hover {
+  border-color: var(--lc-brand);
+  color: var(--lc-brand);
+}
+.el-pagination.is-background .el-pager li.is-active {
+  background: var(--lc-brand);
+  border-color: var(--lc-brand);
+  color: var(--lc-paper-card);
+  font-weight: 600;
+}
+.el-pagination .el-select .el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--lc-line) inset;
+}
+
+/* ==================== 按钮 ==================== */
+.el-button {
+  border-radius: var(--lc-radius-ctl);
+  font-weight: 500;
+}
+/* 主按钮实色（无渐变），与登录页提交按钮同一语言 */
+.el-button--primary {
+  --el-button-bg-color: var(--lc-brand);
+  --el-button-border-color: var(--lc-brand);
+  --el-button-hover-bg-color: var(--lc-brand-hover);
+  --el-button-hover-border-color: var(--lc-brand-hover);
+  --el-button-active-bg-color: var(--lc-brand-hover);
+}
+/* 表格内 link 按钮：去掉额外内边距，保持行内排版整洁 */
+.el-table .el-button.is-link {
+  padding: 0 4px;
+}
+
+/* ==================== 输入框 / 选择器 ==================== */
+.el-input__wrapper,
+.el-textarea__inner {
+  border-radius: var(--lc-radius-ctl);
+  box-shadow: 0 0 0 1px var(--lc-line-input) inset;
+  transition: box-shadow var(--lc-motion-fast);
+}
+.el-input__wrapper.is-focus,
+.el-textarea__inner:focus {
+  box-shadow: 0 0 0 1.5px var(--lc-brand) inset, 0 0 0 4px var(--lc-brand-ring);
+}
+
+/* ==================== 弹层 ==================== */
+/* 标题区/操作区以细线分隔，内容区留白统一；
+ * 弹层内首行统一使用 .dialog-desc 说明该操作的口径（比蓝色 el-alert 更克制） */
+.el-dialog {
+  border-radius: var(--lc-radius-card);
+}
+.el-dialog__header {
+  margin-right: 0;
+  padding: var(--lc-sp-5) var(--lc-sp-5) var(--lc-sp-3);
+  border-bottom: 1px solid var(--lc-line-soft);
+}
+.el-dialog__title {
+  font-size: var(--lc-fs-card);
+  font-weight: 650;
+  color: var(--lc-ink);
+}
+.el-dialog__body {
+  padding: var(--lc-sp-5);
+}
+.el-dialog__footer {
+  padding: var(--lc-sp-3) var(--lc-sp-5) var(--lc-sp-5);
+  border-top: 1px solid var(--lc-line-soft);
+}
+/* 弹层内说明行：一行讲清"这个操作会做什么、有什么约束" */
+.dialog-desc {
+  margin: 0 0 var(--lc-sp-5);
+  padding-bottom: var(--lc-sp-3);
+  border-bottom: 1px solid var(--lc-line-soft);
+  font-size: var(--lc-fs-label);
+  line-height: 1.75;
+  color: var(--lc-ink-muted);
+}
+
+/* ==================== 表单 ==================== */
+.el-form-item {
+  margin-bottom: var(--lc-sp-5);
+}
+.el-form-item__label {
+  font-size: var(--lc-fs-label);
+  font-weight: 500;
+  color: var(--lc-ink-body);
+}
+.el-form-item__error {
+  font-size: var(--lc-fs-hint);
+  color: var(--lc-danger);
+}
+.el-input__inner,
+.el-textarea__inner {
+  font-size: var(--lc-fs-body);
+}
+/* 只读/禁用态：浅底 + 弱化文字，避免与可编辑项混淆 */
+.el-input.is-disabled .el-input__wrapper {
+  background: var(--lc-paper);
+  box-shadow: 0 0 0 1px var(--lc-line-soft) inset;
+}
+.el-input.is-disabled .el-input__inner {
+  color: var(--lc-ink-muted);
+}
+
+/* ==================== 标签 / 消息 ==================== */
+.el-tag {
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.el-message {
+  border-radius: var(--lc-radius-ctl);
+}
+
+/* ==================== 空状态（E7） ==================== */
+/* 默认空状态过于"系统提示"感，这里改为纸面留白 + 弱化文字 */
+.el-table__empty-block {
+  min-height: 180px;
+  background: var(--lc-paper-card);
+}
+.el-table__empty-text {
+  font-size: var(--lc-fs-label);
+  line-height: 1.9;
+  color: var(--lc-ink-faint);
+}
+.el-tree__empty-text,
+.el-select-dropdown__empty {
+  font-size: var(--lc-fs-label);
+  color: var(--lc-ink-faint);
+}
+
+/* ==================== 加载态（E7） ==================== */
+/* 遮罩用纸面白（而非默认灰），转圈用主色，避免与整体语言割裂 */
+.el-loading-mask {
+  background-color: rgba(255, 255, 255, 0.76);
+}
+.el-loading-spinner .path {
+  stroke: var(--lc-brand);
+}
+.el-loading-spinner .el-loading-text {
+  font-size: var(--lc-fs-hint);
+  color: var(--lc-ink-muted);
+}
+
+/* ==================== 键盘可达性（E7） ==================== */
+/* 仅在键盘导航时显示焦点环，鼠标点击不显示，避免破坏视觉整洁 */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--lc-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* 文本选区用主色浅底，替代浏览器默认蓝 */
+::selection {
+  background: var(--lc-brand-soft);
+  color: var(--lc-ink);
+}
+
+/* ==================== 尊重"减少动效"偏好（E7） ==================== */
+/* 用户系统设置偏好减少动效时，关闭过渡与动画（可访问性要求） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

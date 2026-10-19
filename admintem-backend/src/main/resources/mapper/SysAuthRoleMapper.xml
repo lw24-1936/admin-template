@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SysAuthRoleMapper XML —— sys_auth_role 角色表
+  约定同 SysAuthUserMapper：显式 is_deleted 过滤 + 下划线自动映射 + IPage 分页。
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthRoleMapper">
+
+    <sql id="Base_Column_List">
+        id, role_name, role_key, created_by, created_time, update_by, update_time
+    </sql>
+
+    <!-- 按主键查询 -->
+    <select id="selectById" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <!-- 按 ID 集合批量查询 -->
+    <select id="selectByIds" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 按 role_key 查询（注册默认角色等场景） -->
+    <select id="selectByRoleKey" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        WHERE role_key = #{roleKey} AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 按 role_key 集合批量查询（会话构建：由已认证快照的角色标识直接取角色明细，
+         省去"按用户查关联 + 按 ID 查角色"两次查询） -->
+    <select id="selectByRoleKeys" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        WHERE is_deleted = 0
+        AND role_key IN
+        <foreach collection="roleKeys" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 统计同名 role_key（支持排除自身） -->
+    <select id="countByRoleKey" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_auth_role
+        WHERE role_key = #{roleKey} AND is_deleted = 0
+        <if test="excludeId != null">
+            AND id &lt;&gt; #{excludeId}
+        </if>
+    </select>
+
+    <!-- 全部角色（下拉选项使用） -->
+    <select id="selectAllOrdered" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        WHERE is_deleted = 0
+        ORDER BY id ASC
+    </select>
+
+    <!-- 分页查询角色
+         排序：默认 id ASC；前端传 sortField/sortOrder 时由 Service 经 SortWhitelist 白名单转成
+         orderBy（如 role_name DESC），${orderBy} 只可能是白名单列，无注入风险。 -->
+    <select id="selectRolePage" resultType="com.admintem.web.entity.SysAuthRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_role
+        <where>
+            is_deleted = 0
+            <if test="q.roleName != null and q.roleName != ''">
+                AND role_name LIKE CONCAT('%', #{q.roleName}, '%')
+            </if>
+            <if test="q.roleKey != null and q.roleKey != ''">
+                AND role_key LIKE CONCAT('%', #{q.roleKey}, '%')
+            </if>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                ORDER BY ${orderBy}, id ASC
+            </when>
+            <otherwise>
+                ORDER BY id ASC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 新增角色 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.admintem.web.entity.SysAuthRole">
+        INSERT INTO sys_auth_role
+        (role_name, role_key, created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{roleName}, #{roleKey}, #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 选择性更新角色 -->
+    <update id="updateSelective" parameterType="com.admintem.web.entity.SysAuthRole">
+        UPDATE sys_auth_role
+        <set>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="roleKey != null">role_key = #{roleKey},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 逻辑删除角色 -->
+    <update id="logicDelete">
+        UPDATE sys_auth_role
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{updateTime}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  admintem-backend 日志配置（logback-spring）
+  ============================================================================
+  存储设计参考原项目 logback.xml：
+    1. 日志统一存放 LOG_HOME（默认 logs/，可用 -DLOG_HOME 覆盖）；
+    2. 文件命名与分文件：
+       - admintem-backend-info.log  全量 INFO+（生产主日志）
+       - admintem-backend-error.log 仅 ERROR
+       - sql/admintem-sql.log       全量带参 SQL（sys-sql，仅 dev/test/pre）
+       - sql/admintem-slow.log      慢 SQL（sys-slow-sql，WARN+）
+    3. 滚动归档：按天/大小滚动到 history/ 子目录并以 .gz 压缩，info 保留 30 天；
+    4. 写入异步化：AsyncAppender（不丢弃日志 discardingThreshold=0、队列 102400、
+       maxFlushTime 1000ms、可阻塞确保不丢日志）包裹主要文件输出；
+    5. 日志行包含 [traceId]（RequestTraceFilter 写入 MDC，未命中显示 -），
+       配合请求起止日志与 ApiLogAspect 形成“请求 → SQL”全链路可查。
+  ============================================================================
+-->
+<configuration>
+
+    <!-- 日志根目录：可用 -DLOG_HOME 覆盖，默认相对运行目录 logs/ -->
+    <property name="LOG_HOME" value="${LOG_HOME:-logs}"/>
+
+    <!-- 控制台格式：时间 | 级别 | 线程 | traceId | 类名:行号 | 消息 -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{traceId:-}] %logger{60}:%line - %msg%n"/>
+    <!-- 文件格式 -->
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{traceId:-}] %logger{80}:%line - %msg%n"/>
+
+    <!-- 1) 控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 2) INFO+ 全量文件：logs/admintem-backend-info.log -->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/admintem-backend-info.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/history/admintem-backend-info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 3) ERROR 专属文件：logs/admintem-backend-error.log -->
+    <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/admintem-backend-error.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/history/admintem-backend-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 4) 全量带参 SQL：logs/sql/admintem-sql.log（sys-sql） -->
+    <appender name="FILE_SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/sql/admintem-sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/sql/history/admintem-sql.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>15</maxHistory>
+            <totalSizeCap>2GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 5) 慢 SQL：logs/sql/admintem-slow.log（sys-slow-sql，WARN+） -->
+    <appender name="FILE_SLOW" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/sql/admintem-slow.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/sql/history/admintem-slow.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ============ 异步包装（参考原项目 AsyncAppender 参数，保证不丢日志） ============ -->
+    <appender name="ASYNC_INFO" class="ch.qos.logback.classic.AsyncAppender">
+        <includeCallerData>true</includeCallerData>
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>1000</maxFlushTime>
+        <queueSize>102400</queueSize>
+        <neverBlock>false</neverBlock>
+        <appender-ref ref="FILE_INFO"/>
+    </appender>
+    <appender name="ASYNC_ERROR" class="ch.qos.logback.classic.AsyncAppender">
+        <includeCallerData>true</includeCallerData>
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>1000</maxFlushTime>
+        <queueSize>102400</queueSize>
+        <neverBlock>false</neverBlock>
+        <appender-ref ref="FILE_ERROR"/>
+    </appender>
+    <appender name="ASYNC_SQL" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>1000</maxFlushTime>
+        <queueSize>102400</queueSize>
+        <neverBlock>false</neverBlock>
+        <appender-ref ref="FILE_SQL"/>
+    </appender>
+    <appender name="ASYNC_SLOW" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <maxFlushTime>1000</maxFlushTime>
+        <queueSize>102400</queueSize>
+        <neverBlock>false</neverBlock>
+        <appender-ref ref="FILE_SLOW"/>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_INFO"/>
+        <appender-ref ref="ASYNC_ERROR"/>
+    </root>
+
+    <!-- sys-sql：dev/test/pre 写独立 SQL 文件；pro 关闭（仅保留慢 SQL） -->
+    <springProfile name="dev,test,pre">
+        <logger name="sys-sql" level="INFO" additivity="false">
+            <appender-ref ref="ASYNC_SQL"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+    <springProfile name="pro">
+        <logger name="sys-sql" level="OFF" additivity="false"/>
+    </springProfile>
+
+    <!-- sys-slow-sql：全局 WARN+，写慢 SQL 文件并在全量日志保留 -->
+    <logger name="sys-slow-sql" level="WARN" additivity="false">
+        <appender-ref ref="ASYNC_SLOW"/>
+        <appender-ref ref="ASYNC_INFO"/>
+    </logger>
+
+    <logger name="org.apache.catalina" level="WARN"/>
+    <logger name="org.apache.tomcat" level="WARN"/>
+</configuration>

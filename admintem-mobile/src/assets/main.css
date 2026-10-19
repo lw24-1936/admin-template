@@ -1,0 +1,114 @@
+/**
+ * 移动端全局样式
+ * 视觉基调与桌面端一致：纸面浅灰底 + 深蓝主色，无渐变光效
+ * 布局：内容限制在 480px 手机宽度内，宽屏居中显示
+ *
+ * 说明：视觉数值（色板/字号/间距/圆角/投影/动效）统一由 src/styles/tokens.css 提供，
+ *      Vant 变量映射见 src/styles/theme.css；本文件只保留全局重置与通用布局类。
+ */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--lc-canvas);
+  color: var(--lc-ink);
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 手机宽度容器：宽屏（PC 浏览器调试）时居中呈现 */
+#app {
+  max-width: 480px;
+  min-height: 100%;
+  margin: 0 auto;
+  background: var(--lc-paper);
+  /* 注意：--lc-frame-shadow 本身就是一个完整的 box-shadow 值，
+     不能再拼长度前缀，否则整条声明非法、描边直接失效（曾踩过） */
+  box-shadow: var(--lc-frame-shadow);
+}
+
+/**
+ * 页面通用内边距（底部预留标签栏与安全区高度）
+ *
+ * 高度用 dvh：手机浏览器把地址栏算进 100vh，滚动时会"跳一下"，
+ * 或首屏内容被地址栏挡住一截；dvh 跟随可视区变化。保留 vh 作为旧内核回退。
+ */
+.lc-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 18px 16px calc(66px + env(safe-area-inset-bottom));
+}
+
+/** 白卡片 */
+.lc-card {
+  background: var(--lc-paper-card);
+  border: 1px solid var(--lc-line);
+  border-radius: var(--lc-radius-card);
+  padding: 18px 16px;
+  margin-bottom: 14px;
+}
+
+/** 卡片小标题 */
+.lc-card__title {
+  margin: 0 0 12px;
+  font-size: var(--lc-fs-hint);
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--lc-ink-faint);
+}
+
+/** 页面主标题 */
+.lc-page__title {
+  margin: 0 0 var(--lc-sp-1);
+  font-size: var(--lc-fs-page);
+  font-weight: 650;
+  color: var(--lc-ink);
+}
+
+.lc-page__desc {
+  margin: 0 0 var(--lc-sp-4);
+  font-size: var(--lc-fs-label);
+  line-height: 1.7;
+  color: var(--lc-ink-muted);
+}
+
+/* 输入区在移动端的描边风格（与桌面端表单一致） */
+.van-field {
+  --van-field-input-text-color: var(--lc-ink);
+}
+
+/* ==================== 细节与无障碍（与桌面端同套规则） ==================== */
+
+/* 文本选区用主色浅底 */
+::selection {
+  background: var(--lc-brand-soft);
+  color: var(--lc-ink);
+}
+
+/* 仅在键盘导航时显示焦点环 */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--lc-brand);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 尊重"减少动效"偏好：关闭过渡与动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

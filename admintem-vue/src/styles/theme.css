@@ -1,0 +1,95 @@
+/**
+ * 组件库变量映射（桌面端）—— 把 Element Plus 的主题变量指向设计 token
+ *
+ * 说明：
+ *   1. 本文件只做"库变量 → token"的映射，不放组件规则（组件级精修见 styles/components.css）；
+ *   2. 覆盖变量是 Element Plus 官方推荐的主题定制方式，因此**无需 !important**，
+ *      也不会因为组件内部样式调整而失效；
+ *   3. E1 阶段刻意没有做这层映射（那时要求"零视觉变化"），
+ *      从 E2/E3 开始是有意的视觉统一，映射范围按"实际用到的组件"逐步补齐。
+ */
+:root {
+  /* ---------------- 主色与语义色 ---------------- */
+  --el-color-primary: var(--lc-brand);
+  --el-color-primary-light-3: #3f6289;
+  --el-color-primary-light-5: #6d88a6;
+  --el-color-primary-light-7: #9fafc3;
+  --el-color-primary-light-8: #c3cdda;
+  --el-color-primary-light-9: var(--lc-brand-soft);
+  --el-color-primary-dark-2: #0e3057;
+
+  --el-color-success: #2f7a52;
+  --el-color-warning: #a9752a;
+  --el-color-danger: var(--lc-danger);
+  --el-color-error: var(--lc-danger);
+  --el-color-info: var(--lc-ink-muted);
+
+  /* ---------------- 文字与描边 ---------------- */
+  --el-text-color-primary: var(--lc-ink);
+  --el-text-color-regular: var(--lc-ink-body);
+  --el-text-color-secondary: var(--lc-ink-muted);
+  /* 占位符是"用户要读的文字"，按正文门槛取色（白卡 4.60:1），不用提示级灰 */
+  --el-text-color-placeholder: var(--lc-ink-muted);
+  /* 禁用态：WCAG 1.4.3 明确豁免 inactive 组件，故保留更浅的一档 */
+  --el-text-color-disabled: var(--lc-ink-disabled);
+
+  --el-border-color: var(--lc-line);
+  --el-border-color-light: var(--lc-line-soft);
+  --el-border-color-lighter: var(--lc-line-soft);
+  --el-border-color-extra-light: var(--lc-line-soft);
+  --el-border-color-hover: var(--lc-line-input);
+  --el-border-color-darker: var(--lc-line-strong);
+
+  --el-fill-color: var(--lc-paper);
+  --el-fill-color-light: #f8fafc;
+  --el-fill-color-lighter: var(--lc-paper);
+  --el-fill-color-blank: var(--lc-paper-card);
+  --el-bg-color: var(--lc-paper-card);
+  --el-bg-color-page: var(--lc-paper);
+  --el-bg-color-overlay: var(--lc-paper-card);
+
+  /* ---------------- 字号 / 圆角 / 投影 ---------------- */
+  --el-font-size-base: var(--lc-fs-body);
+  --el-font-size-small: var(--lc-fs-label);
+  --el-font-size-extra-small: var(--lc-fs-hint);
+  --el-border-radius-base: var(--lc-radius-ctl);
+  --el-border-radius-small: 8px;
+  --el-border-radius-round: 999px;
+  --el-box-shadow-light: 0 12px 32px -24px rgba(6, 26, 51, 0.28);
+  --el-box-shadow: var(--lc-shadow-sheet);
+
+  /* ---------------- 表格 ---------------- */
+  --el-table-border-color: var(--lc-line-soft);
+  --el-table-border: 1px solid var(--lc-line-soft);
+  --el-table-text-color: var(--lc-ink-body);
+  --el-table-header-text-color: var(--lc-ink-muted);
+  --el-table-header-bg-color: var(--lc-paper);
+  --el-table-row-hover-bg-color: #f8fafc;
+  --el-table-current-row-bg-color: var(--lc-brand-soft);
+  --el-table-tr-bg-color: var(--lc-paper-card);
+  --el-table-bg-color: var(--lc-paper-card);
+
+  /* ---------------- 卡片 ---------------- */
+  --el-card-border-color: var(--lc-line);
+  --el-card-border-radius: var(--lc-radius-card);
+  --el-card-padding: var(--lc-sp-5);
+
+  /* ---------------- 输入框 / 选择器 ---------------- */
+  --el-input-border-color: var(--lc-line-input);
+  --el-input-hover-border-color: var(--lc-line-input);
+  --el-input-focus-border-color: var(--lc-brand);
+  --el-input-text-color: var(--lc-ink);
+  --el-input-height: 36px;
+  --el-component-size: 36px;
+
+  /* ---------------- 分页 ---------------- */
+  --el-pagination-button-bg-color: transparent;
+  --el-pagination-hover-color: var(--lc-brand);
+  --el-pagination-font-size: var(--lc-fs-label);
+  --el-pagination-button-color: var(--lc-ink-body);
+
+  /* ---------------- 弹层 ---------------- */
+  --el-dialog-border-radius: var(--lc-radius-card);
+  --el-dialog-padding-primary: var(--lc-sp-5);
+  --el-overlay-color-lighter: rgba(21, 41, 63, 0.36);
+}

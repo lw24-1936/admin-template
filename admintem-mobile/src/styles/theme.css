@@ -1,0 +1,39 @@
+/**
+ * 组件库变量映射（移动端）—— 把 Vant 的主题变量指向设计 token
+ *
+ * 说明：
+ *   1. 本文件只做"库变量 → token"的映射，不放组件规则与数值；
+ *   2. 覆盖 Vant 变量是官方推荐的主题定制方式，不需要 sass 或额外依赖；
+ *   3. E1/E6 只映射改造前 main.css 原本就覆盖过的 4 个变量（主色 2 个 + 标签栏高度 + 正文字号），
+ *      其余外观由各页面自己控制，保证"token 替换零视觉变化"可被逐像素验证；
+ *   4. E8 追加文字色与占位符映射：Vant 默认文字灰阶（#969799 / #c8c9cc）在纸面上
+ *      对比度只有 2.6:1 / 1.9:1，属可访问性缺陷，故统一收敛到与桌面端同名的 token。
+ */
+:root {
+  /* 主色：与桌面端同一 token */
+  --van-primary-color: var(--lc-brand);
+  --van-tabbar-item-active-color: var(--lc-brand);
+
+  /* 标签栏与字号（保持改造前的取值） */
+  --van-tabbar-height: 50px;
+  --van-font-size-md: var(--lc-fs-body); /* 14px，与原 --van-font-size-md: 14px 等价 */
+
+  /* 文字灰阶（E8：替换 Vant 默认的低对比度灰） */
+  --van-text-color: var(--lc-ink-body);
+  --van-text-color-2: var(--lc-ink-muted);
+  --van-text-color-3: var(--lc-ink-faint);
+}
+
+/**
+ * 占位符颜色必须写在 `.van-field` 作用域内。
+ *
+ * 原因（与桌面端 E3 遇到的同一类陷阱）：Vant 会在**组件自身的类**上定义默认变量，
+ * 例如 `.van-field { --van-field-placeholder-text-color: var(--van-text-color-3) }`，
+ * 组件作用域的声明优先于 `:root`，因此只写 `:root` 不生效——实测会退回到
+ * `--van-text-color-3`（提示级灰 3.35:1）。写在 `.van-field` 上后与库默认同层，
+ * 由加载顺序决定胜负；theme.css 在 main.js 中先于组件按需样式引入，
+ * 故用双类提升特异性，确保稳定生效（实测 4.60:1）。
+ */
+.van-field.van-field {
+  --van-field-placeholder-text-color: var(--lc-ink-muted);
+}

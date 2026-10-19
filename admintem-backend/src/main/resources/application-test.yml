@@ -1,0 +1,56 @@
+# ============================================================================
+# admintem-backend 测试环境配置（profile: test，mvn -P test）
+# ----------------------------------------------------------------------------
+# 说明：
+#  - 演示环境与 dev 共用同一 MySQL(admintem_new)/Redis 便于直接启动；
+#    正式测试环境请替换为测试库并保证含 V1.0.x 增量脚本。
+#  - 端口 8091；Redis 客户端为 Redisson（redisson:*）。
+# ============================================================================
+
+spring:
+  # Flyway 迁移开关（脚本在 admintem-docs/db/changelog，构建时打进 classpath:db/migration）
+  # 只在 dev/test 打开：生产由运维显式执行脚本，避免应用启动即改结构
+  flyway:
+    enabled: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://100.71.112.119:3306/admintem_new?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: ${ADMINTEM_DB_PASSWORD:}
+    hikari:
+      pool-name: AdmintemHikariPool-Test
+      minimum-idle: 5
+      maximum-pool-size: 30
+      max-lifetime: 1800000
+      connection-timeout: 10000
+      idle-timeout: 600000
+      connection-test-query: SELECT 1
+
+# Redis（Redisson 客户端，键前缀 admintem:auth:*）
+redisson:
+  address: redis://100.71.112.119:6379
+  password: ${ADMINTEM_REDIS_PASSWORD:}
+  database: 0
+  connect-timeout-ms: 5000
+  timeout-ms: 5000
+  connection-pool-size: 16
+  min-idle-size: 2
+
+server:
+  port: 8091
+
+logging:
+  level:
+    root: info
+    com.admintem.web: debug
+    org.springframework.security: warn
+
+# 接口调用日志切面开关（沿用原项目 log.aspect.enable 设计）
+admintem:
+  log:
+    aspect:
+      enable: true
+  security:
+    permit-urls:
+      - "/auth/login"
+      - "/auth/register"

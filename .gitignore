@@ -1,0 +1,51 @@
+# ---------------------------------------------------------------------------
+# admintem 后台管理模板 —— 仓库级忽略规则
+#
+# 原则：构建产物、依赖、运行期文件、本地口令一律不入库；
+#      文档里的截图（admintem-docs/images）属于交付物，**要**入库。
+# ---------------------------------------------------------------------------
+
+# ---- 依赖 ----
+node_modules/
+.pnpm-store/
+
+# ---- 构建产物 ----
+target/
+dist/
+dist-ssr/
+*.jar
+*.war
+.vite/
+
+# ---- IDE / 系统 ----
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ---- 运行期文件 ----
+logs/
+*.log
+*.log.gz
+uploads/
+*.pid
+*.hprof
+
+# ---- 本地口令（真实密码只存在本机）----
+admintem-backend/config/application-local.yml
+
+# ---- 设计预览与一次性截图（交付截图在 admintem-docs/images） ----
+admintem-docs/design-preview/
+admintem-docs/tests/backup/
+admintem-docs/tests/output/
+
+# ---- 测试与覆盖率 ----
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+
+# ---- 前端本地环境覆盖 ----
+.env.local
+.env.*.local

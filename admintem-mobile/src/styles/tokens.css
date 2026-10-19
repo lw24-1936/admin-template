@@ -1,0 +1,87 @@
+/**
+ * 设计 token（移动端）—— 与桌面端 `admintem-vue/src/styles/tokens.css` 数值完全一致
+ *
+ * 目的：桌面端与移动端共用同一份视觉数值，两端看起来是同一个产品；
+ *      改一处（例如把 --lc-brand 调深）两端同时生效。
+ *
+ * 说明：
+ *   1. 前缀统一 `--lc-`，与 Vant 的 `--van-*` 区分；
+ *   2. E1 曾保留 `--lc-bg / --lc-muted / --lc-primary` 三个历史别名以做到"零改动"；
+ *      E6 完成 48 处替换后仅剩 3 处引用、其中 `--lc-primary` 已无人使用，
+ *      故 E8 一并清除并改为引用规范名（`--lc-paper / --lc-ink-muted`），避免死 token；
+ *   3. 组件库变量映射见 styles/theme.css；
+ *   4. E8（可访问性）与桌面端**同步**调整：`--lc-ink-faint` 加深为 #848d9c、
+ *      `--lc-ink-faint-2/-3` 合并为 `--lc-ink-disabled`——两端数值必须始终一致，
+ *      否则"同一个产品"的观感会被两套灰阶破坏。
+ */
+:root {
+  /* ---------------- 纸面与卡片 ---------------- */
+  --lc-paper: #f5f6f8;
+  --lc-paper-card: #ffffff;
+  --lc-grid-line: rgba(15, 39, 68, 0.028);
+  --lc-canvas: #e9ebef; /* 手机容器之外的画布底（宽屏居中时可见） */
+  --lc-frame-shadow: 0 0 0 1px rgba(21, 41, 63, 0.06); /* 手机容器的极细描边 */
+  --lc-surface-soft: #fafbfc; /* 次级面（入口按钮/列表底） */
+  --lc-surface-hover: #f2f4f8; /* 按下/hover 面 */
+  --lc-line-hover: #cfd6e2; /* 按下/hover 描边 */
+  --lc-danger-soft: #fdf6f6; /* 危险操作按下底 */
+
+  /* ---------------- 墨色文字阶梯 ---------------- */
+  --lc-ink: #15293f;
+  --lc-ink-body: #3d4757;
+  --lc-ink-soft: #5f6a7a;
+  --lc-ink-muted: #6b7686;
+  --lc-ink-faint: #848d9c; /* 提示 / 脚注（白卡 3.35:1 / 纸面 3.09:1） */
+  --lc-ink-disabled: #a2aab6; /* 仅用于"禁用态"文字（WCAG 1.4.3 豁免） */
+
+  /* ---------------- 描边与分隔线 ---------------- */
+  --lc-line: #e6e9ef;
+  --lc-line-strong: #e1e5ec;
+  --lc-line-soft: #eef0f4;
+  --lc-line-input: #dfe3ea;
+
+  /* ---------------- 主色与语义色 ---------------- */
+  --lc-brand: #123c6e;
+  --lc-brand-hover: #1a4d8c;
+  --lc-brand-soft: #eef3fb;
+  --lc-brand-ring: rgba(18, 60, 110, 0.07);
+  --lc-danger: #b02a2a;
+  --lc-danger-line: #f0d9d9;
+
+  /* ---------------- 字体 ---------------- */
+  --lc-font-sans: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial,
+    sans-serif;
+
+  /* ---------------- 字号阶梯 ---------------- */
+  --lc-fs-display: 27px; /* 移动端登录页主标题 */
+  --lc-fs-title: 17px;
+  --lc-fs-page: 22px;
+  --lc-fs-card: 16px;
+  --lc-fs-lead: 15px;
+  --lc-fs-body: 14px;
+  --lc-fs-label: 13px;
+  --lc-fs-hint: 12px;
+  --lc-fs-kicker: 11px;
+
+  /* ---------------- 间距节奏 ---------------- */
+  --lc-sp-1: 4px;
+  --lc-sp-2: 8px;
+  --lc-sp-3: 12px;
+  --lc-sp-4: 16px;
+  --lc-sp-5: 20px;
+  --lc-sp-6: 24px;
+  --lc-sp-7: 32px;
+
+  /* ---------------- 形状与投影 ---------------- */
+  --lc-radius-ctl: 10px;
+  --lc-radius-card: 14px;
+  --lc-shadow-sheet: 0 24px 48px -36px rgba(6, 26, 51, 0.28);
+
+  /* ---------------- 控件尺寸 ---------------- */
+  --lc-control-h: 46px; /* 移动端输入/按钮高度 */
+  --lc-tap-min: 44px; /* 触摸目标最小高度 */
+
+  /* ---------------- 动效 ---------------- */
+  --lc-motion-enter: 0.35s ease;
+  --lc-motion-fast: 0.15s ease;
+}

@@ -1,0 +1,256 @@
+# ============================================================================
+# admintem-backend 主配置文件
+# ----------------------------------------------------------------------------
+# 说明：
+#  - 本文件存放"各环境通用"配置；环境差异化配置放在 application-{profile}.yml。
+#  - 激活环境由 Maven Profile 注入的 env-flag 决定（沿用旧项目机制）：
+#        mvn spring-boot:run             -> dev（默认）
+#        mvn -P test spring-boot:run     -> test
+#        mvn -P pre  spring-boot:run     -> pre
+#        mvn -P pro  spring-boot:run     -> pro
+#  - 数据库与 Redis 的连接沿用旧项目（demo）配置，如需调整请同步 docs 说明。
+# ============================================================================
+
+# 激活的环境配置（占位符由 Maven 资源过滤注入：@env-flag@ 由 Spring Boot parent
+# 的 maven-resources 分隔符规则支持，请勿直接写死或改为 ${env-flag}）
+spring:
+  application:
+    name: admintem-backend
+  profiles:
+    active: @env-flag@
+
+  # 本地私有配置：数据库/Redis 口令等敏感项放在该文件（不纳入版本库），
+  # 文件不存在时自动忽略；可参考 config/application-local.yml.example。
+  config:
+    import: optional:file:./config/application-local.yml
+
+  # 优雅停机：收到停止信号后先拒绝新请求，再等待在途请求完成
+  # （没有它时，发布/重启会把正在执行的登录、审计写入等请求直接切断）
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+  # ==========================================================================
+  # Flyway：数据库版本化迁移
+  #
+  # 脚本唯一出处：admintem-docs/db/changelog/V*.sql
+  # 构建时由 pom 的 resources 复制到 classpath:db/migration（filtering=false）
+  #
+  # 采用"基线 + 增量"模式（项目已有库，不是从零创建）：
+  #   - 首次启动：若库里有表但无 flyway_schema_history，则记录基线，不重复执行历史脚本；
+  #   - 之后：只执行比基线更新的 V*.sql（例如后续 V1.0.7）。
+  # 全新库请先跑 db/init/00_admintem_full_init.sql（建表+种子），再启动应用。
+  #
+  # 默认关闭，dev/test 打开；pre/pro 由运维显式执行脚本，避免"应用一启动就改生产结构"。
+  # ==========================================================================
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    table: flyway_schema_history
+    baseline-on-migrate: true
+    baseline-version: 0
+    baseline-description: "baseline-from-init-script"
+    validate-on-migrate: true
+    # 禁止 clean（防止误操作把库清空）；不对 SQL 做占位符替换（脚本里有字面量 @/￥ 符号）
+    clean-disabled: true
+    placeholder-replacement: false
+
+  # 文件上传限额（头像）：与 admintem.upload.max-size-mb 保持一致；
+  # Spring 的 multipart 限制是硬闸门，超过会直接 413，不会进入业务校验
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+  # Jackson 全局 JSON 序列化规则（统一时间格式，避免前后端解析歧义）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+    deserialization:
+      # 反序列化时忽略未知字段：前后端字段演进期更宽容（如接口多返回字段）
+      fail-on-unknown-properties: false
+
+# ============================================================================
+# 服务端配置
+# ============================================================================
+server:
+  port: 8090                        # 服务端口（可被 application-{env}.yml 覆盖）
+  # 优雅停机：收到停止信号后先拒绝新请求，再等待在途请求完成（上限见 spring.lifecycle）
+  # 没有它时，发布/重启会把正在执行的登录、审计写入等请求直接切断
+  shutdown: graceful
+  servlet:
+    context-path: /                 # 应用上下文路径
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true                   # 强制 UTF-8，避免中文乱码
+  tomcat:
+    uri-encoding: UTF-8
+    threads:
+      max: 400                      # 最大工作线程数
+      min-spare: 20                 # 最小空闲线程数
+    accept-count: 1000              # 请求排队上限
+
+# ============================================================================
+# 业务自定义配置（前缀 admintem）
+# ============================================================================
+admintem:
+  # ---- JWT 令牌配置 ----
+  jwt:
+    # 签名密钥：HS256 要求至少 32 字节；生产环境务必替换为高强度随机串并妥善保管
+    secret: "admintem-auth-jwt-hs256-secret-key-2026-change-me-in-prod!"
+    # 普通登录令牌有效期（分钟）
+    expire-minutes: 180
+    # 勾选"记住我"后令牌有效期（天）
+    remember-expire-days: 7
+    # 令牌请求头名称（沿用旧项目约定）
+    header: "admintem_token"
+    # 令牌前缀（沿用旧项目约定：前端携带 "LAUNCH <jwt>"）
+    bearer-prefix: "LAUNCH "
+    # Redis 中令牌白名单 key 前缀（与旧项目 security:jwt: 前缀隔离，互不影响）
+    redis-key-prefix: "admintem:auth:jwt:"
+    # 生产环境（profile 含 pro）若仍使用上面的示例密钥（含 change-me 标记）则拒绝启动：
+    # "忘了换密钥"不会自己暴露，往往要等令牌被伪造才发现
+    fail-on-default-secret: true
+  # ---- 认证相关 ----
+  auth:
+    # 是否开放自助注册（false 时 /auth/register 返回业务错误）
+    register-enabled: true
+    # 注册用户默认分配的角色 key（对应 sys_auth_role.role_key，需在数据库中预先存在）
+    default-role-key: "common"
+    # 登录防暴力破解：连续失败次数上限
+    max-login-fail-count: 5
+    # 达到上限后的账号锁定时间（分钟）
+    login-lock-minutes: 10
+    # ---- 密码策略（B4）----
+    password:
+      # BCrypt 代价因子：每 +1 单次校验耗时翻倍；生产可提到 12（需实测登录 P99）
+      bcrypt-strength: 10
+      # 登录成功时把旧散列静默升级到当前强度（老用户无需改密，明文只在登录这一刻可得）
+      rehash-on-login: true
+      # 复杂度校验：默认关闭，避免影响既有演示账号与接口回归；
+      # 开启后"注册 / 新增用户 / 修改本人密码 / 管理员重置密码"四条路径都受约束
+      complexity-enabled: false
+      complexity-regex: '^(?=.*[A-Za-z])(?=.*\d).{8,}$'
+      complexity-message: "密码至少 8 位，且需同时包含字母与数字"
+    # Redis 中登录失败计数 key 前缀
+    fail-count-key-prefix: "admintem:auth:fail:"
+    # Redis 中账号锁定 key 前缀
+    lock-key-prefix: "admintem:auth:lock:"
+    # ---- IP 维度风控（默认关闭；生产建议开启，见 docs/02 第 3.4 节与 docs/04 配置项）----
+    # 是否启用"按来源 IP"的登录限制（防撞库：同一来源换账号名继续试）
+    ip-limit-enabled: false
+    # 同一 IP 连续登录失败上限，达到后临时限制该 IP
+    ip-max-login-fail-count: 20
+    # IP 维度限制时长（分钟）
+    ip-lock-minutes: 10
+    # Redis 中 IP 失败计数 / IP 限制 key 前缀
+    ip-fail-count-key-prefix: "admintem:auth:fail:ip:"
+    ip-lock-key-prefix: "admintem:auth:lock:ip:"
+  # ---- 文件上传（头像）----
+  # 本项目第一个文件存储需求：本地目录，Docker 部署时把该目录挂成卷即可；
+  # 多实例时指向共享存储（NFS/OSS 挂载点），接口层无需改动。
+  upload:
+    avatar-dir: "./uploads/avatar"
+    max-size-mb: 2
+    url-prefix: "/uploads/avatar"
+    allowed-extensions: "png,jpg,jpeg,webp,gif"
+  # ---- 用户权限缓存（Redis）----
+  cache:
+    # 当前登录用户权限快照 key 前缀（key = 前缀 + userId）
+    user-perm-key-prefix: "admintem:auth:user:perm:"
+    # 权限快照有效期（分钟）
+    user-perm-expire-minutes: 30
+  # ---- 超级角色 ----
+  security:
+    # 拥有该 role_key 的角色视为超级管理员，跳过按钮级权限校验（沿用旧项目约定：admin）
+    admin-role-key: "admin"
+  # ---- SQL 日志与慢 SQL ----
+  sql:
+    # 是否打印全量带参 SQL（logs/sql/admintem-sql.log）；生产环境在 application-pro.yml 中关闭
+    log-enable: true
+    # 慢 SQL 默认阈值（毫秒），超过则 WARN 到 logs/sql/admintem-slow.log
+    slow-ms: 2000
+    # 按语句分级的慢 SQL 阈值（可选）：key 写 Mapper 名或方法名前缀，取"最长包含匹配"，未命中用 slow-ms
+    # 用途：热路径收紧（登录/会话）、重查询放宽，便于在慢日志里优先看到真正的高频问题语句
+    slow-ms-by-mapper:
+      SysAuthUserMapper.selectByUserName: 1000
+      SysAuthUserMapper.selectById: 1000
+      SysAuthRolePermissionMapper.selectByRoleIds: 1500
+      SysAuthPermissionMapper.selectAllOrdered: 1500
+    # 是否对全量 SQL 日志中的敏感参数脱敏（手机号/邮箱/证件号/口令/令牌等）
+    # 默认开启：联调同样不建议把真实个人信息写进日志文件
+    mask-enable: true
+  # ---- 操作审计（写 sys_auth_audit_log，见 docs/02 第 13 节） ----
+  audit:
+    # 是否启用操作审计：关闭后切面不注册、403 出口也不写库，业务行为完全不变
+    enable: true
+    # 失败原因等长文本的入库截断长度（超长会截断而不是让插入失败）
+    max-text-length: 200
+    # 审计日志保留天数（仅作为运维清理 SQL 的默认值，程序不做自动删除）
+    retention-days: 180
+    # 是否记录"越权被拒绝（403）"的尝试：这是安全审计里最有价值的信号，建议开启
+    log-denied: true
+
+# ============================================================================
+# MyBatis-Plus 配置
+# ============================================================================
+mybatis-plus:
+  # 实体类别名扫描包（Mapper XML 中可直接写类名，便于阅读）
+  type-aliases-package: com.admintem.web.entity
+  configuration:
+    # 下划线转驼峰（user_name -> userName）
+    map-underscore-to-camel-case: true
+    # SQL 全量日志由 config/mybatis/SqlLogInnerInterceptor 输出（logger=sys-sql，
+    # 独立文件 logs/sql/admintem-sql.log），此处不再使用 StdOut 打印避免重复
+  global-config:
+    banner: false
+    db-config:
+      # 主键策略：数据库自增
+      id-type: auto
+      # 兼容历史说明：逻辑删除现由 Mapper XML 显式维护（is_deleted 条件），
+      # 以下 @TableLogic 全局规则仅作元数据兼容保留
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# ============================================================================
+# Actuator：只暴露 health / info
+#   - /actuator/health 供 Nginx、K8s、监控探活（含 DB/Redis 健康指示）
+#   - 不暴露 env/beans/heapdump 等敏感端点：这些在生产等于把配置和内存交出去
+# 访问地址：http://localhost:8090/actuator/health
+# ============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      # 不返回组件细节，避免泄露内部中间件拓扑
+      show-details: never
+      probes:
+        enabled: true   # 提供 /actuator/health/liveness 与 /readiness（容器探活用）
+
+# ============================================================================
+# springdoc-openapi（Swagger UI）配置
+# 访问地址：http://localhost:8090/swagger-ui/index.html
+# ============================================================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+  # 分组：默认单组 all
+  group-configs:
+    - group: all
+      packages-to-scan: com.admintem.web.controller
+
+# ============================================================================
+# 日志配置（详见 logback-spring.xml）
+# ============================================================================
+logging:
+  config: classpath:logback-spring.xml

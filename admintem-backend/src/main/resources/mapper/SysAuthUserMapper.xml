@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  SysAuthUserMapper XML —— sys_auth_user 用户表
+  ============================================================================
+  约定：
+    1. 所有 SELECT 均显式过滤 is_deleted = 0（逻辑删除统一由 SQL 维护，不再依赖
+       MyBatis-Plus 的 @TableLogic 自动拼接）；
+    2. 列名→实体字段采用 map-underscore-to-camel-case 自动映射
+       （如 user_name -> userName）；
+    3. 分页由 MyBatis-Plus 分页插件识别 IPage 首参自动完成（count + limit）。
+  ============================================================================
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthUserMapper">
+
+    <!-- 公共查询列 -->
+    <sql id="Base_Column_List">
+        id, user_name, nick_name, email, phone, password, sex, avatar, dept_id,
+        status, introduce, ext_json, created_by, created_time, update_by, update_time
+    </sql>
+
+    <!-- 按部门分组统计用户数（部门树展示"这个部门有几个人"） -->
+    <select id="countGroupByDept" resultType="java.util.Map">
+        SELECT dept_id AS deptId, COUNT(1) AS total
+        FROM sys_auth_user
+        WHERE is_deleted = 0 AND dept_id IS NOT NULL
+        GROUP BY dept_id
+    </select>
+
+    <!-- 按主键查询 -->
+    <select id="selectById" resultType="com.admintem.web.entity.SysAuthUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_user
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <!-- 按账号查询 -->
+    <!-- 批量按账号查询：在线会话页一次补齐昵称/状态，避免逐个查询 -->
+    <select id="selectByUserNames" resultType="com.admintem.web.entity.SysAuthUser">
+        SELECT
+            id, user_name, nick_name, email, phone, password, sex, avatar, dept_id, status, introduce, ext_json,
+            created_by, created_time, update_by, update_time, is_deleted
+        FROM sys_auth_user
+        WHERE is_deleted = 0
+          AND user_name IN
+        <foreach collection="userNames" item="name" open="(" separator="," close=")">
+            #{name}
+        </foreach>
+    </select>
+    <select id="selectByUserName" resultType="com.admintem.web.entity.SysAuthUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_user
+        WHERE user_name = #{userName} AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 统计同名账号数量（注册/新增/编辑唯一性校验） -->
+    <select id="countByUserName" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_auth_user
+        WHERE user_name = #{userName} AND is_deleted = 0
+        <if test="excludeId != null">
+            AND id &lt;&gt; #{excludeId}
+        </if>
+    </select>
+
+    <!-- 分页查询用户：账号/昵称/手机号模糊 + 状态精确过滤
+         排序：默认 created_time DESC, id DESC；前端传 sortField/sortOrder 时由 Service 经
+         SortWhitelist 白名单转成 orderBy（如 user_name ASC），此处 ${orderBy} 只可能是白名单列，
+         不会出现用户输入直拼 SQL 的情况；未登记字段 Service 会回落默认排序。 -->
+    <select id="selectUserPage" resultType="com.admintem.web.entity.SysAuthUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_auth_user
+        <where>
+            is_deleted = 0
+            <if test="q.userName != null and q.userName != ''">
+                AND user_name LIKE CONCAT('%', #{q.userName}, '%')
+            </if>
+            <if test="q.nickName != null and q.nickName != ''">
+                AND nick_name LIKE CONCAT('%', #{q.nickName}, '%')
+            </if>
+            <if test="q.phone != null and q.phone != ''">
+                AND phone LIKE CONCAT('%', #{q.phone}, '%')
+            </if>
+            <if test="q.status != null">
+                AND status = #{q.status}
+            </if>
+        </where>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                ORDER BY ${orderBy}, id DESC
+            </when>
+            <otherwise>
+                ORDER BY created_time DESC, id DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 新增用户：回填自增主键 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.admintem.web.entity.SysAuthUser">
+        INSERT INTO sys_auth_user
+        (user_name, nick_name, email, phone, password, sex, avatar, dept_id, status, introduce,
+         ext_json, created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{userName}, #{nickName}, #{email}, #{phone}, #{password}, #{sex}, #{avatar}, #{deptId},
+         #{status}, #{introduce}, #{extJson}, #{createdBy}, #{createdTime},
+         #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 选择性更新：仅更新传入的非空字段（user_name 作为账号不允许被更新） -->
+    <update id="updateSelective" parameterType="com.admintem.web.entity.SysAuthUser">
+        UPDATE sys_auth_user
+        <set>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="introduce != null">introduce = #{introduce},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 逻辑删除用户 -->
+    <update id="logicDelete">
+        UPDATE sys_auth_user
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{updateTime}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+</mapper>

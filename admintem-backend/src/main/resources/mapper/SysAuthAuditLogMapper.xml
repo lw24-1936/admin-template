@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SysAuthAuditLogMapper XML —— sys_auth_audit_log 操作审计日志
+  约定同其它 Mapper：字段显式列举 + 下划线自动映射。
+
+  本表只追加：写语句只有 insert；读语句为分页查询 + 动作字典。
+  索引对应关系（V1.0.5）：
+    operator  -> idx_audit_operator_time (operator, created_time)
+    action    -> idx_audit_action_time   (action, created_time)
+    仅时间    -> idx_audit_created_time  (created_time)
+  因此 WHERE 里对 operator / action 都是**等值或前缀匹配**，配合 ORDER BY created_time DESC 可走索引。
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthAuditLogMapper">
+
+    <!--
+      新增审计日志。
+      说明：使用 useGeneratedKeys 回填自增主键，便于调用方在需要时记录"审计行ID"；
+      所有可空字段均写 NULLIF(#{xxx}, '') 之外的普通占位符，由服务层统一做长度截断。
+    -->
+    <insert id="insert" parameterType="com.admintem.web.entity.SysAuthAuditLog"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_auth_audit_log (
+            trace_id, operator, operator_id, action, action_name,
+            target_type, target_id, target_name,
+            http_method, request_uri, client_ip,
+            result, error_code, error_msg, cost_ms, created_time
+        ) VALUES (
+            #{traceId}, #{operator}, #{operatorId}, #{action}, #{actionName},
+            #{targetType}, #{targetId}, #{targetName},
+            #{httpMethod}, #{requestUri}, #{clientIp},
+            #{result}, #{errorCode}, #{errorMsg}, #{costMs}, #{createdTime}
+        )
+    </insert>
+
+    <!--
+      分页查询。
+      注意：
+        1. 不加 is_deleted 条件 —— 本表没有逻辑删除列（只追加）；
+        2. 排序固定 created_time DESC, id DESC：时间相同也能稳定翻页，避免"同一页重复/漏行"；
+        3. 操作人、目标名用 LIKE 'x%' 前缀匹配（可利用索引前缀），而不是 '%x%'（会全表扫）；
+           动作码用等值匹配。
+    -->
+    <select id="selectAuditPage" resultType="com.admintem.web.entity.SysAuthAuditLog">
+        SELECT
+            id, trace_id, operator, operator_id, action, action_name,
+            target_type, target_id, target_name,
+            http_method, request_uri, client_ip,
+            result, error_code, error_msg, cost_ms, created_time
+        FROM sys_auth_audit_log
+        <where>
+            <if test="q.operator != null and q.operator != ''">
+                AND operator LIKE CONCAT(#{q.operator}, '%')
+            </if>
+            <if test="q.action != null and q.action != ''">
+                AND action = #{q.action}
+            </if>
+            <if test="q.targetName != null and q.targetName != ''">
+                AND target_name LIKE CONCAT(#{q.targetName}, '%')
+            </if>
+            <if test="q.result != null">
+                AND result = #{q.result}
+            </if>
+            <if test="q.beginTime != null and q.beginTime != ''">
+                AND created_time &gt;= #{q.beginTime}
+            </if>
+            <if test="q.endTime != null and q.endTime != ''">
+                AND created_time &lt;= #{q.endTime}
+            </if>
+        </where>
+        ORDER BY created_time DESC, id DESC
+    </select>
+
+    <!-- 动作字典：按出现次数倒序，常用的动作排在前面 -->
+    <select id="selectActionDict" resultType="java.util.Map">
+        SELECT action AS action, MAX(action_name) AS actionName, COUNT(1) AS total
+        FROM sys_auth_audit_log
+        WHERE action IS NOT NULL AND action &lt;&gt; ''
+        GROUP BY action
+        ORDER BY total DESC, action ASC
+    </select>
+
+</mapper>

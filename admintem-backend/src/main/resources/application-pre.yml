@@ -1,0 +1,52 @@
+# ============================================================================
+# admintem-backend 预发布环境配置（profile: pre，mvn -P pre）
+# ----------------------------------------------------------------------------
+# 说明：
+#  - 预发布应使用独立预发布库/Redis；演示阶段沿用共享环境以便直接启动，
+#    发布前务必替换 host/账号并轮换 JWT secret。
+#  - 端口 8092；Redis 客户端为 Redisson（redisson:*）。
+# ============================================================================
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://100.71.112.119:3306/admintem_new?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: ${ADMINTEM_DB_PASSWORD:}
+    hikari:
+      pool-name: AdmintemHikariPool-Pre
+      minimum-idle: 5
+      maximum-pool-size: 30
+      max-lifetime: 1800000
+      connection-timeout: 10000
+      idle-timeout: 600000
+      connection-test-query: SELECT 1
+
+# Redis（Redisson 客户端，键前缀 admintem:auth:*）
+redisson:
+  address: redis://100.71.112.119:6379
+  password: ${ADMINTEM_REDIS_PASSWORD:}
+  database: 0
+  connect-timeout-ms: 5000
+  timeout-ms: 5000
+  connection-pool-size: 16
+  min-idle-size: 2
+
+server:
+  port: 8092
+
+logging:
+  level:
+    root: info
+    com.admintem.web: info
+    org.springframework.security: warn
+
+# 免登录白名单（预发布保留注册便于验收，正式上线按需移除）
+admintem:
+  log:
+    aspect:
+      enable: true
+  security:
+    permit-urls:
+      - "/auth/login"
+      - "/auth/register"

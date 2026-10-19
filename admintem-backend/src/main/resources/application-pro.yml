@@ -1,0 +1,69 @@
+# ============================================================================
+# admintem-backend 生产环境配置（profile: pro，mvn -P pro）
+# ----------------------------------------------------------------------------
+# 安全提醒（上线必读）：
+#  1. 数据库/Redis 必须替换为生产实例与高复杂度口令，禁止沿用演示账号；
+#  2. 必须替换 admintem.jwt.secret（application.yml）为强随机密钥；
+#  3. 自助注册默认关闭（register-enabled=false），如需开放请走审批流程；
+#  4. 日志级别收敛为 info；生产切面日志可按需开启。
+# ============================================================================
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # TODO 生产：替换为正式库地址（库结构需与 V1.0.x 增量脚本保持一致）
+    url: jdbc:mysql://100.71.112.119:3306/admintem_new?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=true&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: ${ADMINTEM_DB_PASSWORD:}
+    hikari:
+      pool-name: AdmintemHikariPool-Pro
+      minimum-idle: 10
+      maximum-pool-size: 60
+      max-lifetime: 1800000
+      connection-timeout: 10000
+      idle-timeout: 600000
+      connection-test-query: SELECT 1
+
+# Redis（Redisson 客户端，键前缀 admintem:auth:*）
+redisson:
+  # TODO 生产：替换为正式 Redis（建议内网/加密通道）
+  address: redis://100.71.112.119:6379
+  password: ${ADMINTEM_REDIS_PASSWORD:}
+  database: 0
+  connect-timeout-ms: 5000
+  timeout-ms: 5000
+  connection-pool-size: 32
+  min-idle-size: 4
+
+server:
+  port: 8093
+
+# 生产关闭接口文档（Swagger UI / OpenAPI JSON 均不暴露）
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    root: info
+    com.admintem.web: info
+    org.springframework.security: warn
+
+# 免登录白名单（生产仅保留登录）
+admintem:
+  auth:
+    register-enabled: false          # 生产默认关闭自助注册
+  sql:
+    log-enable: false                # 生产不打印全量 SQL（慢 SQL 日志仍保留）
+  log:
+    aspect:
+      enable: true
+  security:
+    permit-urls:
+      - "/auth/login"
+    # 跨域放行来源：留空 = 不放开任何跨域来源（推荐生产由 Nginx 同源反代）
+    # 如需前后端分域部署，通过环境变量显式给出实际域名，多个用逗号分隔：
+    #   ADMINTEM_CORS_ORIGINS=https://admin.example.com,https://m.example.com
+    cors-allowed-origins: ${ADMINTEM_CORS_ORIGINS:}

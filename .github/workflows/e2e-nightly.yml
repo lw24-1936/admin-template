@@ -1,0 +1,113 @@
+# =============================================================================
+# 夜间回归：需要真实中间件 + 浏览器，因此与 ci.yml 分开
+#
+# 覆盖：
+#   1. 起 MySQL 8 / Redis 7（service containers）
+#   2. 执行一键初始化脚本（建表 + 种子 + 唯一索引）
+#   3. 启动后端，跑 78 项接口回归（含 401/403/唯一性/内置保护等断言）
+#   4. 起两端 dev server，跑桌面 21 项 + 移动 41 项 E2E
+#
+# 说明：E2E 使用 Playwright 的 Chromium（npx playwright install --with-deps chromium），
+#      与本地脚本"优先使用系统 Edge/Chrome"的解析顺序兼容。
+# =============================================================================
+name: e2e-nightly
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # 每天 UTC 18:00（北京时间次日 02:00）
+  workflow_dispatch:
+
+concurrency:
+  group: e2e-nightly
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: 接口回归 + 两端 E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root_ci_secret
+          MYSQL_DATABASE: admintem_new
+        ports: [ '3306:3306' ]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_ci_secret"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+      redis:
+        image: redis:7
+        ports: [ '6379:6379' ]
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      ADMINTEM_DB_PASSWORD: root_ci_secret
+      ADMINTEM_REDIS_PASSWORD: ''
+      E2E_BASE_URL: http://localhost:5175
+      MOBILE_BASE_URL: http://localhost:5174
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 初始化数据库（脚本需要显式确认）
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot_ci_secret --default-character-set=utf8mb4 \
+                -e "SET @admintem_confirm_reset = 1; source admintem-docs/db/init/00_admintem_full_init.sql"
+
+      - name: 打包并启动后端
+        run: |
+          mvn -B -f admintem-backend/pom.xml -DskipTests package
+          nohup java -jar admintem-backend/target/admintem-backend.jar \
+                --server.port=8090 \
+                --spring.datasource.url="jdbc:mysql://127.0.0.1:3306/admintem_new?serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true" \
+                --redisson.address="redis://127.0.0.1:6379" \
+                > backend.log 2>&1 &
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:8090/actuator/health && break || sleep 2
+          done
+
+      - name: 接口回归（78 项）
+        run: |
+          pwsh -NoProfile -File admintem-docs/tests/api-regression-test.ps1 -BaseUrl http://localhost:8090
+        shell: bash
+        continue-on-error: false
+
+      - name: 启动两端 dev server
+        run: |
+          (cd admintem-vue && npm ci && nohup npx vite --port 5175 --strictPort > ../desktop.log 2>&1 &)
+          (cd admintem-mobile && npm ci && nohup npx vite --port 5174 --strictPort > ../mobile.log 2>&1 &)
+          npx --yes playwright install --with-deps chromium
+          for i in $(seq 1 60); do
+            curl -sf http://localhost:5175 >/dev/null && curl -sf http://localhost:5174 >/dev/null && exit 0 || sleep 2
+          done
+          echo "dev server 未就绪" && exit 1
+
+      - name: 桌面端 E2E（21 项）+ 移动端 E2E（41 项）
+        run: |
+          node admintem-docs/tests/e2e-admin-login.cjs
+          node admintem-docs/tests/e2e-mobile-login.cjs
+
+      - name: 失败时保留日志
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            backend.log
+            desktop.log
+            mobile.log
+          retention-days: 7
