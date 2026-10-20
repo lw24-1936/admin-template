@@ -294,4 +294,40 @@ async function handleLogout() {
   gap: var(--lc-sp-3);
   margin: 18px 16px 0;
 }
+
+/* ===== V2 视觉覆盖（后置规则，优先级高于前面同名选择器） ===== */
+/* 资料头：与首页英雄卡同一渐变语言 */
+.mine-hero {
+  border: 1px solid var(--lc-brand-deep);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 16px 32px -22px var(--lc-brand-glow);
+}
+.mine-hero__avatar {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  color: var(--lc-paper-card);
+}
+.mine-hero__name {
+  color: var(--lc-paper-card);
+  font-weight: 650;
+}
+.mine-hero__account {
+  color: rgba(255, 255, 255, 0.78);
+}
+.mine-hero :deep(.van-tag--primary.van-tag--plain) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.42);
+  color: var(--lc-paper-card);
+}
+
+/* 退出登录：白底危险色文字，避免整屏唯一的实心红按钮 */
+.mine-logout {
+  height: 46px;
+  border: 1px solid var(--lc-danger-line);
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-paper-card);
+  color: var(--lc-danger);
+  font-weight: 600;
+}
 </style>

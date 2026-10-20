@@ -5,9 +5,9 @@
       <router-view />
     </div>
 
-    <van-tabbar route fixed safe-area-inset-bottom active-color="var(--lc-brand)">
-      <van-tabbar-item to="/home" icon="wap-home-o">首页</van-tabbar-item>
-      <van-tabbar-item to="/mine" icon="user-o">我的</van-tabbar-item>
+    <van-tabbar route fixed safe-area-inset-bottom>
+      <van-tabbar-item replace to="/home" icon="wap-home-o">首页</van-tabbar-item>
+      <van-tabbar-item replace to="/mine" icon="user-o">我的</van-tabbar-item>
     </van-tabbar>
   </div>
 </template>
@@ -31,7 +31,7 @@ import 'vant/es/tabbar-item/style/index'
 .tab-layout {
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--lc-paper);
+  background: transparent;
 }
 
 .tab-layout__body {
@@ -40,13 +40,34 @@ import 'vant/es/tabbar-item/style/index'
 }
 
 .tab-layout :deep(.van-tabbar) {
+  /* 半透明白 + 背景虚化：内容滚到底部时会从栏下透出，比纯白更"轻" */
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(14px) saturate(1.1);
   border-top: 1px solid var(--lc-line);
+  box-shadow: 0 -8px 24px -20px rgba(15, 23, 42, 0.3);
   /* 固定在视口底部，并在宽屏下与 480px 内容容器对齐 */
   max-width: 480px;
   margin: 0 auto;
 }
 
+/* 选中项：主色 + 文字加粗 + 图标轻微上浮（不动布局尺寸） */
+.tab-layout :deep(.van-tabbar-item) {
+  color: var(--lc-ink-muted);
+  transition: color var(--lc-motion-fast) var(--lc-ease-out);
+}
+.tab-layout :deep(.van-tabbar-item--active) {
+  color: var(--lc-brand);
+  font-weight: 600;
+}
+.tab-layout :deep(.van-tabbar-item__icon) {
+  font-size: 20px;
+  transition: transform var(--lc-motion-fast) var(--lc-ease-out);
+}
+.tab-layout :deep(.van-tabbar-item--active .van-tabbar-item__icon) {
+  transform: translateY(-1px);
+}
 .tab-layout :deep(.van-tabbar-item__text) {
   font-size: var(--lc-fs-hint);
+  letter-spacing: 0.02em;
 }
 </style>

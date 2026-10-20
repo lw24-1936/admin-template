@@ -41,7 +41,9 @@ const chromium = loadChromium()
 
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
 // 基址可由环境变量覆盖（原因见 e2e-admin-login.cjs 同名注释）
-const APP = process.env.E2E_BASE_URL || 'http://localhost:5174'
+// 优先用 MOBILE_BASE_URL：桌面与移动的 E2E 常共用 E2E_BASE_URL，
+// 混用时会把移动端脚本指到桌面端口（曾因此误报「标题不是移动端登录」）
+const APP = process.env.MOBILE_BASE_URL || process.env.E2E_BASE_URL || 'http://localhost:5174'
 
 /* 断言辅助：失败即中断并退出码 1 */
 let failed = 0

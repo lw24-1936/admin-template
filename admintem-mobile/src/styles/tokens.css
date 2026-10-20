@@ -1,56 +1,64 @@
 /**
- * 设计 token（移动端）—— 与桌面端 `admintem-vue/src/styles/tokens.css` 数值完全一致
+ * 设计 token（移动端）—— 与桌面端 `admintem-vue/src/styles/tokens.css` 同名同值
  *
  * 目的：桌面端与移动端共用同一份视觉数值，两端看起来是同一个产品；
  *      改一处（例如把 --lc-brand 调深）两端同时生效。
  *
  * 说明：
  *   1. 前缀统一 `--lc-`，与 Vant 的 `--van-*` 区分；
- *   2. E1 曾保留 `--lc-bg / --lc-muted / --lc-primary` 三个历史别名以做到"零改动"；
- *      E6 完成 48 处替换后仅剩 3 处引用、其中 `--lc-primary` 已无人使用，
- *      故 E8 一并清除并改为引用规范名（`--lc-paper / --lc-ink-muted`），避免死 token；
- *   3. 组件库变量映射见 styles/theme.css；
- *   4. E8（可访问性）与桌面端**同步**调整：`--lc-ink-faint` 加深为 #848d9c、
- *      `--lc-ink-faint-2/-3` 合并为 `--lc-ink-disabled`——两端数值必须始终一致，
- *      否则"同一个产品"的观感会被两套灰阶破坏。
+ *   2. V2 视觉升级与桌面端**同步**：slate 中性色、主色 #1e3a6e、三层投影、
+ *      两套渐变、系统 UI 字体栈。跨端同值项由 check-tokens 强校验；
+ *   3. 移动端有意不同的四类取值（主标题/卡片标题/控件高度/动效时长）已在
+ *      check-tokens 的 ALLOWED_DIFF 登记；移动端独有的三项（画布底色、
+ *      手机容器描边、48px 触摸目标）登记在 MOBILE_ONLY。
  */
 :root {
   /* ---------------- 纸面与卡片 ---------------- */
-  --lc-paper: #f5f6f8;
+  --lc-paper: #f6f7fa;
+  --lc-paper-2: #eef1f6;
   --lc-paper-card: #ffffff;
-  --lc-grid-line: rgba(15, 39, 68, 0.028);
-  --lc-canvas: #e9ebef; /* 手机容器之外的画布底（宽屏居中时可见） */
-  --lc-frame-shadow: 0 0 0 1px rgba(21, 41, 63, 0.06); /* 手机容器的极细描边 */
-  --lc-surface-soft: #fafbfc; /* 次级面（入口按钮/列表底） */
-  --lc-surface-hover: #f2f4f8; /* 按下/hover 面 */
-  --lc-line-hover: #cfd6e2; /* 按下/hover 描边 */
+  --lc-grid-line: rgba(15, 23, 42, 0.035);
+  --lc-canvas: #e9ecf1; /* 手机容器之外的画布底（宽屏居中时可见） */
+  --lc-frame-shadow: 0 0 0 1px rgba(15, 23, 42, 0.07); /* 手机容器的极细描边 */
+  --lc-surface-soft: #f8fafc; /* 次级面（入口按钮/列表底） */
+  --lc-surface-hover: #f1f4f9; /* 按下/hover 面 */
+  --lc-line-hover: #c9d3e0; /* 按下/hover 描边 */
   --lc-danger-soft: #fdf6f6; /* 危险操作按下底 */
 
   /* ---------------- 墨色文字阶梯 ---------------- */
-  --lc-ink: #15293f;
-  --lc-ink-body: #3d4757;
-  --lc-ink-soft: #5f6a7a;
-  --lc-ink-muted: #6b7686;
-  --lc-ink-faint: #848d9c; /* 提示 / 脚注（白卡 3.35:1 / 纸面 3.09:1） */
-  --lc-ink-disabled: #a2aab6; /* 仅用于"禁用态"文字（WCAG 1.4.3 豁免） */
+  --lc-ink: #0f172a;
+  --lc-ink-body: #334155;
+  --lc-ink-soft: #475569;
+  --lc-ink-muted: #5b6675; /* 白卡 5.9:1 / 纸面 5.6:1 */
+  --lc-ink-faint: #6f7b8c; /* 提示 / 脚注（白卡 4.5:1 / 纸面 4.2:1） */
+  --lc-ink-disabled: #a8b0bc; /* 仅用于"禁用态"文字（WCAG 1.4.3 豁免） */
 
   /* ---------------- 描边与分隔线 ---------------- */
-  --lc-line: #e6e9ef;
-  --lc-line-strong: #e1e5ec;
-  --lc-line-soft: #eef0f4;
-  --lc-line-input: #dfe3ea;
+  --lc-line: #e4e8ef;
+  --lc-line-strong: #dbe2ec;
+  --lc-line-soft: #eef1f5;
+  --lc-line-input: #dbe1ea;
 
   /* ---------------- 主色与语义色 ---------------- */
-  --lc-brand: #123c6e;
-  --lc-brand-hover: #1a4d8c;
+  --lc-brand: #1e3a6e;
+  --lc-brand-hover: #2a4f8c;
+  --lc-brand-deep: #14294f;
   --lc-brand-soft: #eef3fb;
-  --lc-brand-ring: rgba(18, 60, 110, 0.07);
+  --lc-brand-ring: rgba(30, 58, 110, 0.14);
+  --lc-ring: var(--lc-brand); /* 键盘焦点环（与桌面端同义） */
+  --lc-brand-glow: rgba(30, 58, 110, 0.18);
+  --lc-accent: #2f6fed;
+  --lc-accent-soft: rgba(47, 111, 237, 0.1);
   --lc-danger: #b02a2a;
   --lc-danger-line: #f0d9d9;
+  --lc-success: #2f7a52;
+  --lc-success-soft: #eaf5ef;
+  --lc-warning: #a9752a;
+  --lc-warning-soft: #fbf4e8;
 
   /* ---------------- 字体 ---------------- */
-  --lc-font-sans: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial,
-    sans-serif;
+  --lc-font-sans: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
 
   /* ---------------- 字号阶梯 ---------------- */
   --lc-fs-display: 27px; /* 移动端登录页主标题 */
@@ -74,14 +82,22 @@
 
   /* ---------------- 形状与投影 ---------------- */
   --lc-radius-ctl: 10px;
-  --lc-radius-card: 14px;
-  --lc-shadow-sheet: 0 24px 48px -36px rgba(6, 26, 51, 0.28);
+  --lc-radius-card: 16px;
+  --lc-radius-pill: 999px;
+  --lc-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -22px rgba(15, 23, 42, 0.2);
+  --lc-shadow-float: 0 24px 60px -30px rgba(15, 23, 42, 0.3), 0 2px 8px rgba(15, 23, 42, 0.05);
+  --lc-shadow-sheet: 0 24px 60px -40px rgba(15, 23, 42, 0.35);
+
+  /* ---------------- 渐变 ---------------- */
+  --lc-gradient-hero: linear-gradient(135deg, #f8fafc 0%, #eef3fb 46%, #e6eef9 100%);
+  --lc-gradient-brand: linear-gradient(135deg, #1e3a6e 0%, #2b5590 100%);
 
   /* ---------------- 控件尺寸 ---------------- */
   --lc-control-h: 46px; /* 移动端输入/按钮高度 */
   --lc-tap-min: 44px; /* 触摸目标最小高度 */
 
   /* ---------------- 动效 ---------------- */
-  --lc-motion-enter: 0.35s ease;
-  --lc-motion-fast: 0.15s ease;
+  --lc-motion-enter: 0.35s;
+  --lc-motion-fast: 0.15s;
+  --lc-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }

@@ -101,7 +101,8 @@
  * 注册页（纸面极简排版）
  * 注册成功后回到登录页
  */
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import { animate, stagger } from 'animejs'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { register } from '@/api/auth'
@@ -114,6 +115,33 @@ const sexOptions = [
   { value: 1, label: '男' },
   { value: 0, label: '女' },
 ]
+
+/** 注册页入场动效：与登录页同一节奏（reduced-motion 下跳过） */
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  animate('.reg-head > *', {
+    opacity: [0, 1],
+    y: [12, 0],
+    duration: 460,
+    delay: stagger(70),
+    ease: 'outCubic',
+  })
+  animate('.reg-sheet', {
+    opacity: [0, 1],
+    y: [18, 0],
+    scale: [0.988, 1],
+    duration: 540,
+    delay: 80,
+    ease: 'outCubic',
+  })
+  animate('.reg-sheet .el-form-item, .sex-group, .reg-submit, .reg-note, .reg-foot', {
+    opacity: [0, 1],
+    y: [10, 0],
+    duration: 360,
+    delay: stagger(40, { start: 260 }),
+    ease: 'outCubic',
+  })
+})
 
 const form = reactive({
   userName: '',
@@ -176,165 +204,186 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-/* ---------- 纸面基调：暖灰底、细边框、无重装饰 ---------- */
+/* 画布与登录页一致：柔和渐变 + 网格 + 主色光晕 */
 .reg-page {
+  position: relative;
   min-height: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 48px 16px 64px;
-  background:
+  padding: 40px 24px;
+  overflow: hidden;
+  background-image:
+    radial-gradient(880px 420px at 8% -10%, rgba(255, 255, 255, 0.95), transparent 60%),
+    radial-gradient(760px 420px at 100% 8%, var(--lc-accent-soft), transparent 62%),
+    var(--lc-gradient-hero);
+  font-family: var(--lc-font-sans);
+}
+.reg-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
     linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px),
-    var(--lc-paper);
-  background-size: 32px 32px;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(120% 90% at 50% 0%, rgba(0, 0, 0, 0.85), transparent 78%);
 }
 
+/* 玻璃表单卡 */
 .reg-sheet {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 600px;
-  background: var(--lc-paper-card);
-  border: 1px solid var(--lc-line);
-  border-radius: 14px;
-  padding: 44px 48px 34px;
-  box-shadow: var(--lc-shadow-sheet);
-  animation: sheet-in 0.35s ease both;
+  max-width: 620px;
+  padding: 38px 40px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: var(--lc-shadow-float);
 }
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ---------- 页眉排版 ---------- */
 .reg-head {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 .reg-kicker {
-  margin: 0 0 10px;
-  font-size: 11px;
-  letter-spacing: 2.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: var(--lc-fs-kicker);
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--lc-ink-faint);
 }
+.reg-kicker::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--lc-brand);
+}
 .reg-title {
   margin: 0 0 8px;
-  font-size: 26px;
-  font-weight: 650;
-  letter-spacing: 0.2px;
+  font-size: var(--lc-fs-page);
+  font-weight: 680;
+  letter-spacing: -0.02em;
   color: var(--lc-ink);
 }
 .reg-sub {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
 }
 
-/* ---------- 字段：真正的 label + 清晰输入框 ---------- */
+/* 表单控件：与登录页同规格 */
 .reg-sheet :deep(.el-form-item) {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .reg-sheet :deep(.el-form-item__label) {
   height: auto;
   line-height: 1.4;
   margin-bottom: 6px;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-body);
 }
-.reg-sheet :deep(.el-form-item__content) {
-  line-height: 1.4;
-}
-
 .reg-sheet :deep(.el-input__wrapper) {
-  min-height: 44px;
-  padding: 0 12px;
+  min-height: var(--lc-button-h);
+  padding: 0 14px;
   background: var(--lc-paper-card);
-  border-radius: 10px;
+  border-radius: var(--lc-radius-ctl);
   box-shadow: 0 0 0 1px var(--lc-line-input) inset;
-  transition: box-shadow 0.18s ease, background 0.18s ease;
+  transition: box-shadow var(--lc-motion-fast) var(--lc-ease-out);
+}
+.reg-sheet :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--lc-line-hover) inset;
 }
 .reg-sheet :deep(.el-input__wrapper.is-focus) {
   box-shadow: 0 0 0 1.5px var(--lc-brand) inset, 0 0 0 4px var(--lc-brand-ring);
 }
-.reg-sheet :deep(.el-input__inner) {
-  color: var(--lc-ink);
-}
 
-/* 性别：极简单选按钮 */
+/* 性别选择：两枚可选卡片（替代裸 radio） */
 .sex-group {
   display: flex;
-  gap: 10px;
+  gap: var(--lc-sp-3);
+  margin-bottom: var(--lc-sp-4);
 }
 .sex-item {
-  position: relative;
-  display: inline-flex;
+  flex: 1;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  min-width: 84px;
-  height: 40px;
-  padding: 0 18px;
-  font-size: 14px;
-  color: var(--lc-ink-body);
-  background: var(--lc-paper);
-  border: 1px solid var(--lc-line-strong);
-  border-radius: 999px;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--lc-line-input);
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-paper-card);
   cursor: pointer;
-  user-select: none;
-  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  transition: border-color var(--lc-motion-fast), background-color var(--lc-motion-fast),
+    box-shadow var(--lc-motion-fast);
+}
+.sex-item:hover {
+  border-color: var(--lc-line-hover);
+  background: var(--lc-surface-soft);
 }
 .sex-item.is-active {
-  color: var(--lc-brand);
-  background: var(--lc-brand-soft);
   border-color: var(--lc-brand);
-  font-weight: 600;
+  background: var(--lc-brand-soft);
+  box-shadow: 0 0 0 3px var(--lc-brand-ring);
 }
 .sex-radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid var(--lc-line-input);
+  border-radius: 50%;
+  background: var(--lc-paper-card);
+  transition: border-color var(--lc-motion-fast), box-shadow var(--lc-motion-fast);
+}
+.sex-item.is-active .sex-radio {
+  border-color: var(--lc-brand);
+  box-shadow: inset 0 0 0 3px var(--lc-brand);
 }
 
-/* ---------- 主按钮：实色而非渐变 ---------- */
+/* 主按钮：与登录页同款渐变 */
 .reg-submit {
   width: 100%;
-  height: 46px;
+  height: var(--lc-button-h);
   margin-top: 6px;
-  font-size: 15px;
-  letter-spacing: 1px;
+  border: 1px solid var(--lc-brand-deep);
+  border-radius: var(--lc-radius-ctl);
+  font-size: var(--lc-fs-lead);
+  font-weight: 600;
+  letter-spacing: 0.28em;
   color: var(--lc-paper-card);
-  background: var(--lc-brand);
-  border: none;
-  border-radius: 10px;
-  transition: background 0.18s ease, transform 0.12s ease;
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 14px 30px -18px var(--lc-brand-glow);
+  transition: transform var(--lc-motion-fast) var(--lc-ease-out),
+    box-shadow var(--lc-motion-fast) var(--lc-ease-out), filter var(--lc-motion-fast);
 }
 .reg-submit:hover,
 .reg-submit:focus {
-  background: var(--lc-brand-hover);
+  color: var(--lc-paper-card);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px -18px var(--lc-brand-glow);
 }
 .reg-submit:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
-/* ---------- 底部说明与链接 ---------- */
 .reg-note {
-  margin: 18px 0 0;
-  font-size: 12px;
+  margin: 16px 0 0;
+  font-size: var(--lc-fs-hint);
+  line-height: 1.7;
   color: var(--lc-ink-faint);
   text-align: center;
-  line-height: 1.6;
 }
 .reg-foot {
-  margin: 22px 0 0;
-  padding-top: 16px;
+  margin: 8px 0 0;
+  padding-top: 14px;
   border-top: 1px solid var(--lc-line-soft);
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
   text-align: center;
 }
@@ -342,21 +391,23 @@ async function handleRegister() {
   border: none;
   background: none;
   padding: 0 4px;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-brand);
   cursor: pointer;
 }
 .reg-link:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-/* ---------- 窄屏单列 ---------- */
 @media (max-width: 640px) {
   .reg-page {
-    padding: 24px 14px 48px;
+    padding: 22px 14px;
+    align-items: flex-start;
   }
   .reg-sheet {
-    padding: 30px 22px 26px;
+    padding: 26px 20px 22px;
+    border-radius: var(--lc-radius-card);
   }
 }
 </style>

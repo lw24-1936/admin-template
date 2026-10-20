@@ -255,4 +255,68 @@ async function handleLogin() {
     transform: translateY(0);
   }
 }
+
+/* ===== V2 视觉覆盖（后置规则，优先级高于前面同名选择器） ===== */
+/* 画布：渐变 + 光晕 + 网格（与桌面登录页同一语言） */
+.m-login {
+  position: relative;
+  background-image:
+    radial-gradient(520px 260px at 10% -8%, rgba(255, 255, 255, 0.95), transparent 62%),
+    radial-gradient(420px 240px at 100% 6%, var(--lc-accent-soft), transparent 64%),
+    var(--lc-gradient-hero);
+  background-color: var(--lc-paper);
+  overflow: hidden;
+}
+.m-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(120% 80% at 50% 0%, rgba(0, 0, 0, 0.8), transparent 76%);
+}
+.m-login > * { position: relative; z-index: 1; }
+
+.m-login__mark {
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  border-radius: 9px;
+  box-shadow: 0 8px 16px -12px var(--lc-brand-glow);
+}
+.m-login__title {
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+/* 表单卡：玻璃 + 大圆角 + 悬浮投影 */
+.m-login__sheet {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow: var(--lc-shadow-float);
+  padding: 18px 16px 16px;
+}
+.m-login__sheet :deep(.van-cell-group--inset) {
+  margin: 0;
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-paper-card);
+  box-shadow: 0 0 0 1px var(--lc-line) inset;
+}
+.m-login__submit {
+  height: 46px;
+  margin-top: 6px;
+  border: 1px solid var(--lc-brand-deep);
+  border-radius: var(--lc-radius-ctl);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 12px 26px -16px var(--lc-brand-glow);
+  letter-spacing: 0.28em;
+  font-weight: 600;
+}
+.m-login__foot {
+  color: var(--lc-ink-faint);
+}
 </style>

@@ -55,7 +55,12 @@
 
       <!-- 主内容 -->
       <el-main class="layout-main">
-        <RouterView />
+        <!-- 路由过渡：淡入 + 轻微上移；reduced-motion 下由 CSS 关闭 -->
+        <RouterView v-slot="{ Component, route: current }">
+          <transition name="page" mode="out-in">
+            <component :is="Component" :key="current.path" />
+          </transition>
+        </RouterView>
       </el-main>
     </el-container>
 
@@ -136,7 +141,8 @@
  * - 左侧：基于后端菜单树（store.menus）渲染的导航
  * - 顶部：折叠状态 + 面包屑/标题 + 用户下拉（个人资料、修改密码、退出）
  */
-import { computed, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowDown } from '@element-plus/icons-vue'
@@ -149,6 +155,45 @@ import { filterVisibleMenus } from '@/utils/menu'
 const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
+
+/**
+ * 外壳入场动效（anime.js v4）。
+ *
+ * 只动 opacity / transform，且**尊重 reduced-motion**：
+ * 用户开启"减少动效"时直接跳过，页面按最终态渲染（不做 CSS 隐藏再显示，
+ * 避免 JS 失败时白屏）。
+ */
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  animate('.layout-aside', {
+    opacity: [0, 1],
+    x: [-14, 0],
+    duration: 460,
+    ease: 'outCubic',
+  })
+  animate('.layout-header', {
+    opacity: [0, 1],
+    y: [-10, 0],
+    duration: 420,
+    delay: 60,
+    ease: 'outCubic',
+  })
+  animate('.layout-main > *', {
+    opacity: [0, 1],
+    y: [12, 0],
+    duration: 520,
+    delay: 120,
+    ease: 'outCubic',
+  })
+  // 菜单项错峰淡入：让侧边栏"长出来"而不是整块出现
+  animate('.layout-aside .el-menu-item, .layout-aside .el-sub-menu__title', {
+    opacity: [0, 1],
+    x: [-8, 0],
+    duration: 360,
+    delay: stagger(26, { start: 140 }),
+    ease: 'outCubic',
+  })
+})
 
 /** 当前激活菜单 = 路由路径（与后端 menu_url 一致） */
 const activeMenu = computed(() => route.path)
@@ -372,9 +417,11 @@ const roleText = computed(() => {
 
 <style scoped>
 /*
- * 后台外壳样式（E2「纸面极简 · 编辑式」）
- * - 全部数值取自 src/styles/tokens.css，页面内不再写裸色值
- * - 组件库配色通过 Element Plus 的 CSS 变量接管（--el-menu-* 等），不使用 !important
+ * 后台外壳（V2「层叠纸面」）
+ * - 侧边栏：白卡 + 细分隔线；菜单用浅底胶囊 + 左侧指示条表达激活
+ * - 顶栏：半透明 + 背景虚化（滚动时内容从下方"透"出来），保持浅色不压暗
+ * - 内容区：统一 16px 外边距（页面卡片内部另有 20px），避免"双层留白"过厚
+ * - 全部数值取自 tokens，页面内不写裸色值
  */
 .layout-root {
   height: 100%;
@@ -385,73 +432,85 @@ const roleText = computed(() => {
   background: var(--lc-paper-card);
   border-right: 1px solid var(--lc-line);
   overflow: hidden;
+  /* 极淡的侧栏渐变，让白色侧栏与纸面内容区产生层次（不抢内容） */
+  background-image: linear-gradient(180deg, var(--lc-paper-card) 0%, var(--lc-surface-soft) 100%);
 }
 
-/* 品牌区：26px 主色方块 + 双行锁定（名称 + 副标题） */
+/* 品牌区：渐变方块 + 双行锁定（名称 + 副标题） */
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 60px;
+  height: 64px;
   padding: 0 var(--lc-sp-5);
   border-bottom: 1px solid var(--lc-line-soft);
 }
 .brand__mark {
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--lc-brand);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
   color: var(--lc-paper-card);
-  border-radius: 7px;
+  border-radius: 9px;
   font-size: var(--lc-fs-body);
   font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 8px 18px -12px var(--lc-brand-glow);
 }
 .brand__text {
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+  min-width: 0;
 }
 .brand__text strong {
   font-size: var(--lc-fs-lead);
   font-weight: 650;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.01em;
   color: var(--lc-ink);
 }
 .brand__text em {
   font-style: normal;
   font-size: var(--lc-fs-kicker);
-  letter-spacing: 1.6px;
+  letter-spacing: 0.14em;
   color: var(--lc-ink-faint);
 }
 
 .layout-aside :deep(.el-menu) {
-  /* 用组件库变量接管配色，避免与内联样式打架 */
   --el-menu-bg-color: transparent;
   --el-menu-text-color: var(--lc-ink-body);
   --el-menu-active-color: var(--lc-brand);
-  --el-menu-hover-bg-color: var(--lc-surface-hover-soft);
+  --el-menu-hover-bg-color: var(--lc-surface-hover);
   --el-menu-item-height: 42px;
   --el-menu-sub-item-height: 40px;
   border-right: none;
-  padding: var(--lc-sp-2) var(--lc-sp-2) var(--lc-sp-4);
+  padding: var(--lc-sp-2);
 }
 .layout-aside :deep(.el-menu-item),
 .layout-aside :deep(.el-sub-menu__title) {
   position: relative;
-  margin: 1px 0;
-  border-radius: 8px;
+  margin: 2px 0;
+  border-radius: var(--lc-radius-ctl);
   font-size: var(--lc-fs-body);
+  transition: background-color var(--lc-motion-fast) var(--lc-ease-out),
+    color var(--lc-motion-fast) var(--lc-ease-out);
 }
 .layout-aside :deep(.el-sub-menu__title) {
   font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
 }
-/* 激活项：墨色加粗 + 主色浅底 + 左侧 3px 指示条（替代默认的深色反白） */
-.layout-aside :deep(.el-menu-item.is-active) {
+.layout-aside :deep(.el-menu-item:hover),
+.layout-aside :deep(.el-sub-menu__title:hover) {
   color: var(--lc-ink);
+  background: var(--lc-surface-hover);
+}
+/* 激活项：主色浅底 + 主色文字 + 左侧 3px 指示条（不用深色反白，保持浅色主题） */
+.layout-aside :deep(.el-menu-item.is-active) {
+  color: var(--lc-brand);
   font-weight: 600;
   background: var(--lc-brand-soft);
 }
@@ -459,11 +518,15 @@ const roleText = computed(() => {
   content: '';
   position: absolute;
   left: 0;
-  top: 9px;
-  bottom: 9px;
+  top: 10px;
+  bottom: 10px;
   width: 3px;
-  background: var(--lc-brand);
-  border-radius: 0 2px 2px 0;
+  background-image: var(--lc-gradient-brand);
+  border-radius: 0 3px 3px 0;
+}
+/* 子菜单展开时，缩进线与父级标题对齐 */
+.layout-aside :deep(.el-menu .el-menu) {
+  padding-left: 0;
 }
 
 /* ==================== 顶栏 ==================== */
@@ -471,13 +534,18 @@ const roleText = computed(() => {
   min-width: 0;
 }
 .layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 60px;
   padding: 0 var(--lc-sp-6);
-  background: var(--lc-paper-card);
-  border-bottom: 1px solid var(--lc-line);
+  /* 半透明白 + 背景虚化：滚动时内容从下方透出，比纯白更"轻" */
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid var(--lc-line-soft);
 }
 /* 面包屑：父级弱化、当前为墨色加粗 */
 .page-breadcrumb {
@@ -493,7 +561,7 @@ const roleText = computed(() => {
   font-size: var(--lc-fs-body);
 }
 .page-breadcrumb :deep(.el-breadcrumb__separator) {
-  color: var(--lc-line-input);
+  color: var(--lc-ink-faint);
 }
 .crumb-link {
   color: var(--lc-brand);
@@ -501,7 +569,7 @@ const roleText = computed(() => {
   transition: opacity var(--lc-motion-fast);
 }
 .crumb-link:hover {
-  opacity: 0.78;
+  opacity: 0.75;
 }
 
 /* 用户区：角色胶囊 + 头像 + 名称 + 箭头 */
@@ -509,21 +577,24 @@ const roleText = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: var(--lc-sp-2);
-  padding: 4px 8px 4px 4px;
-  border-radius: 999px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid transparent;
+  border-radius: var(--lc-radius-pill);
   cursor: pointer;
   outline: none;
-  transition: background var(--lc-motion-fast);
+  transition: background var(--lc-motion-fast), border-color var(--lc-motion-fast);
 }
 .user-entry:hover {
-  background: var(--lc-surface-hover-soft);
+  background: var(--lc-paper-card);
+  border-color: var(--lc-line);
 }
 .user-role {
   padding: 2px 8px;
   border: 1px solid var(--lc-line);
-  border-radius: 999px;
+  border-radius: var(--lc-radius-pill);
+  background: var(--lc-paper-card);
   font-size: var(--lc-fs-kicker);
-  letter-spacing: 0.6px;
+  letter-spacing: 0.04em;
   color: var(--lc-ink-muted);
   /* 多角色时避免胶囊撑宽顶栏；完整内容通过 title 属性可见 */
   max-width: 160px;
@@ -532,12 +603,14 @@ const roleText = computed(() => {
   white-space: nowrap;
 }
 .user-avatar {
-  background: var(--lc-brand);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
   font-size: var(--lc-fs-label);
 }
 .user-name {
   font-size: var(--lc-fs-label);
   color: var(--lc-ink);
+  font-weight: 500;
 }
 .user-caret {
   font-size: var(--lc-fs-hint);
@@ -546,19 +619,50 @@ const roleText = computed(() => {
 
 /* ==================== 主内容 ==================== */
 .layout-main {
-  background: var(--lc-paper);
+  background: transparent;
   overflow-y: auto;
   /*
-   * 内容区与「左侧导航 / 顶栏 / 右侧窗口边」的间距（外壳统一控制，所有菜单页面同时生效）。
+   * 内容区与「左侧导航 / 顶栏 / 右侧窗口边」的间距（外壳统一控制）。
    *
-   * 原为 var(--lc-sp-6) = 24px，2026-10-18 按需求收紧到 1px：页面自身已有一层
-   * 20px 的内边距（各页的卡片容器），外层再留 24px 会形成"双层留白"，
-   * 视觉上内容像被挤在中间一小块。
+   * 历史：曾按需求收紧到 1px（页面卡片自身有 20px 内边距，外层再加 24px 会双层留白）。
+   * V2 视觉升级把外层调到 16px：卡片改为"细边 + 软投影"后需要一点外部留白才不贴边，
+   * 同时 1px 会让卡片投影被容器裁掉。
    *
-   * 想调回更宽松的观感，只改这一个值即可（例如 4px / 8px / var(--lc-sp-2)）；
-   * 不要在各页面里分别加 padding，否则会重新变成"每页间距不一致"。
+   * 想更紧凑只改这一个值（如 var(--lc-sp-2)）；不要在页面里分别加 padding，
+   * 否则会重新变成"每页间距不一致"。
    */
-  padding: 1px;
+  padding: var(--lc-sp-4);
+}
+
+/* 路由过渡：与 --lc-motion-enter 同节奏（CSS 过渡而非动画，减少 JS 依赖） */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--lc-motion-enter) var(--lc-ease-out),
+    transform var(--lc-motion-enter) var(--lc-ease-out);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+}
+
+/* ==================== 窄屏适配 ==================== */
+@media (max-width: 1280px) {
+  .layout-main {
+    padding: var(--lc-sp-3);
+  }
+  .layout-header {
+    padding: 0 var(--lc-sp-4);
+  }
 }
 
 /* 头像编辑（个人资料弹窗）：头像 + 一旁的说明文字 */
@@ -574,5 +678,5 @@ const roleText = computed(() => {
 .avatar-editor__hint {
   font-size: var(--lc-fs-hint);
   color: var(--lc-ink-faint);
-}</style>
-
+}
+</style>

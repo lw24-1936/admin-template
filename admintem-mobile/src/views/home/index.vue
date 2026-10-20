@@ -228,4 +228,55 @@ function notifyDesktop(name) {
   font-size: var(--lc-fs-kicker);
   color: var(--lc-ink-faint);
 }
+
+/* ===== V2 视觉覆盖（后置规则，优先级高于前面同名选择器） ===== */
+/* 欢迎卡：主色渐变（白字对比 ≥ 4.5:1），作为首页视觉锚点 */
+.home-hero {
+  border: 1px solid var(--lc-brand-deep);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 16px 32px -22px var(--lc-brand-glow);
+  border-radius: var(--lc-radius-card);
+}
+.home-hero__hi {
+  color: var(--lc-paper-card);
+  font-weight: 650;
+}
+.home-hero__sub {
+  color: rgba(255, 255, 255, 0.78);
+}
+.home-hero__avatar {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  color: var(--lc-paper-card);
+}
+
+/* 数据概览：数字放大、标签弱化，卡片间距更松 */
+.home-stats strong {
+  font-size: 24px;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  color: var(--lc-brand);
+  font-variant-numeric: tabular-nums;
+}
+.home-stats span {
+  color: var(--lc-ink-muted);
+}
+
+/* 管理入口：浅底磁贴 + 按下反馈 */
+.home-entry {
+  border-radius: var(--lc-radius-ctl);
+  border: 1px solid var(--lc-line);
+  background: var(--lc-surface-soft);
+  transition: border-color var(--lc-motion-fast), background-color var(--lc-motion-fast),
+    transform var(--lc-motion-fast) var(--lc-ease-out);
+}
+.home-entry:active {
+  border-color: var(--lc-brand);
+  background: var(--lc-brand-soft);
+  transform: scale(0.98);
+}
+.home-entry :deep(.van-icon) {
+  color: var(--lc-brand);
+}
 </style>

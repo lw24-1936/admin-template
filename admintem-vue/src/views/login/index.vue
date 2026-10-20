@@ -2,6 +2,8 @@
   <!-- 登录页：纸面极简（与注册页同套语言）
        左侧为编辑式品牌排版，右侧为白卡片表单；无渐变、无光斑 -->
   <main class="login-page">
+      <!-- 指针跟随的柔光（纯装饰层；触摸设备与 reduced-motion 下不启用） -->
+      <div class="login-aurora" aria-hidden="true" />
     <div class="login-grid">
       <!-- 左：品牌文案排版 -->
       <section class="login-copy">
@@ -80,7 +82,8 @@
  * - 支持记住我（延长令牌有效期）
  * - 登录成功后回跳 redirect 或首页
  */
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
@@ -91,6 +94,67 @@ const store = useUserStore()
 
 const formRef = ref()
 const loading = ref(false)
+
+/**
+ * 登录页入场（anime.js v4）。
+ *
+ * 节奏：文案 → 表单卡 → 字段逐个淡入，总时长 ≤ 900ms。
+ * reduced-motion 下直接跳过（不预先隐藏元素，JS 失败也能看到完整页面）。
+ */
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  animate('.login-kicker, .login-title, .login-desc, .login-points, .login-version', {
+    opacity: [0, 1],
+    y: [14, 0],
+    duration: 520,
+    delay: stagger(70),
+    // 文案做轻微 blur-fade：不碰带 backdrop-filter 的表单卡，避免玻璃效果失效
+    filter: ['blur(5px)', 'blur(0px)'],
+    ease: 'outCubic',
+  })
+  animate('.login-sheet', {
+    opacity: [0, 1],
+    y: [18, 0],
+    scale: [0.985, 1],
+    duration: 560,
+    delay: 140,
+    ease: 'outCubic',
+  })
+  animate('.login-sheet .el-form-item, .login-meta, .login-submit, .login-foot', {
+    opacity: [0, 1],
+    y: [10, 0],
+    duration: 380,
+    delay: stagger(46, { start: 320 }),
+    ease: 'outCubic',
+  })
+})
+
+/**
+ * 指针跟随柔光（Magic UI「magic-card」的 CSS 复刻，不引入 React 与 Tailwind）。
+ *
+ * 只写两个自定义属性 --mx/--my，由 CSS 的 radial-gradient 消费；
+ * 用 requestAnimationFrame 合并高频 pointermove，避免每个事件都触发样式重算。
+ * 触摸设备（hover: none）与 reduced-motion 下不挂监听——它们不需要跟随光斑。
+ */
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (window.matchMedia('(hover: none)').matches) return
+  const page = document.querySelector('.login-page')
+  if (!page) return
+  let raf = 0
+  let px = 0
+  let py = 0
+  const apply = () => {
+    raf = 0
+    page.style.setProperty('--mx', px + 'px')
+    page.style.setProperty('--my', py + 'px')
+  }
+  page.addEventListener('pointermove', (event) => {
+    px = event.clientX
+    py = event.clientY
+    if (!raf) raf = requestAnimationFrame(apply)
+  })
+})
 
 const form = reactive({
   username: 'admin',
@@ -126,121 +190,152 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-/* ---------- 纸面基调（与注册页一致） ---------- */
+/* ---------- 画布：柔和渐变 + 极淡网格 + 两团主色光晕 ---------- */
 .login-page {
+  position: relative;
   min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 40px 24px;
-  background:
+  padding: 48px 24px;
+  overflow: hidden;
+  background-image:
+    radial-gradient(880px 420px at 8% -10%, rgba(255, 255, 255, 0.95), transparent 60%),
+    radial-gradient(760px 420px at 100% 8%, var(--lc-accent-soft), transparent 62%),
+    var(--lc-gradient-hero);
+  font-family: var(--lc-font-sans);
+}
+/* 网格与光斑都是装饰层：fixed/absolute + pointer-events:none，不参与布局 */
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
     linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px),
-    var(--lc-paper);
-  background-size: 32px 32px;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(120% 90% at 50% 0%, rgba(0, 0, 0, 0.85), transparent 78%);
+}
+.login-page::after {
+  content: '';
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -140px;
+  bottom: -220px;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--lc-brand-glow) 0%, transparent 62%);
+  filter: blur(6px);
+}
+
+.login-aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 跟随指针的柔光：位置由 --mx/--my 决定，未移动时落在左上 */
+  background: radial-gradient(
+    340px 340px at var(--mx, 32%) var(--my, 30%),
+    var(--lc-brand-glow) 0%,
+    transparent 68%
+  );
+  opacity: 0.55;
 }
 
 .login-grid {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 1020px;
+  max-width: 1060px;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 72px;
+  grid-template-columns: 1.08fr 1fr;
+  gap: 80px;
   align-items: center;
 }
 
-/* ---------- 左：文案排版 ---------- */
+/* ---------- 左：品牌文案 ---------- */
 .login-copy {
-  animation: copy-in 0.4s ease both;
+  max-width: 470px;
 }
 .login-kicker {
-  margin: 0 0 18px;
-  font-size: 11px;
-  letter-spacing: 2.6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 22px;
+  font-size: var(--lc-fs-kicker);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--lc-ink-faint);
 }
+.login-kicker::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--lc-brand);
+}
 .login-title {
-  margin: 0 0 20px;
-  font-size: 40px;
-  line-height: 1.22;
-  font-weight: 650;
-  letter-spacing: 0.5px;
+  margin: 0 0 22px;
+  font-size: var(--lc-fs-display);
+  line-height: 1.14;
+  font-weight: 680;
+  letter-spacing: -0.025em;
   color: var(--lc-ink);
 }
 .login-desc {
   margin: 0;
-  max-width: 380px;
-  font-size: 14px;
+  max-width: 400px;
+  font-size: var(--lc-fs-body);
   line-height: 1.9;
   color: var(--lc-ink-soft);
 }
 
 .login-points {
-  margin: 30px 0 0;
-  padding: 22px 0 0;
+  margin: 32px 0 0;
+  padding: 24px 0 0;
   border-top: 1px solid var(--lc-line-strong);
   list-style: none;
 }
 .login-points li {
   position: relative;
-  padding: 7px 0 7px 18px;
-  font-size: 13px;
+  padding: 8px 0 8px 22px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-body);
 }
+/* 指示点：主色实心 + 外圈光晕，替代默认圆点 */
 .login-points li::before {
   content: '';
   position: absolute;
   left: 0;
   top: 15px;
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--lc-brand);
+  box-shadow: 0 0 0 4px var(--lc-brand-ring);
 }
 
 .login-version {
-  margin: 34px 0 0;
-  font-size: 12px;
+  margin: 36px 0 0;
+  font-size: var(--lc-fs-hint);
   color: var(--lc-ink-faint);
 }
 
-/* ---------- 右：登录表单 ---------- */
+/* ---------- 右：玻璃表单卡 ---------- */
 .login-form-side {
   display: flex;
   justify-content: flex-end;
 }
 .login-sheet {
   width: 100%;
-  max-width: 420px;
-  background: var(--lc-paper-card);
-  border: 1px solid var(--lc-line);
-  border-radius: 14px;
-  padding: 40px 40px 30px;
-  box-shadow: var(--lc-shadow-sheet);
-  animation: sheet-in 0.4s ease both;
-}
-@keyframes copy-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  max-width: 428px;
+  padding: 40px 38px 30px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: var(--lc-shadow-float);
 }
 
 .login-sheet-head {
@@ -248,17 +343,18 @@ async function handleLogin() {
 }
 .login-sheet-head h2 {
   margin: 0 0 6px;
-  font-size: 23px;
+  font-size: var(--lc-fs-title);
   font-weight: 650;
+  letter-spacing: -0.015em;
   color: var(--lc-ink);
 }
 .login-sheet-head p {
   margin: 0;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
 }
 
-/* 字段标签 + 输入框（与注册页一致） */
+/* 字段：标签在上、输入框 46px，与移动端手感一致 */
 .login-sheet :deep(.el-form-item) {
   margin-bottom: 18px;
 }
@@ -266,16 +362,19 @@ async function handleLogin() {
   height: auto;
   line-height: 1.4;
   margin-bottom: 6px;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-body);
 }
 .login-sheet :deep(.el-input__wrapper) {
-  min-height: 44px;
-  padding: 0 12px;
+  min-height: var(--lc-button-h);
+  padding: 0 14px;
   background: var(--lc-paper-card);
-  border-radius: 10px;
+  border-radius: var(--lc-radius-ctl);
   box-shadow: 0 0 0 1px var(--lc-line-input) inset;
-  transition: box-shadow 0.18s ease;
+  transition: box-shadow var(--lc-motion-fast) var(--lc-ease-out);
+}
+.login-sheet :deep(.el-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--lc-line-hover) inset;
 }
 .login-sheet :deep(.el-input__wrapper.is-focus) {
   box-shadow: 0 0 0 1.5px var(--lc-brand) inset, 0 0 0 4px var(--lc-brand-ring);
@@ -291,35 +390,42 @@ async function handleLogin() {
   margin-bottom: 22px;
 }
 .login-meta :deep(.el-checkbox__label) {
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
 }
 
-/* 主按钮：实色（无渐变） */
+/* 主按钮：深蓝渐变 + 外发光 + 悬停上浮 */
 .login-submit {
   width: 100%;
-  height: 46px;
-  font-size: 15px;
-  letter-spacing: 6px;
+  height: var(--lc-button-h);
+  border: 1px solid var(--lc-brand-deep);
+  border-radius: var(--lc-radius-ctl);
+  font-size: var(--lc-fs-lead);
+  font-weight: 600;
+  letter-spacing: 0.32em;
   color: var(--lc-paper-card);
-  background: var(--lc-brand);
-  border: none;
-  border-radius: 10px;
-  transition: background 0.18s ease, transform 0.12s ease;
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 14px 30px -18px var(--lc-brand-glow);
+  transition: transform var(--lc-motion-fast) var(--lc-ease-out),
+    box-shadow var(--lc-motion-fast) var(--lc-ease-out), filter var(--lc-motion-fast);
 }
 .login-submit:hover,
 .login-submit:focus {
-  background: var(--lc-brand-hover);
+  color: var(--lc-paper-card);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 36px -18px var(--lc-brand-glow);
 }
 .login-submit:active {
-  transform: translateY(1px);
+  transform: translateY(0);
 }
 
 .login-foot {
   margin: 22px 0 0;
   padding-top: 16px;
   border-top: 1px solid var(--lc-line-soft);
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-ink-muted);
   text-align: center;
 }
@@ -327,23 +433,31 @@ async function handleLogin() {
   border: none;
   background: none;
   padding: 0 4px;
-  font-size: 13px;
+  font-size: var(--lc-fs-label);
   color: var(--lc-brand);
   cursor: pointer;
 }
 .login-link:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ---------- 窄屏：单列、仅表单 ---------- */
-@media (max-width: 860px) {
+@media (max-width: 900px) {
   .login-grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 30px;
     max-width: 440px;
   }
   .login-copy {
+    max-width: none;
     text-align: center;
+  }
+  .login-kicker {
+    justify-content: center;
+  }
+  .login-title {
+    font-size: 30px;
   }
   .login-desc {
     margin: 0 auto;
@@ -355,16 +469,14 @@ async function handleLogin() {
   .login-form-side {
     justify-content: center;
   }
-  .login-title {
-    font-size: 30px;
-  }
 }
 @media (max-width: 480px) {
   .login-page {
-    padding: 24px 14px;
+    padding: 26px 14px;
   }
   .login-sheet {
     padding: 30px 22px 26px;
+    border-radius: var(--lc-radius-card);
   }
 }
 </style>

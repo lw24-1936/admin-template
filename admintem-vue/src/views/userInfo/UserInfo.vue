@@ -45,19 +45,16 @@
       <el-table-column prop="userName" label="账号" min-width="120" sortable="custom" />
       <el-table-column prop="nickName" label="昵称" min-width="120" sortable="custom" />
       <el-table-column prop="email" label="邮箱" min-width="160" sortable="custom" />
-      <el-table-column prop="phone" label="手机号" width="130" />
-      <el-table-column prop="deptName" label="部门" width="140">
+      <el-table-column prop="phone" label="手机号" width="120" />
+      <el-table-column prop="deptName" label="部门" width="120">
         <template #default="{ row }">{{ row.deptName || "—" }}</template>
-      </el-table-column>
-      <el-table-column label="性别" width="70" align="center">
-        <template #default="{ row }">{{ sexText(row.sex) }}</template>
       </el-table-column>
       <el-table-column label="状态" width="80" align="center">
         <template #default="{ row }">
           <el-tag :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="角色" min-width="160">
+      <el-table-column label="角色" min-width="150">
         <template #default="{ row }">
           <el-tag
             v-for="name in row.roleNames"
@@ -71,8 +68,7 @@
           <span v-if="!row.roleNames || !row.roleNames.length" class="text-muted">-</span>
         </template>
       </el-table-column>
-      <el-table-column prop="createdTime" label="创建时间" width="170" sortable="custom" />
-      <el-table-column label="操作" width="300" fixed="right">
+      <el-table-column label="操作" width="250" fixed="right">
         <template #default="{ row }">
           <el-button v-perm="'sysAuthUser:editSysAuthUser'" link type="primary" @click="openEdit(row)">
             编辑
@@ -549,7 +545,6 @@ async function submitAssign() {
 }
 
 /* ------------------------------ 展示辅助 ------------------------------ */
-const sexText = (v) => (v === 0 ? '女' : '男')
 const statusText = (v) => (v === 1 ? '禁用' : '启用')
 const statusType = (v) => (v === 1 ? 'danger' : 'success')
 

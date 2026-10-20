@@ -1,8 +1,9 @@
 /**
- * 全局基础样式
+ * 全局基础样式（桌面端）
  *
- * 视觉数值（色板/字号/间距/圆角/投影/字体）统一来自 src/styles/tokens.css，
- * 本文件只保留全局重置与跨页面的通用工具类，不再写裸色值。
+ * 视觉数值统一来自 src/styles/tokens.css；本文件只做重置、画布背景与少量工具类。
+ * V2 变更：画布由"纯纸面 + 网格"改为"柔和渐变 + 极淡网格 + 顶部光晕"，
+ *          字体切换为系统 UI 栈，标题统一负字距（更接近现代后台排版）。
  */
 * {
   box-sizing: border-box;
@@ -19,9 +20,44 @@ body,
 body {
   font-family: var(--lc-font-sans);
   font-size: var(--lc-fs-body);
+  line-height: 1.55;
   color: var(--lc-ink-body);
   background-color: var(--lc-paper);
+  /* 两层极淡渐变叠出"纸面有光"的效果：左上偏亮、右下偏冷 */
+  background-image:
+    radial-gradient(1100px 520px at 12% -8%, rgba(255, 255, 255, 0.9), transparent 62%),
+    radial-gradient(900px 480px at 100% 0%, var(--lc-accent-soft), transparent 58%),
+    linear-gradient(180deg, var(--lc-paper) 0%, var(--lc-paper-2) 100%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 细网格：固定层、不参与布局、不吃事件，避免任何溢出与误点 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.35));
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+}
+
+/* 标题：统一负字距，避免大字号下"字缝过大" */
+h1,
+h2,
+h3,
+h4 {
+  letter-spacing: -0.01em;
 }
 
 /* 搜索/操作条（列表页顶部工具区） */
@@ -44,17 +80,25 @@ body {
   color: var(--lc-ink-faint);
 }
 
+/* 数字等宽：金额/数量/时间纵向对齐 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
 /* 滚动条美化（细、低对比，避免抢视觉重点） */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--lc-line-input);
-  border-radius: 3px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  border-radius: var(--lc-radius-pill);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #c3ccda;
+  background: var(--lc-line-hover);
+  background-clip: content-box;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

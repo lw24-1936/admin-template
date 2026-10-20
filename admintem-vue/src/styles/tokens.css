@@ -1,66 +1,73 @@
 /**
  * 设计 token（桌面端）—— 全站视觉数值的唯一出处
  *
- * 为什么要这一层：改造前"纸面极简"的数值散落在各页面的 <style scoped> 里
- * （登录/注册页写死 #15293f、#123c6e…），而业务页用的是 Element Plus 默认值，
- * 想统一主色就要改十几个文件且极易漏改。抽成 token 后：
- *   - 改一处、全站跟随；
- *   - 与移动端共用同一份数值，两端看起来是同一个产品；
- *   - 审查时可通过"是否还有裸 hex"快速发现漏网。
+ * 本轮（V2 视觉升级）目标：在**保持浅色主题**的前提下，把"纸面极简"升级为
+ * "层叠纸面 + 克制玻璃"：
+ *   - 中性色改用 slate 色系（更冷静、与主流后台一致）；
+ *   - 主色由 #123c6e 微调为 #1e3a6e，并新增深色端点用于渐变按钮；
+ *   - 新增三层投影（card / float / sheet）与两套渐变（hero / brand）；
+ *   - 字体改用系统 UI 栈（中文优先苹方/微软雅黑），去掉 Helvetica 的"文档感"。
  *
  * 约定：
- *   1. 前缀统一 `--lc-`（lc = admintem），避免与 Element Plus 的 `--el-*` 冲突；
- *   2. 本文件只放"数值"，不放组件规则；组件级覆盖写在 styles/theme.css；
- *   3. 本轮（E1）所有取值与改造前的实际取值**完全一致**，因此视觉零变化——
- *      这是刻意的：先把数值收拢，再在后续步骤里改视觉，改坏了也容易定位。
- *   4. E8 起为满足对比度门槛做了两处调整：`--lc-ink-faint` 由 #8a93a2 加深为 #848d9c
- *      （纸面 2.87:1 → 3.09:1），并把重复的 `--lc-ink-faint-2/-3` 合并为
- *      `--lc-ink-disabled`（仅供豁免对比度的禁用态使用）；
- *
- * 维护：新增页面/组件一律引用这里的变量，不要写裸色值；
- *      确需新数值时先在此登记（并说明用途），再引用。
+ *   1. 前缀统一 `--lc-`，避免与 Element Plus 的 `--el-*` 冲突；
+ *   2. 本文件只放"数值"，组件规则写 styles/components.css；
+ *   3. **投影类 token 必须是完整 box-shadow 值**，只能整值使用
+ *      （拼前缀会让整条声明非法，浏览器静默丢弃——check-tokens 有永久防线）；
+ *   4. 桌面端与移动端同名 token 必须同值（有意差异在 check-tokens 登记）。
  */
 :root {
   /* ---------------- 纸面与卡片 ---------------- */
-  --lc-paper: #f5f6f8; /* 页面底色 */
+  --lc-paper: #f6f7fa; /* 页面底色 */
+  --lc-paper-2: #eef1f6; /* 纸面渐变终点 */
   --lc-paper-card: #ffffff; /* 卡片 / 弹层 / 输入框底色 */
-  --lc-grid-line: rgba(15, 39, 68, 0.028); /* 纸面网格线（32px 栅格） */
-  --lc-surface-soft: #fafbfc; /* 次级面（入口按钮/列表底） */
-  --lc-surface-hover: #f2f4f8; /* 按下/hover 面 */
-  --lc-surface-hover-soft: #f7f8fa; /* 更浅一档的 hover 面（菜单项/顶栏用户区） */
-  --lc-line-hover: #cfd6e2; /* 按下/hover 描边 */
+  --lc-grid-line: rgba(15, 23, 42, 0.035); /* 纸面网格线（28px 栅格） */
+  --lc-surface-soft: #f8fafc; /* 次级面（入口按钮/列表底） */
+  --lc-surface-hover: #f1f4f9; /* 按下/hover 面 */
+  --lc-surface-hover-soft: #f8fafc; /* 更浅一档的 hover 面（菜单项/顶栏用户区） */
+  --lc-line-hover: #c9d3e0; /* 按下/hover 描边 */
   --lc-danger-soft: #fdf6f6; /* 危险操作按下底 */
 
   /* ---------------- 墨色文字阶梯 ---------------- */
-  --lc-ink: #15293f; /* 标题 / 强调文字 */
-  --lc-ink-body: #3d4757; /* 正文 */
-  --lc-ink-soft: #5f6a7a; /* 说明性长文 */
-  --lc-ink-muted: #6b7686; /* 次要信息（白卡 4.60:1 / 纸面 4.26:1） */
-  --lc-ink-faint: #848d9c; /* 提示 / kicker / 脚注（白卡 3.35:1 / 纸面 3.09:1） */
-  --lc-ink-disabled: #a2aab6; /* 仅用于"禁用态"文字：WCAG 1.4.3 对 inactive 组件豁免对比度要求 */
+  --lc-ink: #0f172a; /* 标题 / 强调文字（白卡 17.9:1） */
+  --lc-ink-body: #334155; /* 正文（白卡 10.3:1） */
+  --lc-ink-soft: #475569; /* 说明性长文（白卡 7.5:1） */
+  --lc-ink-muted: #5b6675; /* 次要信息（白卡 5.9:1 / 纸面 5.6:1） */
+  --lc-ink-faint: #6f7b8c; /* 提示 / kicker / 脚注（白卡 4.5:1 / 纸面 4.2:1） */
+  --lc-ink-disabled: #a8b0bc; /* 仅用于"禁用态"文字：WCAG 1.4.3 豁免 */
 
   /* ---------------- 描边与分隔线 ---------------- */
-  --lc-line: #e6e9ef; /* 卡片边框 */
-  --lc-line-strong: #e1e5ec; /* 分区上边线 */
-  --lc-line-soft: #eef0f4; /* 行内细分隔线 */
-  --lc-line-input: #dfe3ea; /* 输入框描边 */
+  --lc-line: #e4e8ef; /* 卡片边框 */
+  --lc-line-strong: #dbe2ec; /* 分区上边线 */
+  --lc-line-soft: #eef1f5; /* 行内细分隔线 */
+  --lc-line-input: #dbe1ea; /* 输入框描边 */
 
   /* ---------------- 主色与语义色 ---------------- */
-  --lc-brand: #123c6e; /* 主色：按钮 / 激活态 / 链接 */
-  --lc-brand-hover: #1a4d8c; /* 主色悬停 */
+  --lc-brand: #1e3a6e; /* 主色：按钮 / 激活态 / 链接（白字 9.4:1） */
+  --lc-brand-hover: #2a4f8c; /* 主色悬停 */
+  --lc-brand-deep: #14294f; /* 主色深端点（渐变起点） */
   --lc-brand-soft: #eef3fb; /* 主色浅底（选中态背景） */
-  --lc-brand-ring: rgba(18, 60, 110, 0.07); /* 聚焦外发光 */
+  --lc-brand-ring: rgba(30, 58, 110, 0.14); /* 聚焦外发光（弱） */
+  --lc-ring: var(--lc-brand); /* 键盘焦点环（shadcn 语义：ring 与主色同源） */
+  --lc-brand-glow: rgba(30, 58, 110, 0.18); /* 装饰性光晕（阴影/背景） */
+  --lc-accent: #2f6fed; /* 装饰强调：进度条/指示点/悬停描边，不用于小字 */
+  --lc-accent-soft: rgba(47, 111, 237, 0.1);
   --lc-danger: #b02a2a; /* 危险操作文字 */
   --lc-danger-line: #f0d9d9; /* 危险按钮描边 */
+  --lc-success: #2f7a52; /* 成功（与 Element 映射一致） */
+  --lc-success-soft: #eaf5ef;
+  --lc-warning: #a9752a; /* 警告 */
+  --lc-warning-soft: #fbf4e8;
 
   /* ---------------- 字体 ---------------- */
-  --lc-font-sans: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial,
-    sans-serif;
-  --lc-font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  /* 系统 UI 栈：在 Windows/macOS 上都取到原生无衬线，中文优先苹方/雅黑，
+     比 Helvetica Neue 更接近"现代后台"的观感，且零网络依赖 */
+  --lc-font-sans: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  --lc-font-mono: 'SF Mono', 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 
   /* ---------------- 字号阶梯 ---------------- */
-  --lc-fs-display: 40px; /* 登录页主标题 */
-  --lc-fs-title: 23px; /* 卡片/表单标题 */
+  --lc-fs-display: 42px; /* 登录页主标题 */
+  --lc-fs-title: 24px; /* 卡片/表单标题 */
   --lc-fs-page: 22px; /* 页面标题 */
   --lc-fs-card: 16px; /* 区块标题 */
   --lc-fs-lead: 15px; /* 主按钮文字 */
@@ -81,16 +88,24 @@
 
   /* ---------------- 形状 ---------------- */
   --lc-radius-ctl: 10px; /* 控件：输入框 / 按钮 */
-  --lc-radius-card: 14px; /* 卡片 / 弹层 */
+  --lc-radius-card: 16px; /* 卡片 / 弹层 */
+  --lc-radius-pill: 999px; /* 胶囊：标签 / 分页当前页 */
 
-  /* ---------------- 投影（只保留一种极浅投影） ---------------- */
-  --lc-shadow-sheet: 0 24px 48px -36px rgba(6, 26, 51, 0.28);
+  /* ---------------- 投影（整值使用，禁止拼接） ---------------- */
+  --lc-shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -22px rgba(15, 23, 42, 0.2);
+  --lc-shadow-float: 0 24px 60px -30px rgba(15, 23, 42, 0.3), 0 2px 8px rgba(15, 23, 42, 0.05);
+  --lc-shadow-sheet: 0 24px 60px -40px rgba(15, 23, 42, 0.35);
+
+  /* ---------------- 渐变（装饰；文字一律用纯色 token） ---------------- */
+  --lc-gradient-hero: linear-gradient(135deg, #f8fafc 0%, #eef3fb 46%, #e6eef9 100%);
+  --lc-gradient-brand: linear-gradient(135deg, #1e3a6e 0%, #2b5590 100%);
 
   /* ---------------- 控件尺寸 ---------------- */
   --lc-control-h: 44px; /* 输入框最小高度 */
   --lc-button-h: 46px; /* 主按钮高度 */
 
-  /* ---------------- 动效（只保留两类） ---------------- */
-  --lc-motion-enter: 0.4s ease; /* 页面/卡片入场 */
-  --lc-motion-fast: 0.18s ease; /* 交互反馈 */
+  /* ---------------- 动效 ---------------- */
+  --lc-motion-enter: 0.45s; /* 页面/卡片入场时长（缓动见 --lc-ease-out） */
+  --lc-motion-fast: 0.18s; /* 交互反馈时长 */
+  --lc-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* "快出慢停"的收尾曲线 */
 }

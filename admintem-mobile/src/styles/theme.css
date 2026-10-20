@@ -37,3 +37,38 @@
 .van-field.van-field {
   --van-field-placeholder-text-color: var(--lc-ink-muted);
 }
+
+/* ==================== V2 视觉升级：补充组件映射 ==================== */
+:root {
+  /* 导航栏 / 标签栏：与桌面端顶栏同一语言（白 + 细线 + 轻微模糊感由页面控制） */
+  --van-nav-bar-background: var(--lc-paper-card);
+  --van-nav-bar-title-text-color: var(--lc-ink);
+  --van-nav-bar-icon-color: var(--lc-ink-body);
+  --van-nav-bar-text-color: var(--lc-brand);
+  --van-tabbar-background: rgba(255, 255, 255, 0.86);
+  --van-tabbar-item-text-color: var(--lc-ink-muted);
+
+  /* 单元格：去掉默认外框，靠卡片承载分组 */
+  --van-cell-background: transparent;
+  --van-cell-text-color: var(--lc-ink-body);
+  --van-cell-value-color: var(--lc-ink-muted);
+  --van-cell-label-color: var(--lc-ink-faint);
+  --van-cell-border-color: var(--lc-line-soft);
+  --van-cell-group-background: transparent;
+
+  /* 按钮：主色与圆角，高度与桌面端接近 */
+  --van-button-primary-background: var(--lc-brand);
+  --van-button-primary-border-color: var(--lc-brand);
+  --van-button-border-radius: var(--lc-radius-ctl);
+  --van-button-default-background: var(--lc-paper-card);
+  --van-button-default-border-color: var(--lc-line-input);
+  --van-button-default-color: var(--lc-ink-body);
+
+  /* 标签 / 弹层 / 轻提示 */
+  --van-tag-primary-color: var(--lc-brand);
+  --van-popup-background: var(--lc-paper-card);
+  --van-popup-round-radius: var(--lc-radius-card);
+  --van-toast-background: rgba(15, 23, 42, 0.86);
+  --van-checkbox-checked-icon-color: var(--lc-brand);
+  --van-field-label-color: var(--lc-ink-body);
+}

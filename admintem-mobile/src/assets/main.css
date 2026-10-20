@@ -20,7 +20,7 @@ body {
 body {
   background: var(--lc-canvas);
   color: var(--lc-ink);
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+  font-family: var(--lc-font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -62,7 +62,7 @@ body {
   margin: 0 0 12px;
   font-size: var(--lc-fs-hint);
   font-weight: 600;
-  letter-spacing: 2.2px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--lc-ink-faint);
 }
@@ -97,7 +97,7 @@ body {
 
 /* 仅在键盘导航时显示焦点环 */
 :where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: 2px solid var(--lc-brand);
+  outline: 2px solid var(--lc-ring);
   outline-offset: 2px;
   border-radius: 4px;
 }

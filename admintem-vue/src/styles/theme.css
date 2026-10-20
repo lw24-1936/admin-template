@@ -2,25 +2,27 @@
  * 组件库变量映射（桌面端）—— 把 Element Plus 的主题变量指向设计 token
  *
  * 说明：
- *   1. 本文件只做"库变量 → token"的映射，不放组件规则（组件级精修见 styles/components.css）；
- *   2. 覆盖变量是 Element Plus 官方推荐的主题定制方式，因此**无需 !important**，
- *      也不会因为组件内部样式调整而失效；
- *   3. E1 阶段刻意没有做这层映射（那时要求"零视觉变化"），
- *      从 E2/E3 开始是有意的视觉统一，映射范围按"实际用到的组件"逐步补齐。
+ *   1. 本文件只做"库变量 → token"的映射，组件级精修见 styles/components.css；
+ *   2. 覆盖变量是 Element Plus 官方推荐的主题定制方式，因此**无需 !important**；
+ *   3. V2 视觉升级后：主色改为 #1e3a6e，圆角统一 10/16，投影改为三层
+ *      （card / float / sheet），表格表头改用次级面，输入框焦点环更明显。
  */
 :root {
   /* ---------------- 主色与语义色 ---------------- */
   --el-color-primary: var(--lc-brand);
-  --el-color-primary-light-3: #3f6289;
-  --el-color-primary-light-5: #6d88a6;
-  --el-color-primary-light-7: #9fafc3;
-  --el-color-primary-light-8: #c3cdda;
+  --el-color-primary-light-3: #62759a;
+  --el-color-primary-light-5: #8e9cb6;
+  --el-color-primary-light-7: #bbc4d3;
+  --el-color-primary-light-8: #d2d7e2;
   --el-color-primary-light-9: var(--lc-brand-soft);
-  --el-color-primary-dark-2: #0e3057;
+  --el-color-primary-dark-2: #182e58;
 
-  --el-color-success: #2f7a52;
-  --el-color-warning: #a9752a;
+  --el-color-success: var(--lc-success);
+  --el-color-success-light-9: var(--lc-success-soft);
+  --el-color-warning: var(--lc-warning);
+  --el-color-warning-light-9: var(--lc-warning-soft);
   --el-color-danger: var(--lc-danger);
+  --el-color-danger-light-9: var(--lc-danger-soft);
   --el-color-error: var(--lc-danger);
   --el-color-info: var(--lc-ink-muted);
 
@@ -28,7 +30,7 @@
   --el-text-color-primary: var(--lc-ink);
   --el-text-color-regular: var(--lc-ink-body);
   --el-text-color-secondary: var(--lc-ink-muted);
-  /* 占位符是"用户要读的文字"，按正文门槛取色（白卡 4.60:1），不用提示级灰 */
+  /* 占位符是"用户要读的文字"，按正文门槛取色（白卡 5.9:1），不用提示级灰 */
   --el-text-color-placeholder: var(--lc-ink-muted);
   /* 禁用态：WCAG 1.4.3 明确豁免 inactive 组件，故保留更浅的一档 */
   --el-text-color-disabled: var(--lc-ink-disabled);
@@ -41,7 +43,7 @@
   --el-border-color-darker: var(--lc-line-strong);
 
   --el-fill-color: var(--lc-paper);
-  --el-fill-color-light: #f8fafc;
+  --el-fill-color-light: var(--lc-surface-soft);
   --el-fill-color-lighter: var(--lc-paper);
   --el-fill-color-blank: var(--lc-paper-card);
   --el-bg-color: var(--lc-paper-card);
@@ -49,22 +51,23 @@
   --el-bg-color-overlay: var(--lc-paper-card);
 
   /* ---------------- 字号 / 圆角 / 投影 ---------------- */
+  --el-font-family: var(--lc-font-sans);
   --el-font-size-base: var(--lc-fs-body);
   --el-font-size-small: var(--lc-fs-label);
   --el-font-size-extra-small: var(--lc-fs-hint);
   --el-border-radius-base: var(--lc-radius-ctl);
   --el-border-radius-small: 8px;
-  --el-border-radius-round: 999px;
-  --el-box-shadow-light: 0 12px 32px -24px rgba(6, 26, 51, 0.28);
-  --el-box-shadow: var(--lc-shadow-sheet);
+  --el-border-radius-round: var(--lc-radius-pill);
+  --el-box-shadow-light: var(--lc-shadow-card);
+  --el-box-shadow: var(--lc-shadow-float);
 
   /* ---------------- 表格 ---------------- */
   --el-table-border-color: var(--lc-line-soft);
   --el-table-border: 1px solid var(--lc-line-soft);
   --el-table-text-color: var(--lc-ink-body);
   --el-table-header-text-color: var(--lc-ink-muted);
-  --el-table-header-bg-color: var(--lc-paper);
-  --el-table-row-hover-bg-color: #f8fafc;
+  --el-table-header-bg-color: var(--lc-surface-soft);
+  --el-table-row-hover-bg-color: var(--lc-surface-hover);
   --el-table-current-row-bg-color: var(--lc-brand-soft);
   --el-table-tr-bg-color: var(--lc-paper-card);
   --el-table-bg-color: var(--lc-paper-card);
@@ -76,7 +79,7 @@
 
   /* ---------------- 输入框 / 选择器 ---------------- */
   --el-input-border-color: var(--lc-line-input);
-  --el-input-hover-border-color: var(--lc-line-input);
+  --el-input-hover-border-color: var(--lc-line-hover);
   --el-input-focus-border-color: var(--lc-brand);
   --el-input-text-color: var(--lc-ink);
   --el-input-height: 36px;
@@ -91,5 +94,11 @@
   /* ---------------- 弹层 ---------------- */
   --el-dialog-border-radius: var(--lc-radius-card);
   --el-dialog-padding-primary: var(--lc-sp-5);
-  --el-overlay-color-lighter: rgba(21, 41, 63, 0.36);
+  --el-overlay-color-lighter: rgba(15, 23, 42, 0.42);
+
+  /* ---------------- 菜单（侧边栏） ---------------- */
+  --el-menu-active-color: var(--lc-brand);
+  --el-menu-text-color: var(--lc-ink-body);
+  --el-menu-hover-bg-color: var(--lc-surface-hover-soft);
+  --el-menu-bg-color: transparent;
 }

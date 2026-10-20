@@ -1,45 +1,15 @@
 /**
- * 组件级精修（桌面端）—— 变量覆盖无法表达的结构与排版规则
+ * 组件级精修（桌面端）—— 变量覆盖无法表达的结构、排版与动效
  *
- * 定位：这里放"跨页面共用"的组件微调（表格、卡片、工具栏、分页、按钮、弹层），
- *      页面私有样式仍写在各自 SFC 的 <style scoped> 中。
- * 约定：只引用 tokens 变量，不写裸色值；不使用 !important。
- * 维护：新增规则前先确认能否用 styles/theme.css 的变量覆盖解决——变量优先。
+ * 定位：跨页面共用的组件微调（卡片、表格、工具栏、分页、按钮、输入、弹层、标签）。
+ * 约定：只引用 tokens 变量，不写裸色值；不使用 !important；投影 token 整值使用。
+ *
+ * V2 设计语言（浅色）：
+ *   - 面：白卡 + 1px 细边 + 极软投影；悬停时投影加深一档，不改变尺寸（避免抖动）；
+ *   - 线：表格只留横线，表头用次级面 + 小号字距，数字统一等宽；
+ *   - 点：主按钮用深蓝渐变 + 轻微上浮，链接按钮保持轻量；
+ *   - 动：行入场 0.32s 错峰淡入（仅 ≤12 行，尊重 reduced-motion）。
  */
-
-/* ==================== 表格 ==================== */
-/* 编辑式表格：表头小号字距 + 纸面底、行高 44、仅横向细线、数字等宽
- * 注意：Element Plus 会在组件根类上定义自己的变量（组件作用域优先于 :root），
- *      因此表格/卡片的配色必须写在这里而不是只写 theme.css 的 :root。 */
-.el-table {
-  --el-table-border-color: var(--lc-line-soft);
-  --el-table-header-bg-color: var(--lc-paper);
-  --el-table-header-text-color: var(--lc-ink-muted);
-  --el-table-text-color: var(--lc-ink-body);
-  --el-table-row-hover-bg-color: #f8fafc;
-  --el-table-tr-bg-color: var(--lc-paper-card);
-  --el-table-bg-color: var(--lc-paper-card);
-  font-size: var(--lc-fs-body);
-}
-.el-table th.el-table__cell {
-  font-size: var(--lc-fs-hint);
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  padding: 10px 0;
-}
-.el-table td.el-table__cell {
-  padding: 10px 0;
-}
-.el-table .cell {
-  line-height: 22px;
-  /* 编号/数量/时间等数字等宽对齐，便于纵向比对 */
-  font-variant-numeric: tabular-nums;
-}
-.el-table--border .el-table__inner-wrapper::after,
-.el-table--border::after,
-.el-table--border::before {
-  background-color: var(--lc-line-soft);
-}
 
 /* ==================== 卡片 ==================== */
 .el-card {
@@ -47,57 +17,138 @@
   --el-card-border-radius: var(--lc-radius-card);
   --el-card-padding: var(--lc-sp-5);
   border-radius: var(--lc-radius-card);
+  border: 1px solid var(--lc-line);
+  background: var(--lc-paper-card);
+  box-shadow: var(--lc-shadow-card);
+  /* 卡片本身是"纸片"，悬停只加一点点抬升感，不做位移以免表格抖动 */
+  transition: box-shadow var(--lc-motion-fast) var(--lc-ease-out),
+    border-color var(--lc-motion-fast) var(--lc-ease-out);
+}
+.el-card:hover {
+  border-color: var(--lc-line-hover);
+  box-shadow: var(--lc-shadow-float);
 }
 .el-card__body {
   padding: var(--lc-sp-5);
 }
 
+/* ==================== 表格 ==================== */
+/* 注意：Element Plus 在组件根类上定义自己的变量（组件作用域优先于 :root），
+ * 因此表格配色必须写在这里，而不是只写 theme.css 的 :root。 */
+.el-table {
+  --el-table-border-color: var(--lc-line-soft);
+  --el-table-header-bg-color: var(--lc-surface-soft);
+  --el-table-header-text-color: var(--lc-ink-muted);
+  --el-table-text-color: var(--lc-ink-body);
+  --el-table-row-hover-bg-color: var(--lc-surface-hover);
+  --el-table-tr-bg-color: var(--lc-paper-card);
+  --el-table-bg-color: var(--lc-paper-card);
+  font-size: var(--lc-fs-body);
+  /* 表格自带圆角，与外层卡片留出呼吸 */
+  border-radius: var(--lc-radius-ctl);
+}
+.el-table th.el-table__cell {
+  font-size: var(--lc-fs-kicker);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 11px 0;
+  background: var(--lc-surface-soft);
+  border-bottom: 1px solid var(--lc-line);
+}
+.el-table td.el-table__cell {
+  padding: 12px 0;
+}
+.el-table .cell {
+  line-height: 22px;
+  font-variant-numeric: tabular-nums;
+}
+/* 第一列与最后一列留出内边距，贴近"编辑式表格"的排版感 */
+.el-table th.el-table__cell:first-child .cell,
+.el-table td.el-table__cell:first-child .cell {
+  padding-left: var(--lc-sp-2);
+}
+.el-table--border .el-table__inner-wrapper::after,
+.el-table--border::after,
+.el-table--border::before {
+  background-color: var(--lc-line-soft);
+}
+/* 行入场：只对前 12 行错峰，避免长列表造成"逐行刷屏" */
+@keyframes lc-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.el-table__body tbody tr {
+  animation: lc-row-in 0.32s var(--lc-ease-out) both;
+}
+.el-table__body tbody tr:nth-child(2) { animation-delay: 0.03s; }
+.el-table__body tbody tr:nth-child(3) { animation-delay: 0.06s; }
+.el-table__body tbody tr:nth-child(4) { animation-delay: 0.09s; }
+.el-table__body tbody tr:nth-child(5) { animation-delay: 0.12s; }
+.el-table__body tbody tr:nth-child(6) { animation-delay: 0.15s; }
+.el-table__body tbody tr:nth-child(7) { animation-delay: 0.18s; }
+.el-table__body tbody tr:nth-child(8) { animation-delay: 0.21s; }
+.el-table__body tbody tr:nth-child(9) { animation-delay: 0.24s; }
+.el-table__body tbody tr:nth-child(10) { animation-delay: 0.27s; }
+.el-table__body tbody tr:nth-child(11) { animation-delay: 0.3s; }
+.el-table__body tbody tr:nth-child(12) { animation-delay: 0.33s; }
+.el-table__body tbody tr:nth-child(n + 13) { animation: none; }
+
 /* ==================== 列表页工具栏（TableToolbar） ==================== */
-/* 顶部信息区：kicker + 标题 + 一行说明，底部细线与表格分隔 */
 .table-toolbar__intro {
-  margin-bottom: var(--lc-sp-4);
+  margin-bottom: var(--lc-sp-5);
 }
 .table-toolbar__kicker {
   margin: 0 0 var(--lc-sp-2);
   font-size: var(--lc-fs-kicker);
-  letter-spacing: 2.4px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--lc-ink-faint);
 }
 .table-toolbar__title {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-size: var(--lc-fs-page);
   font-weight: 650;
-  letter-spacing: 0.4px;
+  letter-spacing: -0.015em;
   color: var(--lc-ink);
 }
 .table-toolbar__desc {
   margin: 0;
+  max-width: 76ch;
   font-size: var(--lc-fs-label);
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--lc-ink-muted);
 }
 
 /* ==================== 分页 ==================== */
-/* 细线按钮 + 当前页实心主色（替代默认的浅灰方块） */
 .el-pagination.is-background .btn-prev,
 .el-pagination.is-background .btn-next,
 .el-pagination.is-background .el-pager li {
-  background: transparent;
+  background: var(--lc-paper-card);
   border: 1px solid var(--lc-line);
-  border-radius: 8px;
+  border-radius: var(--lc-radius-ctl);
   color: var(--lc-ink-body);
   font-variant-numeric: tabular-nums;
+  transition: border-color var(--lc-motion-fast), color var(--lc-motion-fast),
+    background-color var(--lc-motion-fast);
 }
 .el-pagination.is-background .el-pager li:not(.is-active):hover {
-  border-color: var(--lc-brand);
+  border-color: var(--lc-accent);
   color: var(--lc-brand);
+  background: var(--lc-brand-soft);
 }
 .el-pagination.is-background .el-pager li.is-active {
-  background: var(--lc-brand);
-  border-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  border-color: var(--lc-brand-deep);
   color: var(--lc-paper-card);
   font-weight: 600;
+  box-shadow: 0 6px 16px -12px var(--lc-brand-glow);
 }
 .el-pagination .el-select .el-input__wrapper {
   box-shadow: 0 0 0 1px var(--lc-line) inset;
@@ -107,18 +158,48 @@
 .el-button {
   border-radius: var(--lc-radius-ctl);
   font-weight: 500;
+  transition: background-color var(--lc-motion-fast) var(--lc-ease-out),
+    border-color var(--lc-motion-fast) var(--lc-ease-out),
+    box-shadow var(--lc-motion-fast) var(--lc-ease-out),
+    transform var(--lc-motion-fast) var(--lc-ease-out);
 }
-/* 主按钮实色（无渐变），与登录页提交按钮同一语言 */
-.el-button--primary {
-  --el-button-bg-color: var(--lc-brand);
-  --el-button-border-color: var(--lc-brand);
-  --el-button-hover-bg-color: var(--lc-brand-hover);
-  --el-button-hover-border-color: var(--lc-brand-hover);
-  --el-button-active-bg-color: var(--lc-brand-hover);
+/* 主按钮：深蓝渐变 + 极软外发光；悬停上浮 1px，按下回落 */
+.el-button--primary:not(.is-plain):not(.is-link):not(.is-disabled) {
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  border-color: var(--lc-brand-deep);
+  box-shadow: 0 8px 20px -14px var(--lc-brand-glow);
+}
+.el-button--primary:not(.is-plain):not(.is-link):not(.is-disabled):hover {
+  background-color: var(--lc-brand-hover);
+  background-image: var(--lc-gradient-brand);
+  border-color: var(--lc-brand-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -14px var(--lc-brand-glow);
+}
+.el-button--primary:not(.is-plain):not(.is-link):not(.is-disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px -12px var(--lc-brand-glow);
+}
+/* 次要按钮：白底细边，悬停描边加深 + 浅底 */
+.el-button--default:not(.is-text):not(.is-link) {
+  background: var(--lc-paper-card);
+  border-color: var(--lc-line-input);
+  color: var(--lc-ink-body);
+}
+.el-button--default:not(.is-text):not(.is-link):hover {
+  border-color: var(--lc-brand);
+  color: var(--lc-brand);
+  background: var(--lc-brand-soft);
 }
 /* 表格内 link 按钮：去掉额外内边距，保持行内排版整洁 */
 .el-table .el-button.is-link {
   padding: 0 4px;
+  font-weight: 500;
+}
+.el-table .el-button.is-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ==================== 输入框 / 选择器 ==================== */
@@ -126,18 +207,45 @@
 .el-textarea__inner {
   border-radius: var(--lc-radius-ctl);
   box-shadow: 0 0 0 1px var(--lc-line-input) inset;
-  transition: box-shadow var(--lc-motion-fast);
+  transition: box-shadow var(--lc-motion-fast) var(--lc-ease-out),
+    background-color var(--lc-motion-fast);
+}
+.el-input__wrapper:hover,
+.el-textarea__inner:hover {
+  box-shadow: 0 0 0 1px var(--lc-line-hover) inset;
 }
 .el-input__wrapper.is-focus,
 .el-textarea__inner:focus {
   box-shadow: 0 0 0 1.5px var(--lc-brand) inset, 0 0 0 4px var(--lc-brand-ring);
 }
+/* 下拉层：更大圆角 + 悬浮投影 */
+.el-select-dropdown,
+.el-picker-panel,
+.el-dropdown__popper {
+  border-radius: 12px;
+  border-color: var(--lc-line);
+  box-shadow: var(--lc-shadow-float);
+}
+.el-select-dropdown__item.is-hovering {
+  background: var(--lc-surface-hover);
+}
+.el-select-dropdown__item.is-selected {
+  color: var(--lc-brand);
+  background: var(--lc-brand-soft);
+  font-weight: 600;
+}
 
 /* ==================== 弹层 ==================== */
-/* 标题区/操作区以细线分隔，内容区留白统一；
- * 弹层内首行统一使用 .dialog-desc 说明该操作的口径（比蓝色 el-alert 更克制） */
-.el-dialog {
+.el-dialog,
+.el-drawer {
   border-radius: var(--lc-radius-card);
+}
+.el-dialog {
+  box-shadow: var(--lc-shadow-float);
+}
+.el-overlay {
+  /* 只做极轻的背景虚化，保持"浅色"而不是把页面压暗 */
+  backdrop-filter: blur(2px);
 }
 .el-dialog__header {
   margin-right: 0;
@@ -147,6 +255,7 @@
 .el-dialog__title {
   font-size: var(--lc-fs-card);
   font-weight: 650;
+  letter-spacing: -0.01em;
   color: var(--lc-ink);
 }
 .el-dialog__body {
@@ -194,15 +303,39 @@
 
 /* ==================== 标签 / 消息 ==================== */
 .el-tag {
-  border-radius: 6px;
+  border-radius: var(--lc-radius-pill);
+  padding: 0 9px;
+  height: 22px;
+  line-height: 20px;
   font-variant-numeric: tabular-nums;
+}
+.el-tag--success {
+  color: var(--lc-success);
+  background: var(--lc-success-soft);
+  border-color: transparent;
+}
+.el-tag--warning {
+  color: var(--lc-warning);
+  background: var(--lc-warning-soft);
+  border-color: transparent;
+}
+.el-tag--danger {
+  color: var(--lc-danger);
+  background: var(--lc-danger-soft);
+  border-color: transparent;
+}
+.el-tag--info {
+  color: var(--lc-ink-muted);
+  background: var(--lc-surface-soft);
+  border-color: var(--lc-line);
 }
 .el-message {
   border-radius: var(--lc-radius-ctl);
+  border-color: var(--lc-line);
+  box-shadow: var(--lc-shadow-float);
 }
 
-/* ==================== 空状态（E7） ==================== */
-/* 默认空状态过于"系统提示"感，这里改为纸面留白 + 弱化文字 */
+/* ==================== 空状态 / 加载态 ==================== */
 .el-table__empty-block {
   min-height: 180px;
   background: var(--lc-paper-card);
@@ -217,11 +350,8 @@
   font-size: var(--lc-fs-label);
   color: var(--lc-ink-faint);
 }
-
-/* ==================== 加载态（E7） ==================== */
-/* 遮罩用纸面白（而非默认灰），转圈用主色，避免与整体语言割裂 */
 .el-loading-mask {
-  background-color: rgba(255, 255, 255, 0.76);
+  background-color: rgba(255, 255, 255, 0.72);
 }
 .el-loading-spinner .path {
   stroke: var(--lc-brand);
@@ -231,12 +361,12 @@
   color: var(--lc-ink-muted);
 }
 
-/* ==================== 键盘可达性（E7） ==================== */
+/* ==================== 键盘可达性 ==================== */
 /* 仅在键盘导航时显示焦点环，鼠标点击不显示，避免破坏视觉整洁 */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
-  outline: 2px solid var(--lc-brand);
+  outline: 2px solid var(--lc-ring);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 /* 文本选区用主色浅底，替代浏览器默认蓝 */
 ::selection {
@@ -244,8 +374,7 @@
   color: var(--lc-ink);
 }
 
-/* ==================== 尊重"减少动效"偏好（E7） ==================== */
-/* 用户系统设置偏好减少动效时，关闭过渡与动画（可访问性要求） */
+/* ==================== 尊重"减少动效"偏好 ==================== */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -254,5 +383,8 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .el-button--primary:not(.is-plain):not(.is-link):not(.is-disabled):hover {
+    transform: none;
   }
 }
