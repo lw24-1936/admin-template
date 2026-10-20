@@ -442,3 +442,79 @@
   background-color: var(--lc-brand);
   border-color: var(--lc-brand);
 }
+
+/* ==================== V2：树（权限分配 / 权限管理） ==================== */
+/* 树的默认态偏"文件管理器"，这里统一成卡片内的导航列表：
+   节点行高 36、圆角 8、悬停浅底、选中主色浅底；复选框与文字基线对齐 */
+.el-tree {
+  background: transparent;
+  color: var(--lc-ink-body);
+  font-size: var(--lc-fs-label);
+}
+.el-tree-node {
+  margin: 1px 0;
+}
+.el-tree-node__content {
+  height: 34px;
+  border-radius: 8px;
+  transition: background-color var(--lc-motion-fast) var(--lc-ease-out);
+}
+.el-tree-node__content:hover {
+  background: var(--lc-surface-hover);
+}
+.el-tree-node.is-current > .el-tree-node__content {
+  background: var(--lc-brand-soft);
+  color: var(--lc-brand);
+  font-weight: 600;
+}
+.el-tree-node__expand-icon {
+  color: var(--lc-ink-muted);
+}
+.el-tree-node__expand-icon.is-leaf {
+  color: transparent;
+}
+/* 树内的类型标签更紧凑，避免把节点行高撑开 */
+.el-tree-node__label + .el-tag {
+  transform: translateY(-1px);
+}
+
+/* ==================== V2：复选 / 单选 / 数字输入 ==================== */
+/* Element 默认的方形复选框在浅色下偏"表单感"，统一为 4px 圆角 + 主色选中 */
+.el-checkbox__inner {
+  border-radius: 4px;
+  border-color: var(--lc-line-input);
+  transition: background-color var(--lc-motion-fast), border-color var(--lc-motion-fast);
+}
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  background-color: var(--lc-brand);
+  border-color: var(--lc-brand);
+}
+.el-checkbox__input.is-focus .el-checkbox__inner {
+  box-shadow: 0 0 0 3px var(--lc-brand-ring);
+}
+.el-radio__inner {
+  border-color: var(--lc-line-input);
+}
+.el-radio__input.is-checked .el-radio__inner {
+  background: var(--lc-brand);
+  border-color: var(--lc-brand);
+}
+.el-radio__input.is-focus .el-radio__inner {
+  box-shadow: 0 0 0 3px var(--lc-brand-ring);
+}
+.el-input-number__decrease,
+.el-input-number__increase {
+  color: var(--lc-ink-muted);
+  background: var(--lc-surface-soft);
+  border-color: var(--lc-line);
+}
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover {
+  color: var(--lc-brand);
+}
+
+/* ==================== V2：树选择器（部门上级） ==================== */
+.el-tree-select__popper .el-tree-node__content {
+  height: 32px;
+}
