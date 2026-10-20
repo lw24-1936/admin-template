@@ -5,7 +5,7 @@
     <header class="m-login__head">
       <!-- 品牌锁定：与桌面端侧边栏同一套标记（26px 主色方块 + 双行） -->
       <div class="m-login__brand">
-        <span class="m-login__mark">A</span>
+        <img class="m-login__mark" src="/favicon.svg" alt="" width="28" height="28" />
         <span class="m-login__brand-text">
           <strong>admintem</strong>
           <em>权限管理系统</em>
@@ -281,8 +281,8 @@ async function handleLogin() {
 .m-login > * { position: relative; z-index: 1; }
 
 .m-login__mark {
-  background-color: var(--lc-brand);
-  background-image: var(--lc-gradient-brand);
+  /* 品牌标记现在是一张 SVG（自带底色与白色字母），这里只保留统一的投影 */
+  display: block;
   border-radius: 9px;
   box-shadow: 0 8px 16px -12px var(--lc-brand-glow);
 }

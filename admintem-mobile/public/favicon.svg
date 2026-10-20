@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="admintem">
+  <title>admintem 权限管理系统</title>
+  <!--
+    品牌图标：深蓝圆角方块 + 白色几何 "A"。
+    设计取舍：
+      1. 先保证 16×16 的浏览器标签页可辨认：只保留一个字母形，不叠加装饰点/细线；
+      2. "A" 用**实心多边形 + 横杠**构成，不用描边也不用字体字形 ——
+         描边在尖角处会产生长斜接（miter）毛刺，字体字形会随系统字体漂移；
+      3. 腿宽约 8.4/64、横杠 7/64，16px 下仍有约 2px，不会糊成一团；
+      4. 圆角 16/64 与界面卡片圆角语言一致；柔光是径向渐变，避免硬边把图标切成两半。
+  -->
+  <defs>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e3a6e" />
+      <stop offset="1" stop-color="#2b5590" />
+    </linearGradient>
+    <!-- 左上柔光：给平面一个光源方向，又不会形成可辨识的硬边 -->
+    <radialGradient id="sheen" cx="0.18" cy="0" r="0.95">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16" />
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="16" fill="url(#brand)" />
+  <rect width="64" height="64" rx="16" fill="url(#sheen)" />
+
+  <!-- 字母 A：封闭多边形（两条腿 + 内尖） -->
+  <path d="M32 10.5 L14.2 52 H23.6 L32 30 L40.4 52 H49 Z" fill="#ffffff" />
+  <!-- 横杠：与两条腿重叠，闭合字腔 -->
+  <rect x="24.6" y="36.4" width="14.8" height="7" fill="#ffffff" />
+</svg>

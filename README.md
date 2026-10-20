@@ -242,6 +242,8 @@ cd admintem-mobile && npm run build
 | 动效 | anime.js v4：外壳错峰入场、路由淡入、登录页 blur-fade、工作台数字滚动、表格行入场 |
 | 可访问性 | 键盘焦点环 2px、`prefers-reduced-motion` 全短路、对比度 18 组 × 2 端全部 ≥ 门槛 |
 
+品牌资产：`admintem-vue/public/favicon.svg`（移动端同文件），同时用于浏览器标签页、侧边栏与移动端登录页标记。
+
 参考：`ui-ux-pro-max` 的浅色设计系统、shadcn/ui 的语义令牌结构、Magic UI 的指针柔光/数字滚动、
 anime.js v4 的时间线编排。**均为设计手法借鉴，运行时不依赖 React / Tailwind / Radix。**
 

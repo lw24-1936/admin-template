@@ -4,7 +4,8 @@
     <el-aside width="220px" class="layout-aside">
       <!-- 品牌区：编辑式双行锁定（标记 + 名称 + 副标题） -->
       <div class="brand">
-        <span class="brand__mark">A</span>
+        <!-- 品牌图标：与浏览器标签页 favicon 同一份 SVG，避免两套标识 -->
+        <img class="brand__mark" src="/favicon.svg" alt="" width="30" height="30" />
         <span class="brand__text">
           <strong>admintem</strong>
           <em>权限管理系统</em>
@@ -55,11 +56,17 @@
 
       <!-- 主内容 -->
       <el-main class="layout-main">
-        <!-- 路由过渡：淡入 + 轻微上移；reduced-motion 下由 CSS 关闭 -->
+        <!--
+          路由容器：用 key 触发"换页重新挂载 + CSS 入场动画"。
+          这里刻意**不用 <transition mode="out-in">**：路由组件是异步懒加载的，
+          out-in 在异步组件解析期间会拿不到子节点，导致进入动画永不触发、内容区空白
+          （2026-10-21 实测：点击菜单后 URL 变了但 layout-main 子元素为 0）。
+          div + CSS animation 没有这层语义依赖，异步组件解析完自然渲染。
+        -->
         <RouterView v-slot="{ Component, route: current }">
-          <transition name="page" mode="out-in">
-            <component :is="Component" :key="current.path" />
-          </transition>
+          <div :key="current.path" class="page-shell">
+            <component :is="Component" />
+          </div>
         </RouterView>
       </el-main>
     </el-container>
@@ -449,16 +456,9 @@ const roleText = computed(() => {
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--lc-brand);
-  background-image: var(--lc-gradient-brand);
-  color: var(--lc-paper-card);
+  display: block;
   border-radius: 9px;
-  font-size: var(--lc-fs-body);
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  /* 图标自身已含渐变底与白色字母，这里只保留统一的柔和投影 */
   box-shadow: 0 8px 18px -12px var(--lc-brand-glow);
 }
 .brand__text {
@@ -634,24 +634,23 @@ const roleText = computed(() => {
   padding: var(--lc-sp-4);
 }
 
-/* 路由过渡：与 --lc-motion-enter 同节奏（CSS 过渡而非动画，减少 JS 依赖） */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity var(--lc-motion-enter) var(--lc-ease-out),
-    transform var(--lc-motion-enter) var(--lc-ease-out);
+/* 路由容器与换页入场：只做一次 8px 上移淡入，不与路由异步解析耦合 */
+.page-shell {
+  animation: page-in var(--lc-motion-enter) var(--lc-ease-out) both;
 }
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .page-enter-active,
-  .page-leave-active {
-    transition: none;
+  .page-shell {
+    animation: none;
   }
 }
 
