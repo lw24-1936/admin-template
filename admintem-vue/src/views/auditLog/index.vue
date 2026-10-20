@@ -270,4 +270,29 @@ onMounted(() => {
   font-size: var(--lc-fs-hint);
   word-break: break-all;
 }
+
+/* ===== V2 页面细节 ===== */
+/* 链路 ID / 请求路径：等宽小字 + 浅底胶囊，避免和正文混在一起 */
+.audit-trace {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--lc-line);
+  border-radius: var(--lc-radius-pill);
+  background: var(--lc-surface-soft);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-fs-hint);
+  color: var(--lc-ink-muted);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.audit-error {
+  color: var(--lc-danger);
+  font-size: var(--lc-fs-hint);
+}
+.audit-muted {
+  color: var(--lc-ink-faint);
+}
 </style>

@@ -248,4 +248,10 @@ onMounted(loadData)
 .dept-muted {
   color: var(--lc-ink-faint);
 }
+
+/* ===== V2 页面细节 ===== */
+.dept-muted {
+  color: var(--lc-ink-faint);
+  font-variant-numeric: tabular-nums;
+}
 </style>

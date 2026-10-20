@@ -21,20 +21,20 @@
       default-expand-all
       :tree-props="{ children: 'children' }"
     >
-      <el-table-column prop="name" label="权限名称" min-width="200" />
+      <el-table-column prop="name" label="权限名称" min-width="180" />
       <el-table-column label="类型" width="80" align="center">
         <template #default="{ row }">
           <el-tag :type="typeTag(row.type)" size="small">{{ typeText(row.type) }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="permissionKey" label="权限标识" min-width="200" />
-      <el-table-column prop="backendUrl" label="后端接口" min-width="180">
+      <el-table-column prop="permissionKey" label="权限标识" min-width="180" show-overflow-tooltip />
+      <el-table-column prop="backendUrl" label="后端接口" min-width="150" show-overflow-tooltip>
         <template #default="{ row }">
           <span v-if="row.backendUrl" class="text-muted">{{ row.backendUrl }}</span>
           <span v-else>-</span>
         </template>
       </el-table-column>
-      <el-table-column prop="menuUrl" label="路由/组件" min-width="160">
+      <el-table-column prop="menuUrl" label="路由/组件" min-width="140" show-overflow-tooltip>
         <template #default="{ row }">
           <span v-if="row.type === 0" class="text-muted">{{ row.menuUrl }}</span>
           <span v-else>-</span>
@@ -46,7 +46,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="orderNum" label="排序" width="70" align="center" />
-      <el-table-column label="操作" width="220" fixed="right">
+      <el-table-column label="操作" width="200" fixed="right">
         <template #default="{ row }">
           <el-button v-perm="'sysAuthPermission:addAuthPermission'" link type="primary" @click="openAdd(row)">
             新增子级

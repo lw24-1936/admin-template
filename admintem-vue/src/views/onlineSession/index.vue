@@ -194,4 +194,23 @@ onMounted(loadData)
   font-size: var(--lc-fs-hint);
   color: var(--lc-ink-faint);
 }
+
+/* ===== V2 页面细节 ===== */
+/* 令牌摘要：只显示前 8 位，用等宽字体 + 胶囊底，强调"这是标识不是凭证" */
+.session-digest {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--lc-line);
+  border-radius: var(--lc-radius-pill);
+  background: var(--lc-surface-soft);
+  font-family: var(--lc-font-mono);
+  font-size: var(--lc-fs-hint);
+  color: var(--lc-ink-muted);
+}
+.session-hint {
+  margin: var(--lc-sp-3) 0 0;
+  font-size: var(--lc-fs-hint);
+  line-height: 1.7;
+  color: var(--lc-ink-faint);
+}
 </style>

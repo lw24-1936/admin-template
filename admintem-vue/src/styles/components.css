@@ -388,3 +388,57 @@
     transform: none;
   }
 }
+
+/* ==================== V2：树表（权限树 / 部门树） ==================== */
+/* Element 的树表靠 padding 表示层级；这里补一条竖向引导线，层级更易读 */
+.el-table .el-table__row--level-1 > td:first-child .cell,
+.el-table .el-table__row--level-2 > td:first-child .cell,
+.el-table .el-table__row--level-3 > td:first-child .cell {
+  position: relative;
+}
+.el-table .el-table__row--level-1 > td:first-child .cell::before,
+.el-table .el-table__row--level-2 > td:first-child .cell::before,
+.el-table .el-table__row--level-3 > td:first-child .cell::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--lc-line);
+}
+.el-table .el-table__expand-icon {
+  color: var(--lc-ink-muted);
+  transition: color var(--lc-motion-fast), transform var(--lc-motion-fast) var(--lc-ease-out);
+}
+.el-table .el-table__expand-icon:hover {
+  color: var(--lc-brand);
+}
+
+/* ==================== V2：抽屉（审计明细） ==================== */
+.el-drawer__header {
+  margin-bottom: 0;
+  padding: var(--lc-sp-5) var(--lc-sp-5) var(--lc-sp-3);
+  border-bottom: 1px solid var(--lc-line-soft);
+  color: var(--lc-ink);
+  font-size: var(--lc-fs-card);
+  font-weight: 650;
+}
+.el-drawer__body {
+  padding: var(--lc-sp-5);
+}
+.el-descriptions__label.el-descriptions__cell.is-bordered-label {
+  width: 110px;
+  color: var(--lc-ink-muted);
+  font-weight: 500;
+  background: var(--lc-surface-soft);
+}
+.el-descriptions__content.el-descriptions__cell.is-bordered-content {
+  color: var(--lc-ink-body);
+}
+
+/* ==================== V2：开关 ==================== */
+.el-switch.is-checked .el-switch__core {
+  background-color: var(--lc-brand);
+  border-color: var(--lc-brand);
+}
