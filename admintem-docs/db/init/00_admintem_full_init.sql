@@ -294,7 +294,7 @@ INSERT INTO `sys_auth_role_permission` (`role_id`,`permission_id`,`created_by`,`
 INSERT INTO `sys_auth_user`
 (`id`,`user_name`,`nick_name`,`email`,`phone`,`password`,`sex`,`status`,`created_by`,`created_time`,`is_deleted`)
 VALUES
-(1,'admin','admin','123456@qq.com','121345678908','$2a$10$/VhWe0aRisfDuKKBvxQeruMZ..1TqQZU4wKdlHNqoJjnz58NGCtLm',1,0,'admin',NOW(),0),
+(1,'admin','admin','123456@qq.com','12134567890','$2a$10$/VhWe0aRisfDuKKBvxQeruMZ..1TqQZU4wKdlHNqoJjnz58NGCtLm',1,0,'admin',NOW(),0),
 (3,'test','test','test@qq.com','17263526352','$2a$10$/VhWe0aRisfDuKKBvxQeruMZ..1TqQZU4wKdlHNqoJjnz58NGCtLm',1,0,'admin',NOW(),0);
 
 -- 5.1) 部门种子（V1.0.9）：总公司 / 技术部 / 产品部，并把演示用户挂上去

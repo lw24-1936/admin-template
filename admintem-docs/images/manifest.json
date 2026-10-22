@@ -17,7 +17,7 @@
   {
     "name": "desktop-04-user-list",
     "note": "用户管理（/userInfo）",
-    "size": 104809
+    "size": 104392
   },
   {
     "name": "desktop-05-user-add",
@@ -27,12 +27,12 @@
   {
     "name": "desktop-06-user-assign-role",
     "note": "用户管理 · 分配角色弹层",
-    "size": 15454
+    "size": 15488
   },
   {
     "name": "desktop-07-user-reset-pwd",
     "note": "用户管理 · 重置密码弹层",
-    "size": 13070
+    "size": 13039
   },
   {
     "name": "desktop-08-role-list",
@@ -52,7 +52,7 @@
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 163460
+    "size": 163462
   },
   {
     "name": "desktop-12-permission-add",
@@ -62,12 +62,12 @@
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 152668
+    "size": 152002
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 209352
+    "size": 211108
   },
   {
     "name": "desktop-13-403",
@@ -82,7 +82,7 @@
   {
     "name": "desktop-15-user-list-test",
     "note": "用户管理 · 受限账号 test（写操作按钮不渲染）",
-    "size": 92680
+    "size": 92171
   },
   {
     "name": "mobile-01-login",
@@ -97,7 +97,7 @@
   {
     "name": "mobile-03-mine",
     "note": "移动端我的（#/mine）",
-    "size": 147150
+    "size": 146638
   },
   {
     "name": "mobile-04-password",

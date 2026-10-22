@@ -74,7 +74,7 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 > 初始化脚本会 **DROP 并重建** `sys_auth_*`、`sys_dept`、`sys_auth_audit_log` 等表。
 > 没有 `SET @admintem_confirm_reset = 1` 会直接 `SIGNAL` 中止，不会删任何数据——这条闸门来自一次真实事故（见《09》18.6）。
 
-后续增量变更由 Flyway 在 dev 环境自动执行 `admintem-docs/db/changelog/V*.sql`（已应用到 V1.0.9）。
+后续增量变更由 Flyway 在 dev 环境自动执行 `admintem-docs/db/changelog/V*.sql`（已应用到 V1.0.10）。
 
 ### 2.3 配置连接信息
 
@@ -258,7 +258,7 @@ anime.js v4 的时间线编排。**均为设计手法借鉴，运行时不依赖
 | ---- | ---- |
 | [01-需求与范围](admintem-docs/01-需求与范围.md) | 目标、边界、角色 |
 | [02-系统设计文档](admintem-docs/02-系统设计文档.md) | 架构、鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.9 变更（含回滚） |
+| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.10 变更（含回滚） |
 | [04-部署与操作手册](admintem-docs/04-部署与操作手册.md) | 环境、配置项、启动、故障处理 |
 | [05-接口与权限标识对照表](admintem-docs/05-接口与权限标识对照表.md) | 每个接口对应的权限标识（含自动生成的矩阵） |
 | [06-测试报告](admintem-docs/06-测试报告.md) | 每轮验证的实测数据 |
