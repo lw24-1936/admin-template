@@ -68,6 +68,9 @@ logging:
 admintem:
   auth:
     register-enabled: true   # 仅开发/测试环境允许自助注册
+    captcha:
+      enabled: false          # 本地默认不强制（保证脚本回归）；生产 true
+      debug: true             # 仅 dev 暴露缺口位置，供 E2E 拖拽
   log:
     aspect:
       enable: true

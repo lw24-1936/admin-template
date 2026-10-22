@@ -3,6 +3,16 @@
  */
 import request from '@/utils/request'
 
+/** 生成图形验证码挑战 */
+export function getCaptcha() {
+  return request({ url: '/auth/captcha', method: 'post' })
+}
+
+/** 校验拼图位置，返回一次性票据 */
+export function verifyCaptcha(data) {
+  return request({ url: '/auth/captcha/verify', method: 'post', data })
+}
+
 /** 登录 */
 export function login(data) {
   return request({ url: '/auth/login', method: 'post', data })

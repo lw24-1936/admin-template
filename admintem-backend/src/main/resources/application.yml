@@ -118,6 +118,12 @@ admintem:
     register-enabled: false    # 默认关闭；dev/test profile 显式开启，避免误用配置上公网
     # 注册用户默认分配的角色 key（对应 sys_auth_role.role_key，需在数据库中预先存在）
     default-role-key: "common"
+    captcha:
+      enabled: true
+      debug: false
+      expire-seconds: 120
+      tolerance: 6
+      max-attempts: 3
     # 登录防暴力破解：连续失败次数上限
     max-login-fail-count: 5
     # 达到上限后的账号锁定时间（分钟）

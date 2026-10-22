@@ -55,6 +55,10 @@
               />
             </el-form-item>
 
+            <el-form-item label="验证码">
+              <SliderCaptcha ref="captchaRef" @success="onCaptchaSuccess" />
+            </el-form-item>
+
             <div class="login-meta">
               <el-checkbox v-model="form.rememberMe">记住我（7 天内免登录）</el-checkbox>
             </div>
@@ -87,6 +91,7 @@ import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
+import SliderCaptcha from '@/components/SliderCaptcha.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -94,6 +99,8 @@ const store = useUserStore()
 
 const formRef = ref()
 const loading = ref(false)
+const captchaRef = ref(null)
+const captchaTicket = ref('')
 
 /**
  * 登录页入场（anime.js v4）。
@@ -167,6 +174,10 @@ const rules = {
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 
+function onCaptchaSuccess(ticket) {
+  captchaTicket.value = ticket
+}
+
 /** 提交登录 */
 async function handleLogin() {
   // 校验失败时 Element Plus 会 reject，此处以返回值判断，避免未处理的 Promise rejection
@@ -176,7 +187,7 @@ async function handleLogin() {
   if (loading.value) return
   loading.value = true
   try {
-    await store.login({ ...form })
+    await store.login({ ...form, captchaTicket: captchaTicket.value })
     ElMessage.success('登录成功')
     // 回跳来源页，默认进入工作台
     const redirect = route.query.redirect

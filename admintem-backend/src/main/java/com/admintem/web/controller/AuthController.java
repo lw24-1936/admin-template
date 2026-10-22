@@ -3,7 +3,11 @@ package com.admintem.web.controller;
 import com.admintem.web.aspect.AuditLog;
 import com.admintem.web.aspect.AuditTargetType;
 import com.admintem.web.common.Result;
+import com.admintem.web.entity.dto.CaptchaVerifyRequest;
 import com.admintem.web.entity.dto.LoginRequest;
+import com.admintem.web.entity.vo.CaptchaTicketVO;
+import com.admintem.web.entity.vo.CaptchaVO;
+import com.admintem.web.security.CaptchaService;
 import com.admintem.web.entity.dto.RegisterRequest;
 import com.admintem.web.entity.dto.UpdatePasswordRequest;
 import com.admintem.web.entity.dto.UpdateProfileRequest;
@@ -33,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthController {
 
     private final AuthService authService;
+    private final CaptchaService captchaService;
 
     /**
      * 用户登录（免登录）。
@@ -40,10 +45,23 @@ public class AuthController {
      * @param request 登录请求体
      * @return 令牌 + 用户会话
      */
+    /** 生成图形验证码（免登录）。 */
+    @PostMapping("/captcha")
+    public Result<CaptchaVO> captcha() {
+        return Result.ok(captchaService.create());
+    }
+
+    /** 校验拼图位置，通过返回一次性票据（免登录）。 */
+    @PostMapping("/captcha/verify")
+    public Result<CaptchaTicketVO> verifyCaptcha(@Valid @RequestBody CaptchaVerifyRequest request) {
+        return Result.ok(new CaptchaTicketVO(captchaService.verify(request.getToken(), request.getX())));
+    }
+
     @PostMapping("/login")
     @AuditLog(action = "LOGIN", name = "用户登录", target = AuditTargetType.AUTH)
     @Operation(summary = "登录")
     public Result<?> login(@Valid @RequestBody LoginRequest request) {
+        captchaService.assertTicket(request.getCaptchaTicket());
         return Result.ok("登录成功", authService.login(request));
     }
 

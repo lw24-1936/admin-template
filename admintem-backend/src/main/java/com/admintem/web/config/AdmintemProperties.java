@@ -102,8 +102,20 @@ public class AdmintemProperties {
         /**
          * 密码策略。
          */
-        @Data
-        public static class Password {
+        /** 图形验证码配置。 */
+    @Data
+    public static class Captcha {
+        private boolean enabled = true;
+        private boolean debug = false;
+        private int expireSeconds = 120;
+        private int tolerance = 6;
+        private int maxAttempts = 3;
+        private String keyPrefix = "admintem:auth:captcha:";
+        private String ticketKeyPrefix = "admintem:auth:captcha:ticket:";
+    }
+
+    @Data
+    public static class Password {
             /**
              * BCrypt 代价因子（4~31）。
              *
@@ -157,6 +169,9 @@ public class AdmintemProperties {
 
         /** Redis：IP 维度限制 key 前缀 */
         private String ipLockKeyPrefix = "admintem:auth:lock:ip:";
+
+        /** 图形滑块验证码 */
+        private Captcha captcha = new Captcha();
     }
 
     /**

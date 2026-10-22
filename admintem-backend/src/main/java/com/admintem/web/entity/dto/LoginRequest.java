@@ -23,4 +23,8 @@ public class LoginRequest {
     /** 是否记住我（延长令牌有效期） */
     @Schema(description = "是否记住我（延长令牌有效期）", example = "true")
     private Boolean rememberMe = false;
+
+    /** 图形验证码一次性票据（captcha.enabled=true 时必填） */
+    @Schema(description = "图形验证码票据")
+    private String captchaTicket;
 }
