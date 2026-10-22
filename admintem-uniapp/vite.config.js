@@ -12,6 +12,12 @@ import uni from '@dcloudio/vite-plugin-uni'
  */
 export default defineConfig({
   plugins: [uni()],
+  // uni-app 的 app / 小程序构建不会把 VITE_* 注入 import.meta.env（只给 H5 用），
+  // 这里显式 define 一个常量，三端都能在构建时覆盖后端地址：
+  //   VITE_API_BASE_URL=http://192.168.1.214:8090 pnpm build:app
+  define: {
+    __ADMINTEM_API_BASE__: JSON.stringify(process.env.VITE_API_BASE_URL || ''),
+  },
   server: {
     port: 5176,
     strictPort: true,

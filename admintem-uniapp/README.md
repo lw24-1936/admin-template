@@ -121,7 +121,71 @@ admintem-uniapp/
 | 我的 / 资料 / 改密 | 逐页跳转与退出确认弹窗 | ✅ 页面渲染、弹窗可见、0 控制台错误 |
 | 头像上传 | `uni.chooseImage` + `/auth/uploadAvatar` | 代码路径就绪；自动化未模拟文件选择 |
 
-## 8. 已知限制
+## 8. 打包成 App
+
+可以。uni-app 的 App 端与 H5/小程序共用同一份页面代码，本工程已经具备构建条件：
+
+```bash
+pnpm build:app     # 产物：dist/build/app（App 资源包，HBuilderX 可直接导入运行）
+```
+
+### 8.1 产物与验证
+
+| 项 | 结果 |
+| ---- | ---- |
+| App 资源包构建 | ✅ DONE（app-service.js / app.css / manifest.json / view 容器） |
+| 平台声明 | android / iPhone / iPad |
+| 模块 | Camera、Gallery（头像拍摄/相册） |
+| Android 权限 | INTERNET、ACCESS_NETWORK_STATE、CAMERA、READ/WRITE_EXTERNAL_STORAGE |
+| 屏幕方向 | portrait-primary |
+| App 图标 | `src/static/app/icon-1024.png`（由品牌 SVG 生成） |
+
+> 本次只验证到"资源包"这一步：本机没有 HBuilderX、Android Studio 与签名证书，
+> 因此**没有生成 APK / IPA**。下面两条路线任选其一即可出安装包。
+
+### 8.2 路线 A：HBuilderX 云打包（推荐，最省事）
+
+1. 安装 HBuilderX，用 DCloud 账号登录；
+2. 打开 `src/manifest.json` → 「基础配置」里点「重新获取」得到 **AppID**（形如 `__UNI__XXXXXXX`），
+   填到 `manifest.json` 的 `appid` 字段（当前为空，空 appid 无法云打包）；
+3. 「App 图标配置」选择 `src/static/app/icon-1024.png`，一键生成各尺寸；
+4. 菜单「发行 → 原生 App-云打包」：
+   - Android：包名（如 `com.admintem.app`）+ 证书（可用 HBuilderX 自动生成）
+   - iOS：Apple 开发者证书 + Provisioning Profile（没有证书时只能打自定义基座）
+5. 云打包完成后下载 APK / IPA。
+
+### 8.3 路线 B：离线打包（要自己控壳与签名）
+
+1. `pnpm build:app` 得到 `dist/build/app`；
+2. 下载 DCloud **App 离线 SDK**（Android/iOS），在其示例工程里替换资源目录；
+3. 配置离线打包 AppKey（DCloud 开发者中心申请）、包名、签名与图标；
+4. 用 Android Studio / Xcode 出包。
+
+这条路线适合要集成原生 SDK（推送、支付、地图）或走企业签名流程的场景。
+
+### 8.4 真机必改的两件事
+
+**① 后端地址**：默认 `http://localhost:8090` 在手机上是"手机自己"，必须换成局域网 IP 或域名：
+
+```bash
+# Windows 上查本机内网 IP：ipconfig → IPv4 地址
+VITE_API_BASE_URL=http://192.168.1.214:8090 pnpm build:app
+```
+
+> 这个变量对 H5 / 小程序 / App 都生效（`vite.config.js` 用 `define` 注入，
+> 因为 uni-app 的 app 构建不会把 `VITE_*` 注入 `import.meta.env`）。
+> 已实测：注入后 `app-service.js` 中出现该地址，默认构建则回落到 `localhost:8090`。
+
+**② 明文 HTTP**：Android 9+ 与 iOS ATS 默认限制明文请求，正式包建议用 HTTPS 域名；
+若只能内网 HTTP，需要在打包配置里放开（离线打包改 `networkSecurityConfig` / ATS 例外）。
+
+### 8.5 打包相关的已知限制
+
+- 未生成 APK/IPA：缺 HBuilderX、Android SDK 与签名证书；
+- `appid` 为空，云打包前必须换成自己的 DCloud AppID；
+- App 端同样不做列表维护页（与桌面端分工）。
+
+## 9. 已知限制
 
 - 微信小程序的 `appid` 为空，需替换为自己的小程序 AppID 才能真机预览；
 - 生产 H5 若与后端不同源，需要 Nginx 反代 `/api` 与 `/uploads`，或构建时设置 `VITE_API_BASE_URL`；
