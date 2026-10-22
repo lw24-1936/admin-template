@@ -9,7 +9,7 @@
 | 桌面端 | Vue 3.5 + Vite 8 + Element Plus 2.14 + Pinia + vue-router |
 | 移动端 | Vue 3.5 + Vite 8 + Vant 4（底部 Tab：首页 / 我的） |
 | 默认账号 | `admin / 12345678`（管理员）、`test / 12345678`（受限账号） |
-| 默认端口 | 后端 **8090**、桌面端 **5175**、移动端 **5174** |
+| 默认端口 | 后端 **8090**、桌面端 **5175**、Vant 移动端 **5174**、uni-app **5176** |
 
 ---
 
@@ -110,7 +110,8 @@ npm run dev -- --port 5174 --strictPort
 | 入口 | 地址 |
 | ---- | ---- |
 | 桌面端 | http://localhost:5175 |
-| 移动端 | http://localhost:5174/#/login |
+| 移动端（Vant） | http://localhost:5174/#/login |
+| uni-app（H5） | http://localhost:5176 |
 | 接口文档 | http://localhost:8090/swagger-ui/index.html |
 | 健康检查 | http://localhost:8090/actuator/health |
 
@@ -172,6 +173,7 @@ admin-template/
 │   └── src/test/java/           144 个单元测试
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）
+├── admintem-uniapp/             uni-app 客户端（H5 + 微信小程序，共用后端）
 └── admintem-docs/               设计与操作文档 + 测试脚本
     ├── 01~12 号文档
     ├── db/init + db/changelog   建库脚本与增量迁移（唯一出处）
@@ -205,6 +207,7 @@ node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check
 # 前端
 cd admintem-vue && npm run lint && npm test && npm run build
 cd admintem-mobile && npm run build
+cd admintem-uniapp && pnpm build:h5 && pnpm build:mp-weixin
 ```
 
 当前基线：**144 单测 / 78 接口 / 21 桌面 E2E / 41 移动 E2E / 123 设计层 / 10 前端单测 / 0 lint 告警**，

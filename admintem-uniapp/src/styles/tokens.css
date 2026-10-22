@@ -1,0 +1,52 @@
+/**
+ * 设计令牌（uni-app）
+ *
+ * 与桌面端 `admintem-vue/src/styles/tokens.css` 同一套色板（V2 浅色），
+ * 差异只在"尺寸单位"：这里用 rpx（750 设计宽度），便于小程序/H5 等比缩放。
+ * 只放数值，不放组件规则；组件规则在 App.vue 的全局样式里。
+ */
+page {
+  /* ---------------- 纸面与卡片 ---------------- */
+  --c-bg: #f6f7fa;
+  --c-bg-2: #eef1f6;
+  --c-card: #ffffff;
+  --c-soft: #f8fafc;
+  --c-hover: #f1f4f9;
+
+  /* ---------------- 墨色文字 ---------------- */
+  --c-ink: #0f172a;
+  --c-body: #334155;
+  --c-sub: #475569;
+  --c-muted: #5b6675;
+  --c-faint: #6f7b8c;
+  --c-disabled: #a8b0bc;
+
+  /* ---------------- 描边 ---------------- */
+  --c-line: #e4e8ef;
+  --c-line-soft: #eef1f5;
+  --c-line-input: #dbe1ea;
+
+  /* ---------------- 主色与语义 ---------------- */
+  --c-brand: #1e3a6e;
+  --c-brand-deep: #14294f;
+  --c-brand-hover: #2a4f8c;
+  --c-brand-soft: #eef3fb;
+  --c-danger: #b02a2a;
+  --c-danger-soft: #fdf6f6;
+  --c-success: #2f7a52;
+  --c-success-soft: #eaf5ef;
+  --c-warning: #a9752a;
+
+  /* ---------------- 圆角 ---------------- */
+  --r-ctl: 20rpx;
+  --r-card: 32rpx;
+  --r-pill: 999rpx;
+
+  /* ---------------- 投影（整值使用） ---------------- */
+  --shadow-card: 0 2rpx 4rpx rgba(15, 23, 42, 0.04), 0 16rpx 48rpx -32rpx rgba(15, 23, 42, 0.24);
+  --shadow-float: 0 24rpx 64rpx -32rpx rgba(15, 23, 42, 0.32), 0 2rpx 8rpx rgba(15, 23, 42, 0.05);
+
+  /* ---------------- 渐变 ---------------- */
+  --grad-brand: linear-gradient(135deg, #1e3a6e 0%, #2b5590 100%);
+  --grad-hero: linear-gradient(135deg, #1e3a6e 0%, #2b5590 100%);
+}

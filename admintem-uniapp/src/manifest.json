@@ -1,0 +1,27 @@
+{
+  "name": "admintem",
+  "appid": "",
+  "description": "admintem 权限管理系统 · uni-app 客户端（与桌面端/移动端共用 admintem-backend）",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "h5": {
+    "title": "admintem 客户端",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true
+  },
+  "uniStatistics": {
+    "enable": false
+  },
+  "vueVersion": "3"
+}
