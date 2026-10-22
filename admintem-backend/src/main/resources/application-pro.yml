@@ -55,6 +55,9 @@ logging:
 admintem:
   auth:
     register-enabled: false          # 生产默认关闭自助注册
+    password:
+      # 生产强制复杂度：至少 8 位且同时包含字母与数字
+      complexity-enabled: true
   sql:
     log-enable: false                # 生产不打印全量 SQL（慢 SQL 日志仍保留）
   log:

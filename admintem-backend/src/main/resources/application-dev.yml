@@ -66,6 +66,8 @@ logging:
 # 业务级可调项：接口调用日志切面开关（沿用原项目 log.aspect.enable 设计）、
 # 免登录白名单（Ant 风格路径；框架文档类路径在 SecurityConfig 中自动追加）
 admintem:
+  auth:
+    register-enabled: true   # 仅开发/测试环境允许自助注册
   log:
     aspect:
       enable: true

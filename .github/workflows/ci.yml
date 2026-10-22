@@ -100,3 +100,33 @@ jobs:
         run: node admintem-docs/tests/check-doc-images.cjs
       - name: 设计 token 一致性（含"阴影 token 整值使用"规则）
         run: node admintem-docs/tests/check-tokens.cjs
+
+  # ---------------------------------------------------------------------------
+  # uni-app：lint + H5 / 微信小程序 / App 资源包三端构建
+  # ---------------------------------------------------------------------------
+  uniapp:
+    name: uni-app（lint + 三端构建）
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: admintem-uniapp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: admintem-uniapp/pnpm-lock.yaml
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+      - name: 代码检查（ESLint）
+        run: pnpm lint
+      - name: 构建 H5
+        run: pnpm build:h5
+      - name: 构建微信小程序
+        run: pnpm build:mp-weixin
+      - name: 构建 App 资源包
+        run: pnpm build:app

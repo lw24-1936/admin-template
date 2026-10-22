@@ -118,16 +118,16 @@ onShow(() => {
     uni.reLaunch({ url: '/pages/login/index' })
     return
   }
-  refresh(true)
+  refresh()
 })
 
 onPullDownRefresh(async () => {
-  await refresh(false)
+  await refresh()
   uni.stopPullDownRefresh()
 })
 
-/** quiet=true 表示首屏不弹 loading，直接用缓存渲染再静默更新 */
-async function refresh(quiet) {
+/** 首屏不弹 loading：先用缓存渲染，再静默刷新 */
+async function refresh() {
   if (refreshing.value) return
   refreshing.value = true
   try {

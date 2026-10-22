@@ -11,6 +11,10 @@
 import { getToken } from '@/utils/storage'
 
 export default {
+  onError(error) {
+    // 小程序/H5 的全局错误钩子：至少留下可检索的日志，避免"白屏无线索"
+    console.error('[admintem] uncaught error:', error)
+  },
   onLaunch() {
     // 平台与令牌状态只打一条，避免刷屏；不打令牌内容
     console.log('[admintem] launch platform=' + process.env.UNI_PLATFORM + ' hasToken=' + !!getToken())

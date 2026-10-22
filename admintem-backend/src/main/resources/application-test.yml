@@ -47,6 +47,8 @@ logging:
 
 # 接口调用日志切面开关（沿用原项目 log.aspect.enable 设计）
 admintem:
+  auth:
+    register-enabled: true   # 仅开发/测试环境允许自助注册
   log:
     aspect:
       enable: true

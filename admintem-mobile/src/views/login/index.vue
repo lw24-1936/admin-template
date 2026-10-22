@@ -319,4 +319,101 @@ async function handleLogin() {
 .m-login__foot {
   color: var(--lc-ink-faint);
 }
+
+/* ===== V2 登录页：渐变画布 + 玻璃表单卡（与桌面/uni-app 同一语言） ===== */
+.m-login {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--lc-paper);
+  background-image: radial-gradient(420px 240px at 8% -10%, rgba(255, 255, 255, 0.95), transparent 62%),
+    linear-gradient(180deg, #f8fafc 0%, #eef3fb 54%, #e7eef9 100%);
+}
+.m-login::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(120% 80% at 50% 0%, rgba(0, 0, 0, 0.8), transparent 76%);
+}
+.m-login > * {
+  position: relative;
+  z-index: 1;
+}
+.m-login__head {
+  margin-bottom: 26px;
+}
+.m-login__brand {
+  margin-bottom: 26px;
+}
+.m-login__mark {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 10px 22px -14px var(--lc-brand-glow);
+}
+.m-login__brand-text strong {
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.m-login__brand-text em {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.m-login__title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--lc-ink);
+}
+.m-login__desc {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--lc-ink-muted);
+}
+.m-login__sheet {
+  padding: 20px 18px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px) saturate(1.15);
+  box-shadow: var(--lc-shadow-float);
+}
+.m-login__sheet :deep(.van-cell-group--inset) {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-paper-card);
+  box-shadow: 0 0 0 1px var(--lc-line) inset;
+}
+.m-login__sheet :deep(.van-field__label) {
+  color: var(--lc-ink-body);
+  font-size: 13px;
+}
+.m-login__meta {
+  margin: 14px 0 18px;
+}
+.m-login__submit {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--lc-brand-deep);
+  border-radius: var(--lc-radius-ctl);
+  background-color: var(--lc-brand);
+  background-image: var(--lc-gradient-brand);
+  box-shadow: 0 14px 30px -18px var(--lc-brand-glow);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+}
+.m-login__foot {
+  color: var(--lc-ink-faint);
+  font-size: 12px;
+}
+.m-login__version {
+  color: var(--lc-ink-faint);
+}
 </style>

@@ -104,7 +104,7 @@
  */
 import { computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { user, roleText, avatarText, refreshUser, logout, flattenMenus } from '@/stores/user'
+import { user, avatarText, refreshUser, logout, flattenMenus } from '@/stores/user'
 import { getToken } from '@/utils/storage'
 import { resolveAssetUrl } from '@/utils/media'
 

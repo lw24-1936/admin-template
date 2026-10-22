@@ -92,7 +92,7 @@
  * 头像走 /auth/uploadAvatar（multipart，字段名 file），成功后把返回的相对路径
  * 一并写入 updateProfile，保证刷新后仍是新头像。
  */
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { updateProfile, uploadAvatar } from '@/api/auth'
 import { user, avatarText, refreshUser } from '@/stores/user'

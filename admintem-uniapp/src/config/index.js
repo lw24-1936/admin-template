@@ -18,7 +18,6 @@ const isH5 = process.env.UNI_PLATFORM === 'h5'
  * 为什么不用 import.meta.env：uni-app 的 app/小程序构建只内联 BASE_URL/MODE 等少量字段，
  * VITE_* 不会被注入（实测构建产物里取不到），所以这里用自定义常量。
  */
-/* global __ADMINTEM_API_BASE__ */
 const injectedBase = typeof __ADMINTEM_API_BASE__ === 'string' ? __ADMINTEM_API_BASE__ : ''
 
 export const API_BASE_URL = injectedBase || (isH5 ? '/api' : 'http://localhost:8090')

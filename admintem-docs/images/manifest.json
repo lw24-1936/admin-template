@@ -52,7 +52,7 @@
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 163462
+    "size": 163460
   },
   {
     "name": "desktop-12-permission-add",
@@ -62,12 +62,12 @@
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 152002
+    "size": 154194
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 211108
+    "size": 216584
   },
   {
     "name": "desktop-13-403",
@@ -87,7 +87,7 @@
   {
     "name": "mobile-01-login",
     "note": "移动端登录页（#/login）",
-    "size": 216654
+    "size": 189081
   },
   {
     "name": "mobile-02-home",

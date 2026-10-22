@@ -49,9 +49,9 @@ public class AuditAsyncConfig {
     @Bean(name = AUDIT_EXECUTOR)
     public ThreadPoolTaskExecutor auditExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(1);
-        executor.setQueueCapacity(2000);
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(5000);
         executor.setThreadNamePrefix("audit-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setTaskDecorator(mdcTaskDecorator());
@@ -59,7 +59,7 @@ public class AuditAsyncConfig {
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(10);
         executor.initialize();
-        log.info("审计线程池已初始化: core=1, queue=2000, 拒绝策略=CallerRuns（不丢审计）");
+        log.info("审计线程池已初始化: core=2, max=4, queue=5000, 拒绝策略=CallerRuns（不丢审计）");
         return executor;
     }
 

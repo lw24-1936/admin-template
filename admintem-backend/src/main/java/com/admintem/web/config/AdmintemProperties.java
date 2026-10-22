@@ -85,7 +85,7 @@ public class AdmintemProperties {
     @Data
     public static class Auth {
         /** 是否开放自助注册 */
-        private boolean registerEnabled = true;
+        private boolean registerEnabled = false;
 
         /** 注册用户默认角色 role_key */
         private String defaultRoleKey = "common";

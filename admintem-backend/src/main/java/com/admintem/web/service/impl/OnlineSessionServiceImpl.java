@@ -69,16 +69,19 @@ public class OnlineSessionServiceImpl implements OnlineSessionService {
             return Collections.emptyList();
         }
 
-        // 1. 逐个取令牌与剩余 TTL（key 数量已被上限约束）
+        // 1. 一次 MGET 取回全部令牌值；TTL 没有批量 API，仍按 key 读（200 条上限内）
+        Map<String, String> values = redissonClient.getBuckets().get(keys.toArray(new String[0]));
         Map<String, String> tokenByUser = new HashMap<>();
         Map<String, Long> ttlByUser = new HashMap<>();
         for (String key : keys) {
             String userName = key.substring(prefix.length());
-            RBucket<String> bucket = redissonClient.getBucket(key);
-            String token = bucket.get();
-            long ttl = bucket.remainTimeToLive();
-            if (token == null || ttl <= 0) {
+            String token = values == null ? null : values.get(key);
+            if (token == null) {
                 // 刚好过期/被删：跳过，避免把"已失效"显示成"在线"
+                continue;
+            }
+            long ttl = redissonClient.getBucket(key).remainTimeToLive();
+            if (ttl <= 0) {
                 continue;
             }
             tokenByUser.put(userName, token);

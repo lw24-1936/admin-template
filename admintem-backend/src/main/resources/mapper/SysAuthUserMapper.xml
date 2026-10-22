@@ -82,7 +82,7 @@
                 AND nick_name LIKE CONCAT('%', #{q.nickName}, '%')
             </if>
             <if test="q.phone != null and q.phone != ''">
-                AND phone LIKE CONCAT('%', #{q.phone}, '%')
+                AND phone LIKE CONCAT(#{q.phone}, '%')
             </if>
             <if test="q.status != null">
                 AND status = #{q.status}

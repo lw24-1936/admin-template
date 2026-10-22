@@ -103,3 +103,38 @@ h4 {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* 全局渲染错误兜底提示：尽量简单，避免"DIV 里再报错" */
+.app-fatal-tip {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(92vw, 560px);
+  padding: 12px 16px;
+  border: 1px solid var(--lc-line-strong);
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-paper-card);
+  box-shadow: var(--lc-shadow-float);
+  font-size: var(--lc-fs-label);
+  color: var(--lc-ink-body);
+}
+.app-fatal-tip strong {
+  color: var(--lc-danger);
+  white-space: nowrap;
+}
+.app-fatal-tip button {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--lc-brand);
+  border-radius: 8px;
+  background: var(--lc-brand);
+  color: #fff;
+  font-size: var(--lc-fs-hint);
+  cursor: pointer;
+}
