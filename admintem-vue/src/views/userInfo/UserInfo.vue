@@ -43,8 +43,8 @@
     <!-- 列头排序：sortable="custom" 交给后端排序（字段名经白名单校验） -->
     <el-table v-loading="loading" :data="list" stripe border @sort-change="handleSortChange">
       <el-table-column prop="userName" label="账号" min-width="120" sortable="custom" />
-      <el-table-column prop="nickName" label="昵称" min-width="120" sortable="custom" />
-      <el-table-column prop="email" label="邮箱" min-width="160" sortable="custom" />
+      <el-table-column prop="nickName" label="昵称" min-width="110" sortable="custom" />
+      <el-table-column prop="email" label="邮箱" min-width="145" sortable="custom" />
       <el-table-column prop="phone" label="手机号" width="120" />
       <el-table-column prop="deptName" label="部门" width="120">
         <template #default="{ row }">{{ row.deptName || "—" }}</template>
@@ -68,7 +68,7 @@
           <span v-if="!row.roleNames || !row.roleNames.length" class="text-muted">-</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="250" fixed="right">
+      <el-table-column label="操作" width="260" fixed="right" class-name="cell-actions">
         <template #default="{ row }">
           <el-button v-perm="'sysAuthUser:editSysAuthUser'" link type="primary" @click="openEdit(row)">
             编辑

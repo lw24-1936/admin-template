@@ -518,3 +518,16 @@
 .el-tree-select__popper .el-tree-node__content {
   height: 32px;
 }
+
+/* ==================== V2：表格操作列单行 ==================== */
+/* 一行放多个 link 按钮时，默认 12px 间距 + 12px 内边距会把 4 个动作挤到第二行。
+ * 约定：操作列加 class-name="cell-actions" 即获得「不换行 + 8px 间距 + 紧凑内边距」。 */
+.el-table .cell-actions .cell {
+  white-space: nowrap;
+}
+.el-table .cell-actions .el-button.is-link {
+  padding: 0 3px;
+}
+.el-table .cell-actions .el-button + .el-button {
+  margin-left: 8px;
+}

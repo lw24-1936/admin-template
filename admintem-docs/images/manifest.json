@@ -12,32 +12,32 @@
   {
     "name": "desktop-03-home",
     "note": "工作台（登录后默认进入）",
-    "size": 119106
+    "size": 111321
   },
   {
     "name": "desktop-04-user-list",
     "note": "用户管理（/userInfo）",
-    "size": 112304
+    "size": 104809
   },
   {
     "name": "desktop-05-user-add",
     "note": "用户管理 · 新增用户弹层",
-    "size": 30496
+    "size": 30484
   },
   {
     "name": "desktop-06-user-assign-role",
     "note": "用户管理 · 分配角色弹层",
-    "size": 15527
+    "size": 15454
   },
   {
     "name": "desktop-07-user-reset-pwd",
     "note": "用户管理 · 重置密码弹层",
-    "size": 13136
+    "size": 13070
   },
   {
     "name": "desktop-08-role-list",
     "note": "角色管理（/roleInfo）",
-    "size": 105445
+    "size": 99033
   },
   {
     "name": "desktop-09-role-assign-perm",
@@ -52,22 +52,22 @@
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 170887
+    "size": 163460
   },
   {
     "name": "desktop-12-permission-add",
     "note": "权限管理 · 新增权限弹层",
-    "size": 36818
+    "size": 36858
   },
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 162225
+    "size": 152668
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 222114
+    "size": 209352
   },
   {
     "name": "desktop-13-403",
@@ -82,7 +82,7 @@
   {
     "name": "desktop-15-user-list-test",
     "note": "用户管理 · 受限账号 test（写操作按钮不渲染）",
-    "size": 99468
+    "size": 92680
   },
   {
     "name": "mobile-01-login",
@@ -102,6 +102,6 @@
   {
     "name": "mobile-04-password",
     "note": "移动端 · 修改密码弹层",
-    "size": 38809
+    "size": 38700
   }
 ]
