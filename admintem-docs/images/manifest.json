@@ -2,7 +2,7 @@
   {
     "name": "desktop-01-login",
     "note": "登录页（/login）",
-    "size": 454183
+    "size": 454251
   },
   {
     "name": "desktop-02-register",
@@ -42,7 +42,7 @@
   {
     "name": "desktop-09-role-assign-perm",
     "note": "角色管理 · 分配权限弹层（权限树）",
-    "size": 28408
+    "size": 35866
   },
   {
     "name": "desktop-10-role-add",
@@ -62,12 +62,12 @@
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 146969
+    "size": 146921
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 202903
+    "size": 202782
   },
   {
     "name": "desktop-13-403",

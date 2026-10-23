@@ -22,7 +22,7 @@
       </template>
     </TableToolbar>
 
-    <el-table v-loading="loading" :data="filtered" stripe border>
+    <el-table v-loading="loading" :data="paged" stripe border>
       <el-table-column label="账号" min-width="140">
         <template #default="{ row }">
           <span>{{ row.userName }}</span>
@@ -68,8 +68,16 @@
     </el-table>
 
     <p class="session-hint">
-      共 {{ filtered.length }} 个在线会话；"令牌摘要"只显示令牌前 8 位，用于区分同一账号的多条会话，不泄露完整令牌。
+      共 {{ total }} 个在线会话（第 {{ page }} / {{ totalPages }} 页）；"令牌摘要"只显示令牌前 8 位，用于区分同一账号的多条会话，不泄露完整令牌。
     </p>
+
+    <PaginationBar
+      :total="total"
+      :page="page"
+      :size="pageSize"
+      :page-sizes="[10, 20, 50]"
+      @change="onPageChange"
+    />
   </el-card>
 </template>
 
@@ -82,14 +90,17 @@
  *   2. 当前会话不允许自我强踢：按钮禁用，提示改用"退出登录"（自我强踢会让用户莫名其妙掉线）；
  *   3. 强制下线是幂等操作：目标已不在线也返回成功（语义是"操作后该账号已无有效令牌"）。
  */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as sessionApi from '@/api/session'
 import TableToolbar from '@/components/TableToolbar.vue'
+import PaginationBar from '@/components/PaginationBar.vue'
 
 const loading = ref(false)
 const list = ref([])
 const keyword = ref('')
+const page = ref(1)
+const pageSize = ref(10)
 
 /** 前端过滤（在线人数通常很少，无需后端分页） */
 const filtered = computed(() => {
@@ -100,6 +111,32 @@ const filtered = computed(() => {
       (s.userName || '').toLowerCase().includes(kw) || (s.nickName || '').toLowerCase().includes(kw)
   )
 })
+
+/** 当前页数据：在线人数有限，前端切片即可，避免为零星数据再加一套后端分页 */
+const paged = computed(() => {
+  const start = (page.value - 1) * pageSize.value
+  return filtered.value.slice(start, start + pageSize.value)
+})
+
+const total = computed(() => filtered.value.length)
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
+
+/** 过滤条件变化时回到第一页 */
+watch(keyword, () => {
+  page.value = 1
+})
+
+/** 数据变少（强制下线后刷新）时收敛页码，避免停在空页 */
+watch(total, (count) => {
+  const max = Math.max(1, Math.ceil(count / pageSize.value))
+  if (page.value > max) page.value = max
+})
+
+/** 分页变化 */
+function onPageChange(nextPage, nextSize) {
+  pageSize.value = nextSize
+  page.value = nextPage
+}
 
 /** 剩余有效期：秒 → 天/时/分 */
 function formatRemain(seconds) {
