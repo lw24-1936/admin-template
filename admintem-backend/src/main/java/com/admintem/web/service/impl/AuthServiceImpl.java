@@ -325,6 +325,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessException(ResultCode.USER_NOT_EXIST);
         }
         // 1. 落盘（校验都在存储层：大小/扩展名/文件头）
+        String oldAvatar = user.getAvatar();
         String url = fileStorageService.storeAvatar(file);
         // 2. 更新用户头像字段：只更新这一列，避免连带覆盖其他资料
         SysAuthUser update = new SysAuthUser();
@@ -333,7 +334,15 @@ public class AuthServiceImpl implements AuthService {
         update.setUpdateBy(user.getUserName());
         update.setUpdateTime(LocalDateTime.now());
         userMapper.updateSelective(update);
-        // 3. 会话快照里也带 avatar，清掉缓存让下次读取拿到新值
+        // 3. 清理旧头像（best effort：失败不回滚，也不影响本次上传）
+        if (oldAvatar != null && !oldAvatar.isBlank() && !oldAvatar.equals(url)) {
+            try {
+                fileStorageService.deleteByUrl(oldAvatar);
+            } catch (Exception e) {
+                log.warn("旧头像清理失败: userId={}, url={}, err={}", userId, oldAvatar, e.getMessage());
+            }
+        }
+        // 4. 会话快照里也带 avatar，清掉缓存让下次读取拿到新值
         rbacCacheService.evictUser(userId);
         log.info("用户头像已更新: userId={}, url={}", userId, url);
         return url;

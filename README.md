@@ -118,6 +118,9 @@ npm run dev -- --port 5174 --strictPort
 > Swagger 调试时点右上角 **Authorize**，填入 `LAUNCH <登录返回的 token>`。
 > 令牌请求头名默认 `admintem_token`（可在 `admintem.jwt.header` 修改）。
 
+> 文件存储默认本地（`admintem-backend/uploads/avatar`）；切 MinIO 设置
+> `admintem.storage.type=minio`，密钥放 `config/application-local.yml`，详见《14-文件存储策略与MinIO接入》。
+
 ---
 
 ## 3. 权限模型
@@ -175,7 +178,7 @@ admin-template/
 ├── admintem-mobile/             移动端（Vant 4）
 ├── admintem-uniapp/             uni-app 客户端（H5 + 微信小程序，共用后端）\n├── admintem-site/               通用官网模版（Vue 3 + Tailwind + anime.js）
 └── admintem-docs/               设计与操作文档 + 测试脚本
-    ├── 01~13 号文档（13 为移动端组件库选型与使用约定）
+    ├── 01~14 号文档（13 移动端组件库、14 文件存储策略）
     ├── db/init + db/changelog   建库脚本与增量迁移（唯一出处）
     ├── images/                  21 张页面截图（交付物，入库）
     └── tests/                   5 个检查器 + 接口回归 + 两端 E2E + 截图脚本
@@ -225,7 +228,7 @@ cd admintem-uniapp && pnpm build:h5 && pnpm build:mp-weixin
 | 令牌用 Redis 白名单 | 支持"立即失效"（退出、强制下线、改密），纯 JWT 做不到 |
 | 在线会话不建表 | 白名单本身就是在线事实来源，避免两处状态不一致 |
 | 审计异步落库 | 审计是附加动作，不能拖慢主流程；队列满时回退同步（CallerRuns） |
-| 头像存本地目录 | 部署简单、不引对象存储；换共享存储只改配置，接口不变 |
+| 头像存储可切换 | 工厂 + 策略：默认本地目录，`admintem.storage.type=minio` 即切对象存储；接口与前端不变 |
 | 部门不参与授权 | 组织维度 ≠ 授权维度；按部门过滤数据属于 ABAC，另立项 |
 | 唯一索引用函数索引 | 逻辑删除下实现"未删除行唯一 + 删除后可同名重建" |
 

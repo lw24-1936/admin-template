@@ -163,6 +163,20 @@ admintem:
     max-size-mb: 2
     url-prefix: "/uploads/avatar"
     allowed-extensions: "png,jpg,jpeg,webp,gif"
+
+  # ---- 文件存储：local（默认）| minio ----
+  # 切换为 minio 前，在 config/application-local.yml（已 gitignore）配置密钥；
+  # MinIO 的 9000 是 S3 API，9001 是控制台，endpoint 必须指向 9000。
+  storage:
+    type: ${ADMINTEM_STORAGE_TYPE:local}
+    minio:
+      endpoint: ${ADMINTEM_MINIO_ENDPOINT:http://127.0.0.1:9000}
+      access-key: ${ADMINTEM_MINIO_ACCESS_KEY:minio}
+      secret-key: ${ADMINTEM_MINIO_SECRET_KEY:}
+      bucket: ${ADMINTEM_MINIO_BUCKET:admintem}
+      public-url: ${ADMINTEM_MINIO_PUBLIC_URL:}
+      auto-create-bucket: true
+      public-read: true
   # ---- 用户权限缓存（Redis）----
   cache:
     # 当前登录用户权限快照 key 前缀（key = 前缀 + userId）

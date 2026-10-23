@@ -44,6 +44,9 @@ public class AdmintemProperties {
     /** 文件上传（头像等），见 {@link Upload} */
     private Upload upload = new Upload();
 
+    /** 文件存储配置（local / minio，默认本地） */
+    private Storage storage = new Storage();
+
     /* ------------------------------------------------------------------ */
 
     /**
@@ -278,11 +281,10 @@ public class AdmintemProperties {
     }
 
     /**
-     * 上传配置（头像等小文件）。
+     * 上传校验参数（头像等小文件）。
      *
-     * <p>本项目此前没有任何文件存储，头像功能是第一个；存储方案刻意选"本地目录"：
-     * 部署时挂载一个卷即可，不引入对象存储依赖。若后续要做多实例部署，
-     * 把 {@link #dir} 指向共享存储（NFS/OSS 挂载点）即可，接口层不用改。</p>
+     * <p>这里只放"允不允许传"的规则；文件落在本地还是 MinIO 由
+     * {@code admintem.storage.type} 决定，见 {@link Storage}。</p>
      */
     @Data
     public static class Upload {
@@ -297,4 +299,37 @@ public class AdmintemProperties {
 
         /** 允许的扩展名（同时会做文件头校验，防止改扩展名上传可执行文件） */
         private String allowedExtensions = "png,jpg,jpeg,webp,gif";
-    }}
+    }
+
+    /** 文件存储配置：用 type 在本地与 MinIO 之间切换 */
+    @Data
+    public static class Storage {
+        /** 存储类型：local（默认）| minio */
+        private String type = "local";
+
+        /** MinIO 配置（type=minio 时生效） */
+        private Minio minio = new Minio();
+    }
+
+    /** MinIO 连接与 bucket 配置 */
+    @Data
+    public static class Minio {
+        /** API 地址；9000 是 S3 API，9001 是控制台，SDK 不能用 9001 */
+        private String endpoint = "http://127.0.0.1:9000";
+
+        private String accessKey = "minio";
+
+        private String secretKey = "";
+
+        private String bucket = "admintem";
+
+        /** 浏览器可访问的基础地址（不含 bucket）；为空时回退 endpoint */
+        private String publicUrl = "";
+
+        /** bucket 不存在时自动创建 */
+        private boolean autoCreateBucket = true;
+
+        /** 自动设置匿名只读策略（头像为公开资源；私有桶请关闭） */
+        private boolean publicRead = true;
+    }
+}

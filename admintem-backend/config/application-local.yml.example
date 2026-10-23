@@ -22,3 +22,10 @@ ADMINTEM_DB_PASSWORD: "your-mysql-password"
 
 # Redis 口令（Redisson 客户端）
 ADMINTEM_REDIS_PASSWORD: "your-redis-password"
+
+# MinIO（可选；仅 admintem.storage.type=minio 时使用）
+# 注意：9000 是 S3 API，9001 是 Web 控制台，SDK 必须用 9000
+ADMINTEM_MINIO_ENDPOINT: "http://127.0.0.1:9000"
+ADMINTEM_MINIO_ACCESS_KEY: "minio"
+ADMINTEM_MINIO_SECRET_KEY: "your-minio-secret"
+ADMINTEM_MINIO_PUBLIC_URL: "http://127.0.0.1:9000"
