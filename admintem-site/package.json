@@ -1,0 +1,27 @@
+{
+  "name": "admintem-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "通用官网模版：Vue 3 + Vite + Tailwind + shadcn 风格组件 + Magic UI 效果 + anime.js v4",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "animejs": "^4.0.2",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^0.468.0",
+    "tailwind-merge": "^2.5.5",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^5.4.11"
+  }
+}

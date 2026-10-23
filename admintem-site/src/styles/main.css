@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================================
+   设计令牌（shadcn 结构：组件只消费语义变量，不写死色值）
+   来源：ui-ux-pro-max --design-system（Glassmorphism / 信任蓝 + 橙色 CTA）
+   ========================================================================= */
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --card-foreground: 15 23 42;
+    --primary: 37 99 235;
+    --primary-foreground: 255 255 255;
+    --accent: 234 88 12;
+    --accent-foreground: 15 23 42;
+    --muted: 233 239 248;
+    --muted-foreground: 71 85 105;
+    --border: 226 232 240;
+    --ring: 37 99 235;
+    --radius: 14px;
+  }
+
+  /* 深色主题预留：站点默认浅色，切换 .dark 即可整体换肤 */
+  .dark {
+    --background: 10 15 28;
+    --foreground: 241 245 249;
+    --card: 17 24 39;
+    --card-foreground: 241 245 249;
+    --primary: 96 165 250;
+    --primary-foreground: 12 18 32;
+    --accent: 251 146 60;
+    --accent-foreground: 24 16 8;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
+    --border: 45 58 78;
+    --ring: 96 165 250;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-padding-top: 96px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgb(var(--primary) / 0.18);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 硬约束：减少动效时关闭所有非必要动画 */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* 玻璃拟态：顶栏、徽标、悬浮卡片共用 */
+  .glass {
+    @apply border border-white/60 bg-white/70 backdrop-blur-xl;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur;
+  }
+
+  .section {
+    @apply py-20 sm:py-24;
+  }
+
+  .text-gradient {
+    background-image: linear-gradient(100deg, #2563eb 0%, #0ea5e9 52%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* 细网格背景（Magic UI grid-pattern 的 CSS 复刻） */
+  .grid-pattern {
+    background-image: linear-gradient(rgb(15 23 42 / 0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(15 23 42 / 0.045) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  .dot-pattern {
+    background-image: radial-gradient(rgb(15 23 42 / 0.16) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+}
+
+@layer utilities {
+  /* v-reveal 初始态：只由 JS 添加，JS 失败时内容仍然可见 */
+  .reveal-init {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .mask-fade-x {
+    mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+
+  .balance {
+    text-wrap: balance;
+  }
+}

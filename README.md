@@ -9,7 +9,7 @@
 | 桌面端 | Vue 3.5 + Vite 8 + Element Plus 2.14 + Pinia + vue-router |
 | 移动端 | Vue 3.5 + Vite 8 + Vant 4（底部 Tab：首页 / 我的） |
 | 默认账号 | `admin / 12345678`（管理员）、`test / 12345678`（受限账号） |
-| 默认端口 | 后端 **8090**、桌面端 **5175**、Vant 移动端 **5174**、uni-app **5176** |
+| 默认端口 | 后端 **8090**、桌面端 **5175**、Vant 移动端 **5174**、uni-app **5176**、官网模版 **5177** |
 
 ---
 
@@ -173,7 +173,7 @@ admin-template/
 │   └── src/test/java/           144 个单元测试
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）
-├── admintem-uniapp/             uni-app 客户端（H5 + 微信小程序，共用后端）
+├── admintem-uniapp/             uni-app 客户端（H5 + 微信小程序，共用后端）\n├── admintem-site/               通用官网模版（Vue 3 + Tailwind + anime.js）
 └── admintem-docs/               设计与操作文档 + 测试脚本
     ├── 01~12 号文档
     ├── db/init + db/changelog   建库脚本与增量迁移（唯一出处）
