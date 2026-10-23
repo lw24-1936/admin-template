@@ -9,6 +9,12 @@ import { useUserStore } from '@/stores/user'
 import { getToken } from '@/utils/auth'
 
 const routes = [
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/register/index.vue'),
+      meta: { public: true, title: '注册' },
+    },
   {
     path: '/login',
     name: 'login',

@@ -8,14 +8,14 @@
         <view class="row gap-16" @tap="goBack">
           <view class="back" />
           <text class="auth__nav-text">返回登录</text>
-        </view>
+          </view>
         <text class="kicker">SIGN UP</text>
-      </view>
+          </view>
 
       <view class="auth__head">
         <text class="auth__title">创建账号</text>
         <text class="auth__desc">填写基本信息，注册后即可登录系统</text>
-      </view>
+          </view>
 
       <view class="card auth__card">
         <view class="field">
@@ -42,26 +42,32 @@
 
         <view class="field">
           <text class="field__label">密码</text>
-          <input
-            v-model="form.password"
-            class="input"
-            password
-            :maxlength="32"
-            placeholder="6~32 位"
-            placeholder-class="input-placeholder"
-          />
+          <view class="field__control">
+            <input
+              v-model="form.password"
+              class="input"
+              :password="!showPassword"
+              :maxlength="32"
+              placeholder="6~32 位"
+              placeholder-class="input-placeholder"
+            />
+            <text class="field__eye" @tap="showPassword = !showPassword">{{ showPassword ? '隐藏' : '显示' }}</text>
+          </view>
         </view>
 
         <view class="field">
           <text class="field__label">确认密码</text>
-          <input
-            v-model="form.confirmPassword"
-            class="input"
-            password
-            :maxlength="32"
-            placeholder="再次输入密码"
-            placeholder-class="input-placeholder"
-          />
+          <view class="field__control">
+            <input
+              v-model="form.confirmPassword"
+              class="input"
+              :password="!showConfirm"
+              :maxlength="32"
+              placeholder="再次输入密码"
+              placeholder-class="input-placeholder"
+            />
+            <text class="field__eye" @tap="showConfirm = !showConfirm">{{ showConfirm ? '隐藏' : '显示' }}</text>
+          </view>
         </view>
 
         <view class="field">
@@ -90,12 +96,17 @@
 
         <view class="field">
           <text class="field__label">性别</text>
-          <picker :range="sexOptions" :value="sexIndex" @change="onSexChange">
-            <view class="picker-value">
-              <text>{{ sexOptions[sexIndex] }}</text>
-              <view class="chevron" />
-            </view>
-          </picker>
+          <view class="sex" role="radiogroup" aria-label="性别">
+            <view
+              v-for="option in sexOptions"
+              :key="option.value"
+              class="sex__item"
+              :class="{ 'sex__item--on': form.sex === option.value }"
+              @tap="form.sex = option.value"
+            >
+              <text>{{ option.label }}</text>
+          </view>
+          </view>
         </view>
 
         <button
@@ -109,7 +120,7 @@
 
       <view class="notice notice--muted mt-24">
         <text>注册是否开放由后端配置 admintem.register-enabled 控制；账号创建后默认无角色权限。</text>
-      </view>
+          </view>
     </view>
   </view>
 </template>
@@ -126,8 +137,12 @@ import { register } from '@/api/auth'
 
 const statusH = uni.getSystemInfoSync().statusBarHeight || 20
 const loading = ref(false)
-const sexOptions = ['男', '女']
-const sexIndex = ref(0)
+const showPassword = ref(false)
+const showConfirm = ref(false)
+const sexOptions = [
+  { value: 1, label: '男' },
+  { value: 0, label: '女' },
+]
 
 const form = reactive({
   userName: '',
@@ -141,11 +156,6 @@ const form = reactive({
 
 function toast(title) {
   uni.showToast({ title, icon: 'none' })
-}
-
-function onSexChange(e) {
-  sexIndex.value = Number(e.detail.value)
-  form.sex = sexIndex.value === 0 ? 1 : 0
 }
 
 function goBack() {
@@ -281,5 +291,48 @@ async function handleSubmit() {
 
 .auth__card {
   padding: 36rpx 32rpx 32rpx;
+}
+.field__control {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.field__control .input {
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 76rpx;
+}
+.field__eye {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  padding: 8rpx 4rpx;
+  font-size: 24rpx;
+  color: var(--c-primary, #1e3a6e);
+}
+.sex {
+  display: inline-flex;
+  gap: 4rpx;
+  padding: 6rpx;
+  background: var(--c-surface-soft, #f1f5fb);
+  border: 1rpx solid var(--c-line, #e2e8f0);
+  border-radius: 18rpx;
+}
+.sex__item {
+  min-width: 108rpx;
+  padding: 10rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--c-muted, #64748b);
+  border-radius: 12rpx;
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.sex__item--on {
+  color: var(--c-primary, #1e3a6e);
+  font-weight: 600;
+  background: #fff;
+  box-shadow: 0 2rpx 6rpx rgba(15, 23, 42, 0.08), 0 0 0 1rpx var(--c-line, #e2e8f0);
 }
 </style>

@@ -8,6 +8,11 @@ export function login(data) {
   return request({ url: '/auth/login', method: 'post', data })
 }
 
+/** 注册（是否开放由后端 register-enabled 控制） */
+export function register(data) {
+  return request({ url: '/auth/register', method: 'post', data })
+}
+
 /** 退出登录 */
 export function logout() {
   return request({ url: '/auth/logout', method: 'post' })

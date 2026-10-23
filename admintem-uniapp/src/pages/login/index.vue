@@ -11,14 +11,14 @@
         <view class="brand__text">
           <text class="brand__name">admintem</text>
           <text class="brand__sub">权限管理系统</text>
-        </view>
+          </view>
       </view>
 
       <view class="auth__head">
         <text class="kicker">SIGN IN</text>
         <text class="auth__title">登录</text>
         <text class="auth__desc">使用你的账号继续访问工作台</text>
-      </view>
+          </view>
 
       <view class="card auth__card">
         <view class="field">
@@ -36,27 +36,30 @@
 
         <view class="field">
           <text class="field__label">密码</text>
-          <input
-            v-model="form.password"
-            class="input"
-            password
-            :maxlength="32"
-            placeholder="请输入密码"
-            placeholder-class="input-placeholder"
-            confirm-type="done"
-            @confirm="handleSubmit"
-          />
+          <view class="field__control">
+            <input
+              v-model="form.password"
+              class="input"
+              :password="!showPassword"
+              :maxlength="32"
+              placeholder="请输入密码"
+              placeholder-class="input-placeholder"
+              confirm-type="done"
+              @confirm="handleSubmit"
+            />
+            <text class="field__eye" @tap="showPassword = !showPassword">{{ showPassword ? '隐藏' : '显示' }}</text>
+          </view>
         </view>
 
         <view class="row between auth__meta">
           <view class="row gap-8" @tap="form.rememberMe = !form.rememberMe">
             <view class="check" :class="{ 'check--on': form.rememberMe }">
               <text v-if="form.rememberMe" class="check__tick">✓</text>
-            </view>
+          </view>
             <text class="faint">记住账号</text>
           </view>
           <text class="faint">令牌 7 天有效</text>
-        </view>
+          </view>
 
         <button
           class="btn btn--primary btn--block"
@@ -70,11 +73,11 @@
       <view class="row auth__foot">
         <text class="muted">还没有账号？</text>
         <text class="auth__link" @tap="goRegister">创建账号</text>
-      </view>
+          </view>
 
       <view class="notice notice--muted auth__demo">
         <text>演示账号：admin / 12345678（普通账号 test / 12345678）</text>
-      </view>
+          </view>
     </view>
   </view>
 </template>
@@ -93,6 +96,7 @@ import { getToken, getRememberedName, setRememberedName } from '@/utils/storage'
 
 const statusH = uni.getSystemInfoSync().statusBarHeight || 20
 const loading = ref(false)
+const showPassword = ref(false)
 const form = reactive({
   username: getRememberedName() || '',
   password: '',
@@ -288,6 +292,25 @@ async function handleSubmit() {
   font-size: 26rpx;
   font-weight: 600;
   color: var(--c-brand);
+}
+
+/* 密码可见切换：不改变输入框高度，只占右侧一小段 */
+.field__control {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.field__eye {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8rpx 4rpx;
+  font-size: 24rpx;
+  color: var(--c-primary);
+}
+.field__control .input {
+  padding-right: 72rpx;
 }
 
 .auth__demo {

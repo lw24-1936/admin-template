@@ -3,30 +3,41 @@
   <div class="lc-page mine">
     <!-- 资料头 -->
     <section class="mine-hero">
-      <div class="mine-hero__avatar">{{ userStore.avatarText }}</div>
-      <div class="mine-hero__info">
-        <p class="mine-hero__name">{{ userStore.displayName }}</p>
-        <p class="mine-hero__account">账号：{{ userStore.user?.userName || '-' }}</p>
+      <div class="mine-hero__top">
+        <div class="mine-hero__avatar">
+          <img v-if="avatarUrl" :src="avatarUrl" alt="" />
+          <span v-else>{{ userStore.avatarText }}</span>
+        </div>
+        <div class="mine-hero__info">
+          <p class="mine-hero__name">{{ userStore.displayName }}</p>
+          <p class="mine-hero__account">@{{ userStore.user?.userName || '-' }}</p>
+        </div>
+        <span class="mine-hero__status">{{ statusText }}</span>
       </div>
-      <van-tag type="primary" plain>{{ userStore.roleNames[0] || '未分配角色' }}</van-tag>
+
+      <div class="mine-hero__roles">
+        <span v-for="name in userStore.roleNames" :key="name" class="mine-hero__chip">{{ name }}</span>
+        <span v-if="!userStore.roleNames.length" class="mine-hero__chip">未分配角色</span>
+      </div>
+
+      <dl class="mine-hero__stats">
+        <div>
+          <dt>{{ userStore.menus.length }}</dt>
+          <dd>菜单</dd>
+        </div>
+        <div>
+          <dt>{{ userStore.permissions.length }}</dt>
+          <dd>权限</dd>
+        </div>
+        <div>
+          <dt>{{ userStore.roles.length }}</dt>
+          <dd>角色</dd>
+        </div>
+      </dl>
     </section>
 
     <h1 class="lc-page__title">个人中心</h1>
     <p class="lc-page__desc">查看本人账号信息、修改登录密码或退出当前登录。</p>
-
-    <!-- 角色与权限 -->
-    <section class="lc-card">
-      <h2 class="lc-card__title">角色与权限</h2>
-      <div class="mine-tags">
-        <van-tag v-for="role in userStore.roles" :key="role.id" type="primary" plain>
-          {{ role.roleName || role.roleKey }}
-        </van-tag>
-        <span v-if="!userStore.roles.length" class="mine-empty">未分配角色</span>
-      </div>
-      <p class="mine-count">
-        共 {{ userStore.permissions.length }} 项权限标识、{{ userStore.menus.length }} 个菜单
-      </p>
-    </section>
 
     <!-- 账号信息 -->
     <section class="lc-card">
@@ -44,14 +55,16 @@
     <section class="lc-card">
       <h2 class="lc-card__title">账号操作</h2>
       <van-cell-group :border="false">
-        <van-cell title="修改密码" is-link @click="openPassword" />
-        <van-cell title="关于移动端" is-link @click="showAbout" />
+        <van-cell title="修改密码" icon="lock" is-link @click="openPassword" />
+        <van-cell title="关于移动端" icon="info-o" is-link @click="showAbout" />
       </van-cell-group>
     </section>
 
     <van-button block class="mine-logout" :loading="logoutLoading" @click="handleLogout">
       退出登录
     </van-button>
+
+    <p class="mine-foot">admintem 移动端 v0.1.0 · 后端共享 admintem-backend</p>
 
     <!-- 修改密码弹层 -->
     <van-popup v-model:show="passwordVisible" position="bottom" round :style="{ paddingBottom: '20px' }">
@@ -132,6 +145,18 @@ import * as authApi from '@/api/auth'
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || ''
+
+/** 头像：兼容本地相对路径与 MinIO 绝对地址 */
+const avatarUrl = computed(() => {
+  const path = userStore.user?.avatar
+  if (!path) return ''
+  if (/^(https?:)?\/\//i.test(path) || path.startsWith('data:') || path.startsWith('blob:')) {
+    return path
+  }
+  return API_BASE + (path.startsWith('/') ? path : '/' + path)
+})
 
 const logoutLoading = ref(false)
 const passwordVisible = ref(false)
@@ -223,6 +248,66 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+.mine-hero__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.mine-hero__top {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-sp-3);
+}
+.mine-hero__status {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  font-size: var(--lc-fs-kicker);
+  color: var(--lc-paper-card);
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+}
+.mine-hero__roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.mine-hero__chip {
+  padding: 3px 9px;
+  font-size: var(--lc-fs-kicker);
+  color: var(--lc-paper-card);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+}
+.mine-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+.mine-hero__stats div {
+  text-align: center;
+}
+.mine-hero__stats dt {
+  font-size: 22px;
+  font-weight: 680;
+  color: var(--lc-paper-card);
+  font-variant-numeric: tabular-nums;
+}
+.mine-hero__stats dd {
+  margin: 3px 0 0;
+  font-size: var(--lc-fs-hint);
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.78);
+}
+.mine .lc-page__title {
+  margin-top: 18px;
 }
 .mine-hero__info {
   flex: 1;
@@ -278,9 +363,15 @@ async function handleLogout() {
 .mine-logout:active {
   background: var(--lc-danger-soft);
 }
+.mine-foot {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: var(--lc-fs-kicker);
+  color: var(--lc-ink-faint);
+}
 
 .mine-popup {
-  padding: 20px 0 4px;
+  padding: 20px 0 12px;
 }
 .mine-popup__title {
   margin: 0 16px 14px;
@@ -297,7 +388,9 @@ async function handleLogout() {
 
 /* ===== V2 视觉覆盖（后置规则，优先级高于前面同名选择器） ===== */
 /* 资料头：与首页英雄卡同一渐变语言 */
+/* 新的资料头是"上中下"三段：顶部信息 / 角色 / 指标，不能再沿用横向 flex */
 .mine-hero {
+  display: block;
   border: 1px solid var(--lc-brand-deep);
   background-color: var(--lc-brand);
   background-image: var(--lc-gradient-brand);
@@ -314,6 +407,10 @@ async function handleLogout() {
 }
 .mine-hero__account {
   color: rgba(255, 255, 255, 0.78);
+}
+.mine :deep(.van-cell__left-icon) {
+  color: var(--lc-brand);
+  margin-right: 8px;
 }
 .mine-hero :deep(.van-tag--primary.van-tag--plain) {
   background: rgba(255, 255, 255, 0.14);

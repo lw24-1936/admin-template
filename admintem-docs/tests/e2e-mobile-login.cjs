@@ -116,7 +116,11 @@ await page.waitForSelector('input', { timeout: 60000 })
   check('标签栏含“我的”', tabText.includes('我的'))
 
   console.log('D. 首页内容与权限入口')
-  check('显示欢迎语', tabText.includes('你好，admin') || tabText.includes('你好，超级管理员'), tabText.slice(0, 80))
+  check(
+    '显示欢迎语',
+    /(夜深了|上午好|中午好|下午好|晚上好)，admin/.test(tabText),
+    tabText.slice(0, 80)
+  )
   check('角色展示为角色名（非 [object Object]）', !tabText.includes('[object Object]'))
   const entryCount = await page.locator('.home-entry').count()
   check('admin 可见 4 个管理入口', entryCount === 4, '实际 ' + entryCount)

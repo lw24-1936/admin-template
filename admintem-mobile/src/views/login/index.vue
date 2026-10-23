@@ -31,12 +31,14 @@
           />
           <van-field
             v-model="form.password"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
             name="password"
             label="密码"
             placeholder="请输入密码"
             autocomplete="current-password"
+            :right-icon="showPassword ? 'eye-o' : 'closed-eye'"
             :rules="[{ required: true, message: '请输入密码' }]"
+            @click-right-icon="showPassword = !showPassword"
           />
         </van-cell-group>
 
@@ -57,6 +59,11 @@
           登 录
         </van-button>
       </van-form>
+
+      <p class="m-login__switch">
+        还没有账号？
+        <router-link to="/register" class="m-login__link">创建账号</router-link>
+      </p>
 
       <p class="m-login__foot">
         演示账号：admin / 12345678
@@ -95,6 +102,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const loading = ref(false)
+const showPassword = ref(false)
 
 const form = reactive({
   username: 'admin',
@@ -119,15 +127,19 @@ async function handleLogin() {
 </script>
 
 <style scoped>
+/* 登录页：网格 + 两团柔光，与 uni-app/官网同一套浅色渐变语言 */
 .m-login {
+  position: relative;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 56px 16px 24px;
-  background:
+  padding: 56px 16px calc(24px + env(safe-area-inset-bottom));
+  background-color: var(--lc-paper);
+  background-image:
+    radial-gradient(circle at 88% -8%, rgba(47, 111, 237, 0.2), transparent 46%),
+    radial-gradient(circle at -10% 32%, rgba(124, 58, 237, 0.12), transparent 42%),
     linear-gradient(var(--lc-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px),
-    var(--lc-paper);
-  background-size: 28px 28px;
+    linear-gradient(90deg, var(--lc-grid-line) 1px, transparent 1px);
+  background-size: auto, auto, 28px 28px, 28px 28px;
 }
 
 .m-login__head {
@@ -185,8 +197,10 @@ async function handleLogin() {
   color: var(--lc-ink-muted);
 }
 
+/* 表单卡：半透明玻璃，避免纯白卡片压在渐变上太重 */
 .m-login__sheet {
-  background: var(--lc-paper-card);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px) saturate(1.05);
   border: 1px solid var(--lc-line);
   border-radius: var(--lc-radius-card);
   padding: 18px 0 20px;
@@ -229,10 +243,27 @@ async function handleLogin() {
   opacity: 0.9;
 }
 
+.m-login__switch {
+  margin: 16px 16px 0;
+  text-align: center;
+  font-size: var(--lc-fs-label);
+  color: var(--lc-ink-muted);
+}
+.m-login__link {
+  margin-left: 4px;
+  color: var(--lc-brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+.m-login__link:active {
+  opacity: 0.7;
+}
+
 .m-login__foot {
-  margin: 18px 16px 0;
+  margin: 14px 16px 0;
   padding-top: 14px;
   border-top: 1px solid var(--lc-line-soft);
+  text-align: center;
   font-size: var(--lc-fs-hint);
   color: var(--lc-ink-faint);
   text-align: center;
