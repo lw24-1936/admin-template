@@ -54,7 +54,7 @@ public class AuthController {
     /** 校验拼图位置，通过返回一次性票据（免登录）。 */
     @PostMapping("/captcha/verify")
     public Result<CaptchaTicketVO> verifyCaptcha(@Valid @RequestBody CaptchaVerifyRequest request) {
-        return Result.ok(new CaptchaTicketVO(captchaService.verify(request.getToken(), request.getX())));
+        return Result.ok(new CaptchaTicketVO(captchaService.verify(request.getToken(), request.getCode())));
     }
 
     @PostMapping("/login")

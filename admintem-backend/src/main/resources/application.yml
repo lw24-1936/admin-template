@@ -122,7 +122,9 @@ admintem:
       enabled: true
       debug: false
       expire-seconds: 120
-      tolerance: 6
+      length: 4
+      width: 140
+      height: 48
       max-attempts: 3
     # 登录防暴力破解：连续失败次数上限
     max-login-fail-count: 5

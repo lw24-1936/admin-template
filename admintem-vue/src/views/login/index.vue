@@ -56,7 +56,7 @@
             </el-form-item>
 
             <el-form-item label="验证码">
-              <SliderCaptcha ref="captchaRef" @success="onCaptchaSuccess" />
+              <CodeCaptcha ref="captchaRef" @success="onCaptchaSuccess" />
             </el-form-item>
 
             <div class="login-meta">
@@ -91,7 +91,7 @@ import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import SliderCaptcha from '@/components/SliderCaptcha.vue'
+import CodeCaptcha from '@/components/CodeCaptcha.vue'
 
 const route = useRoute()
 const router = useRouter()

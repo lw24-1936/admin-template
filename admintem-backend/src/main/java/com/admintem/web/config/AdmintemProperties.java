@@ -108,7 +108,9 @@ public class AdmintemProperties {
         private boolean enabled = true;
         private boolean debug = false;
         private int expireSeconds = 120;
-        private int tolerance = 6;
+        private int length = 4;
+        private int width = 140;
+        private int height = 48;
         private int maxAttempts = 3;
         private String keyPrefix = "admintem:auth:captcha:";
         private String ticketKeyPrefix = "admintem:auth:captcha:ticket:";
