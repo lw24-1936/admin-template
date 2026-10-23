@@ -55,7 +55,7 @@
       </el-header>
 
       <!-- 主内容 -->
-      <el-main class="layout-main">
+      <el-main :class="['layout-main', { 'layout-main--fill': isFillPath(route.path) }]">
         <!--
           路由容器：用 key 触发"换页重新挂载 + CSS 入场动画"。
           这里刻意**不用 <transition mode="out-in">**：路由组件是异步懒加载的，
@@ -64,7 +64,7 @@
           div + CSS animation 没有这层语义依赖，异步组件解析完自然渲染。
         -->
         <RouterView v-slot="{ Component, route: current }">
-          <div :key="current.path" class="page-shell">
+          <div :key="current.path" :class="['page-shell', { 'page-shell--fill': isFillPath(current.path) }]">
             <component :is="Component" />
           </div>
         </RouterView>
@@ -160,6 +160,12 @@ import MenuItem from './MenuItem.vue'
 import { filterVisibleMenus } from '@/utils/menu'
 
 const route = useRoute()
+
+/** 系统管理页：外壳 6px + 表格内部滚动（其余页面保持默认滚动方式） */
+const FILL_PATHS = ['/userInfo', '/roleInfo', '/permissionInfo', '/auditLog', '/onlineSession', '/dept']
+function isFillPath(path) {
+  return FILL_PATHS.includes(path)
+}
 const router = useRouter()
 const store = useUserStore()
 
@@ -626,10 +632,17 @@ const roleText = computed(() => {
    *
    * 历史：曾按需求收紧到 1px（页面卡片自身有 20px 内边距），V2 视觉升级放宽到 16px。
    * 2026-10-22 按需求统一为 10px（--lc-sp-shell-gap）：四边等距，卡片贴着顶栏与窗口边但不糊在一起。
+   * 2026-10-23 系统管理页改为 6px（layout-main--fill）：卡片撑满可视区，数据多时表格内部滚动。
    *
    * 只改这一个值即可；不要在页面里分别加 padding，否则会重新变成"每页间距不一致"。
    */
   padding: var(--lc-sp-shell-gap);
+}
+
+/* 系统管理页：四边 6px，表格内部滚动（覆盖上面的 10px 外壳间距） */
+.layout-main--fill {
+  padding: 6px;
+  overflow: hidden;
 }
 
 /* 路由容器与换页入场：只做一次 8px 上移淡入，不与路由异步解析耦合 */
