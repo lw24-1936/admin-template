@@ -1,22 +1,29 @@
 <template>
   <div class="code-captcha" :data-code="debugText" :data-state="state">
     <div class="cap-row">
-      <img v-if="image" class="cap-img" :src="image" alt="图形验证码" draggable="false" @click="load" />
-      <button class="cap-refresh" type="button" @click="load">换一张</button>
-    </div>
-    <div class="cap-entry">
       <input
         v-model="input"
         class="cap-input"
         :maxlength="length"
-        placeholder="请输入图中的数字与字母"
+        placeholder="请输入验证码"
         autocomplete="off"
         spellcheck="false"
         @input="onInput"
         @keyup.enter="submit"
       />
-      <span class="cap-tip" :class="{ 'cap-tip--ok': state === 'ok' }">{{ tip }}</span>
+      <img
+        v-if="image"
+        class="cap-img"
+        :src="image"
+        alt="图形验证码"
+        draggable="false"
+        @click="load"
+      />
+      <button class="cap-link" type="button" @click="load">看不清？换一张</button>
     </div>
+    <p v-if="state !== 'idle'" class="cap-status" :class="{ 'cap-status--ok': state === 'ok' }">
+      {{ tip }}
+    </p>
   </div>
 </template>
 
@@ -24,7 +31,8 @@
 /**
  * 图形验证码（数字 + 字母）
  *
- * 图片由服务端渲染，答案只在服务端 Redis；输入满 length 位自动校验，
+ * 一行布局：输入框 → 验证码图片 → “看不清？换一张”。
+ * 图片由服务端渲染，答案只在服务端 Redis；输入满位数自动校验，
  * 通过后把一次性 ticket 交给登录页。debug 模式（仅 dev）带 data-code 供 E2E 使用。
  */
 import { onMounted, ref } from 'vue'
@@ -37,7 +45,7 @@ const length = ref(4)
 const debugText = ref(null)
 const input = ref('')
 const state = ref('loading')
-const tip = ref('加载中…')
+const tip = ref('')
 
 let tokenId = 0
 
@@ -45,7 +53,7 @@ async function load() {
   const id = ++tokenId
   state.value = 'loading'
   input.value = ''
-  tip.value = '加载中…'
+  tip.value = ''
   try {
     const res = await getCaptcha()
     if (id !== tokenId) return
@@ -55,10 +63,9 @@ async function load() {
     length.value = data.length || 4
     debugText.value = data.debugText || null
     state.value = 'idle'
-    tip.value = '看不清？点图片或换一张'
   } catch {
     state.value = 'error'
-    tip.value = '加载失败，点击"换一张"重试'
+    tip.value = '验证码加载失败，请点“看不清？换一张”重试'
   }
 }
 
@@ -97,61 +104,68 @@ defineExpose({ reset })
 .code-captcha {
   width: 100%;
 }
+
+/* 输入框 + 图片 + 换一张，同一行 */
 .cap-row {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
-.cap-img {
-  width: 140px;
-  height: 48px;
-  cursor: pointer;
-  border: 1px solid var(--lc-line);
-  border-radius: 8px;
-  background: var(--lc-surface-soft);
-}
-.cap-refresh {
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--lc-line);
-  border-radius: 8px;
-  background: var(--lc-paper-card);
-  color: var(--lc-ink-muted);
-  font-size: 12px;
-  cursor: pointer;
-}
-.cap-refresh:hover {
-  border-color: var(--lc-brand);
-  color: var(--lc-brand);
-}
-.cap-entry {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
-}
+
 .cap-input {
   flex: 1;
-  height: 40px;
+  min-width: 0;
+  height: 44px;
   padding: 0 12px;
   border: 1px solid var(--lc-line-input, var(--lc-line));
   border-radius: 8px;
   background: var(--lc-paper-card);
   color: var(--lc-ink);
   font-size: 14px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   outline: none;
 }
+
 .cap-input:focus {
   border-color: var(--lc-brand);
 }
-.cap-tip {
-  font-size: 12px;
-  color: var(--lc-ink-faint);
-  white-space: nowrap;
+
+.cap-img {
+  width: 128px;
+  height: 44px;
+  flex: 0 0 128px;
+  border: 1px solid var(--lc-line);
+  border-radius: 8px;
+  background: var(--lc-surface-soft);
+  cursor: pointer;
 }
-.cap-tip--ok {
+
+.cap-link {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--lc-brand);
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.cap-link:hover {
+  text-decoration: underline;
+}
+
+.cap-status {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--lc-ink-muted);
+}
+
+.cap-status--ok {
   color: var(--lc-success);
 }
 </style>
