@@ -1,6 +1,8 @@
 <template>
-  <!-- 公共分页条：封装 el-pagination，统一页码/每页条数与变更事件 -->
-  <div class="pagination-bar">
+  <!-- 固定分页条：贴在视口右下角，列表滚动时始终可见。
+       Teleport 到 body：页面容器有入场 transform，会让 fixed 相对容器定位。 -->
+  <Teleport to="body">
+    <div class="pagination-bar" role="navigation" aria-label="分页">
     <el-pagination
       v-model:current-page="innerPage"
       v-model:page-size="innerSize"
@@ -9,13 +11,19 @@
       layout="total, sizes, prev, pager, next, jumper"
       background
       @change="handleChange"
-    />
-  </div>
+      />
+    </div>
+  </Teleport>
+  <!-- 占位：避免最后一行数据被浮动分页条遮住 -->
+  <div class="pagination-spacer" aria-hidden="true" />
 </template>
 
 <script setup>
 /**
  * 公共分页条组件
+ *
+ * 固定在页面右下角（position: fixed），列表滚动时不用回到页底翻页；
+ * 组件末尾的 spacer 预留高度，避免遮挡表格最后一行。
  *
  * 用法：
  *   <PaginationBar :total="total" :page="query.pageNum" :size="query.pageSize"
@@ -65,8 +73,31 @@ function handleChange(page, size) {
 
 <style scoped>
 .pagination-bar {
+  position: fixed;
+  right: 28px;
+  bottom: 20px;
+  z-index: 30;
   display: flex;
   justify-content: flex-end;
-  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--lc-line);
+  border-radius: 14px;
+  background: var(--lc-paper-card);
+  box-shadow: var(--lc-shadow-float);
+}
+
+.pagination-spacer {
+  height: 68px;
+}
+
+/* 窄屏：贴边显示，允许横向滚动，避免把分页挤出视口 */
+@media (max-width: 900px) {
+  .pagination-bar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: calc(100vw - 24px);
+    overflow-x: auto;
+  }
 }
 </style>
