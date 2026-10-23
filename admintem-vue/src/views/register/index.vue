@@ -21,7 +21,7 @@
         <el-row :gutter="18">
           <el-col :xs="24" :sm="12">
             <el-form-item label="账号" prop="userName">
-              <el-input v-model="form.userName" placeholder="字母、数字或下划线" clearable autofocus />
+              <el-input v-model="form.userName" placeholder="字母、数字或下划线" clearable />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12">
@@ -59,7 +59,7 @@
 
           <el-col :span="24">
             <el-form-item label="性别" prop="sex">
-              <div class="sex-group">
+              <div class="sex-group" role="radiogroup" aria-label="性别">
                 <label
                   v-for="option in sexOptions"
                   :key="option.value"
@@ -72,7 +72,7 @@
                     :value="option.value"
                     class="sex-radio"
                   />
-                  {{ option.label }}
+                  <span class="sex-label">{{ option.label }}</span>
                 </label>
               </div>
             </el-form-item>
@@ -303,45 +303,67 @@ async function handleRegister() {
   box-shadow: 0 0 0 1.5px var(--lc-brand) inset, 0 0 0 4px var(--lc-brand-ring);
 }
 
-/* 性别选择：两枚可选卡片（替代裸 radio） */
+/* 性别选择：紧凑分段控件（3px 轨道 + 32px 选项，比输入框低一档） */
 .sex-group {
-  display: flex;
-  gap: var(--lc-sp-3);
-  margin-bottom: var(--lc-sp-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  width: fit-content;
+  padding: 3px;
+  border: 1px solid var(--lc-line);
+  border-radius: var(--lc-radius-ctl);
+  background: var(--lc-surface-soft);
 }
 .sex-item {
-  flex: 1;
-  display: flex;
+  position: relative;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  border: 1px solid var(--lc-line-input);
-  border-radius: var(--lc-radius-ctl);
-  background: var(--lc-paper-card);
+  justify-content: center;
+  gap: 6px;
+  min-width: 72px;
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--lc-ink-muted);
   cursor: pointer;
-  transition: border-color var(--lc-motion-fast), background-color var(--lc-motion-fast),
+  transition: color var(--lc-motion-fast), background-color var(--lc-motion-fast),
     box-shadow var(--lc-motion-fast);
 }
 .sex-item:hover {
-  border-color: var(--lc-line-hover);
-  background: var(--lc-surface-soft);
+  color: var(--lc-ink);
 }
 .sex-item.is-active {
-  border-color: var(--lc-brand);
-  background: var(--lc-brand-soft);
-  box-shadow: 0 0 0 3px var(--lc-brand-ring);
-}
-.sex-radio {
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid var(--lc-line-input);
-  border-radius: 50%;
+  color: var(--lc-brand);
+  font-weight: 600;
   background: var(--lc-paper-card);
-  transition: border-color var(--lc-motion-fast), box-shadow var(--lc-motion-fast);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.08), 0 0 0 1px var(--lc-line);
 }
-.sex-item.is-active .sex-radio {
-  border-color: var(--lc-brand);
-  box-shadow: inset 0 0 0 3px var(--lc-brand);
+/* 选中态的小圆点，替代整块高亮，视觉更轻 */
+.sex-item.is-active::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lc-brand);
+}
+/* 原生 radio 只保留交互与可访问性，不显示 */
+.sex-radio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.sex-item:has(.sex-radio:focus-visible) {
+  outline: 2px solid var(--lc-brand);
+  outline-offset: 2px;
+}
+.sex-label {
+  pointer-events: none;
 }
 
 /* 主按钮：与登录页同款渐变 */
