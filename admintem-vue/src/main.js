@@ -111,11 +111,14 @@ import {
   ArrowDown,
   Avatar as IconAvatar,
   DataLine,
+  Document,
   Finished,
   Grid,
   HomeFilled,
   Medal,
   Menu as IconMenu,
+  Monitor,
+  OfficeBuilding,
   Operation,
   User,
   UserFilled,
@@ -164,6 +167,9 @@ const menuIcons = {
   Avatar: IconAvatar,
   Grid,
   Medal,
+  Document,
+  Monitor,
+  OfficeBuilding,
 }
 for (const [name, component] of Object.entries(menuIcons)) {
   app.component(name, component)
