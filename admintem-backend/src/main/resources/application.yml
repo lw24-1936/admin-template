@@ -178,6 +178,13 @@ admintem:
       auto-create-bucket: true
       public-read: true
   # ---- 用户权限缓存（Redis）----
+  # ---- 方法日志（controller + service 公共方法）----
+  log:
+    aspect:
+      enable: true          # 关闭后不打印方法入参/返回值（异常仍由全局处理器记录）
+      max-length: 1200      # 单段 args/return 最大字符数，超出截断
+      slow-ms: 500          # 超过该耗时额外 WARN
+
   cache:
     # 当前登录用户权限快照 key 前缀（key = 前缀 + userId）
     user-perm-key-prefix: "admintem:auth:user:perm:"

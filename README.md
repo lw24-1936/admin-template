@@ -178,7 +178,7 @@ admin-template/
 ├── admintem-mobile/             移动端（Vant 4）
 ├── admintem-uniapp/             uni-app 客户端（H5 + 微信小程序，共用后端）\n├── admintem-site/               通用官网模版（Vue 3 + Tailwind + anime.js）
 └── admintem-docs/               设计与操作文档 + 测试脚本
-    ├── 01~14 号文档（13 移动端组件库、14 文件存储策略）
+    ├── 01~15 号文档（13 移动端组件库、14 文件存储、15 方法日志）
     ├── db/init + db/changelog   建库脚本与增量迁移（唯一出处）
     ├── images/                  21 张页面截图（交付物，入库）
     └── tests/                   5 个检查器 + 接口回归 + 两端 E2E + 截图脚本
