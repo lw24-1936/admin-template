@@ -39,7 +39,6 @@
         <el-dropdown trigger="click">
           <span class="user-entry">
             <!-- 角色标签：编辑式细边胶囊，弱化但可读（过长时省略，悬停显示完整） -->
-            <span class="user-role" :title="roleText">{{ roleText }}</span>
             <el-avatar :size="28" :src="avatarUrl" class="user-avatar">{{ avatarText }}</el-avatar>
             <span class="user-name">{{ displayName }}</span>
             <el-icon class="user-caret"><ArrowDown /></el-icon>
@@ -418,14 +417,6 @@ async function handleUploadAvatar(options) {
   }
 }
 
-/**
- * 当前用户角色展示串（顶栏胶囊标签用）
- * 后端下发的是 RoleVO 对象数组（{ id, roleName, roleKey }），需按 roleName 取值
- */
-const roleText = computed(() => {
-  const names = (store.roles || []).map((role) => role.roleName || role.roleKey).filter(Boolean)
-  return names.length ? names.join('、') : '普通用户'
-})
 </script>
 
 <style scoped>
@@ -583,7 +574,7 @@ const roleText = computed(() => {
   display: inline-flex;
   align-items: center;
   gap: var(--lc-sp-2);
-  padding: 4px 10px 4px 4px;
+  padding: 4px 10px 4px 6px;
   border: 1px solid transparent;
   border-radius: var(--lc-radius-pill);
   cursor: pointer;
@@ -593,20 +584,6 @@ const roleText = computed(() => {
 .user-entry:hover {
   background: var(--lc-paper-card);
   border-color: var(--lc-line);
-}
-.user-role {
-  padding: 2px 8px;
-  border: 1px solid var(--lc-line);
-  border-radius: var(--lc-radius-pill);
-  background: var(--lc-paper-card);
-  font-size: var(--lc-fs-kicker);
-  letter-spacing: 0.04em;
-  color: var(--lc-ink-muted);
-  /* 多角色时避免胶囊撑宽顶栏；完整内容通过 title 属性可见 */
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .user-avatar {
   background-color: var(--lc-brand);

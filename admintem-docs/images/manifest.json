@@ -2,7 +2,7 @@
   {
     "name": "desktop-01-login",
     "note": "登录页（/login）",
-    "size": 453376
+    "size": 454594
   },
   {
     "name": "desktop-02-register",
@@ -12,12 +12,12 @@
   {
     "name": "desktop-03-home",
     "note": "工作台（登录后默认进入）",
-    "size": 111395
+    "size": 109673
   },
   {
     "name": "desktop-04-user-list",
     "note": "用户管理（/userInfo）",
-    "size": 94027
+    "size": 92688
   },
   {
     "name": "desktop-05-user-add",
@@ -37,7 +37,7 @@
   {
     "name": "desktop-08-role-list",
     "note": "角色管理（/roleInfo）",
-    "size": 88451
+    "size": 87014
   },
   {
     "name": "desktop-09-role-assign-perm",
@@ -52,7 +52,7 @@
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 150012
+    "size": 148687
   },
   {
     "name": "desktop-12-permission-add",
@@ -62,12 +62,12 @@
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 147005
+    "size": 145487
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 203794
+    "size": 202216
   },
   {
     "name": "desktop-13-403",
@@ -82,7 +82,7 @@
   {
     "name": "desktop-15-user-list-test",
     "note": "用户管理 · 受限账号 test（写操作按钮不渲染）",
-    "size": 80242
+    "size": 79016
   },
   {
     "name": "mobile-01-login",
