@@ -12,7 +12,8 @@
 
 | 项 | 值 |
 | ---- | ---- |
-| 前端地址 | <http://192.168.1.167:8092>（同机 Tailscale 可用 `http://100.71.112.119:8092`） |
+| 桌面端 | <http://192.168.1.167:8092>（同机 Tailscale 可用 `http://100.71.112.119:8092`） |
+| 移动端 | <http://192.168.1.167:8092/mobile/#/login>（Vant，挂载在 /mobile/） |
 | 后端地址 | `http://127.0.0.1:8090`（仅本机监听，由 Nginx 同源反代） |
 | Jenkins 任务 | `admin-demo-deploy`（Freestyle project） |
 | 部署目录 | `/opt/admin-demo/` |
@@ -21,7 +22,7 @@
 | Redis | 沿用 `redis://100.71.112.119:6379` database 0 |
 | 构建工具 | 服务器 JDK `21.0.12.1`、Maven `3.8.7`、Node `v22.23.2`、npm `10.9.8` |
 | Nginx | `/usr/sbin/nginx`，独立配置/独立进程，监听 **8092** |
-| 最后一次构建 | **#3 SUCCESS**（约 2 分 3 秒，依赖已缓存） |
+| 最后一次构建 | **#4 SUCCESS**（含移动端；依赖已缓存） |
 
 ![部署后工作台](jenkins-deploy/22-deployed-dashboard.png)
 
@@ -34,7 +35,8 @@
   │  http://192.168.1.167:8092
   ▼
 独立 Nginx（/usr/sbin/nginx -p /opt/admin-demo/nginx，8092）
-  ├─ /                 → /opt/admin-demo/frontend（Vue3 构建产物，history fallback）
+  ├─ /                 → /opt/admin-demo/frontend（桌面端 Vue3，history fallback）
+  ├─ /mobile/          → /opt/admin-demo/frontend/mobile（移动端 Vant）
   └─ /auth /sysAuth /uploads /actuator /v3
                          → http://127.0.0.1:8090（Spring Boot）
                                                    │
@@ -83,7 +85,8 @@ ss -lntp | grep -E ':8090|:8092' || echo '8090/8092 free'
 /opt/admin-demo/
 ├── src/                 # Gitee 拉取的源码
 ├── backend/             # admintem-backend.jar
-├── frontend/            # Vue dist（Nginx root）
+├── frontend/            # Vue dist（桌面端 Nginx root）
+│   └── mobile/          # Vant dist（/mobile/）
 ├── config/
 │   └── application-local.yml   # 数据库/Redis 密码，600，禁止入 Git
 ├── nginx/
@@ -189,24 +192,40 @@ user www-data;
 pid /opt/admin-demo/nginx/nginx.pid;
 error_log /opt/admin-demo/logs/nginx-error.log warn;
 
-events { worker_connections 1024; }
+events {
+    worker_connections 1024;
+}
 
 http {
+    # 后端的鉴权头是 admintem_token（带下划线），Nginx 默认会丢弃这类头
+    underscores_in_headers on;
     include /etc/nginx/mime.types;
     default_type application/octet-stream;
     sendfile on;
+    keepalive_timeout 65;
     client_max_body_size 10m;
+
     access_log /opt/admin-demo/logs/nginx-access.log;
 
     server {
         listen 8092;
         server_name _;
+
         root /opt/admin-demo/frontend;
         index index.html;
 
-        location / { try_files $uri $uri/ /index.html; }
+        # 移动端（Vant）构建产物放在 frontend/mobile，访问 /mobile/
+        location /mobile/ {
+            try_files $uri $uri/ /mobile/index.html;
+        }
 
-        location ~ ^/(auth|sysAuth|uploads|actuator|swagger-ui|v3)/ {
+        # Vue history 路由：刷新子路由不 404
+        location / {
+            try_files $uri $uri/ /index.html;
+        }
+
+        # 后端接口与上传文件走同源反代；sysAuth 前缀覆盖 sysAuthRole/sysAuthUser 等
+        location ~ ^/(auth|sysAuth|uploads|actuator|swagger-ui|v3) {
             proxy_pass http://127.0.0.1:8090;
             proxy_http_version 1.1;
             proxy_set_header Host $host;
@@ -315,9 +334,9 @@ ssh -i /var/jenkins_home/.ssh/admin_demo \
 
 ![构建运行中](jenkins-deploy/12-build-running.png)
 
-最终任务页显示 **#3 成功**：
+最终任务页显示 **#4 成功**（桌面端 + 移动端）：
 
-![构建历史](jenkins-deploy/23-job-final.png)
+![构建历史](jenkins-deploy/25-job-after-mobile.png)
 
 ---
 
@@ -325,37 +344,39 @@ ssh -i /var/jenkins_home/.ssh/admin_demo \
 
 构建日志在任务页 **Console Output**：
 
-![Build #3 控制台](jenkins-deploy/20-build3-console.png)
+![Build #4 控制台](jenkins-deploy/24-build4-console.png)
 
 关键阶段：
 
 ```text
-===== [1/7] 同步代码 =====
+===== [1/8] 同步代码 =====
 commit=e4c496c style(layout)：顶栏头像左侧不再展示角色胶囊
 
-===== [2/7] 构建后端（JDK21，target 17） =====
+===== [2/8] 构建后端（JDK21，target 17） =====
 BUILD SUCCESS
-Total time: 6.498 s
 
-===== [3/7] 构建前端（本机 Node） =====
-added 288 packages in 4s
+===== [3/8] 构建桌面端（Vue） =====
 vite v8.2.2 building client environment for production...
-✓ built in 548ms
+✓ built in 2.69s
 
-===== [4/7] 替换静态文件 =====
-===== [5/7] 重启后端 =====
-backend pid=1822960
-===== [6/7] 等待健康检查 =====
+===== [4/8] 构建移动端（Vant，挂载 /mobile/） =====
+vite v8.3.0 building client environment for production...
+✓ built in 259ms
+
+===== [5/8] 替换静态文件 =====
+===== [6/8] 重启后端 =====
+backend pid=1848527
+===== [7/8] 等待健康检查 =====
 backend health=UP
-===== [7/7] 启动/重载独立 Nginx（8092） =====
+===== [8/8] 启动/重载独立 Nginx（8092） =====
 frontend http=200
 ===== 部署完成: http://192.168.1.167:8092 =====
 Finished: SUCCESS
 ```
 
-构建耗时约 **2 分 3 秒**（第 2、3 次依赖已缓存；首次约 1 分钟 Maven 下载）。
+构建耗时约 **2 分钟**（第 4 次依赖已缓存；首次约 1 分钟 Maven 下载）。
 
-完整日志见 [build-3-console.txt](jenkins-deploy/build-3-console.txt)。
+完整日志见 [build-4-console.txt](jenkins-deploy/build-4-console.txt)。
 
 ---
 
@@ -373,13 +394,33 @@ Finished: SUCCESS
 
 ![部署后工作台](jenkins-deploy/22-deployed-dashboard.png)
 
-### 9.3 接口与 SPA 刷新
+### 9.3 桌面端系统管理（本次 405 修复验证）
+
+登录后点击「系统管理 → 角色管理」，列表正常加载 3 条角色，`POST /sysAuthRole/paginQuery` 返回 200：
+
+![桌面端角色管理](jenkins-deploy/26-desktop-role-page.png)
+
+### 9.4 移动端
+
+打开 <http://192.168.1.167:8092/mobile/#/login>，使用同一账号登录：
+
+![移动端登录](jenkins-deploy/27-mobile-login.png)
+
+登录后进入移动端首页：
+
+![移动端首页](jenkins-deploy/28-mobile-home.png)
+
+移动端与桌面端共用同一套后端接口、数据库和 Redis；静态资源、`/auth`、`/sysAuth`、`/uploads` 全部由同一个 Nginx 8092 同源代理。
+
+### 9.5 接口与 SPA 刷新
 
 ```text
 GET  http://192.168.1.167:8092/actuator/health   → 200 {"status":"UP"}
 GET  http://192.168.1.167:8092/userInfo           → 200（Nginx history fallback 返回 index.html）
 POST http://192.168.1.167:8092/auth/captcha       → 200（不再 403）
 GET  http://192.168.1.167:8092/uploads/avatar/... → 200
+POST http://192.168.1.167:8092/sysAuthRole/paginQuery → 200（桌面角色列表）
+GET  http://192.168.1.167:8092/mobile/#/login → 200（移动端入口）
 ```
 
 浏览器控制台：无 4xx 资源、无 JS 报错。
@@ -392,13 +433,14 @@ GET  http://192.168.1.167:8092/uploads/avatar/... → 200
 
 | 步骤 | 做什么 | 关键点 |
 | ---- | ---- | ---- |
-| 1/7 | `git fetch` / `reset --hard origin/master` | 公开 Gitee 仓库；保证构建内容可追溯 |
-| 2/7 | `mvn -B -Pdev -DskipTests clean package` | JDK21 构建，项目 target 17；演示跳过测试 |
-| 3/7 | `npm ci && npm run build` | 使用服务器已有 Node 22；`.env.production` 的 API base 为空 |
-| 4/7 | 替换 frontend / jar | 先构建到 `.new`，成功后再替换，避免半成品 |
-| 5/7 | kill 旧 PID，启动新 jar | PID 文件 `/opt/admin-demo/run/backend.pid` |
-| 6/7 | 轮询 `/actuator/health` | 最长 120 秒；失败打印最后 80 行日志并退出 1 |
-| 7/7 | 独立 Nginx 启动/重载 | PID 为空或进程不在时重新启动，避免空 PID `reload` 失败 |
+| 1/8 | `git fetch` / `reset --hard origin/master` | 公开 Gitee 仓库；保证构建内容可追溯 |
+| 2/8 | `mvn -B -Pdev -DskipTests clean package` | JDK21 构建，项目 target 17；演示跳过测试 |
+| 3/8 | `npm ci && npm run build`（桌面端） | 使用服务器 Node 22；`.env.production` 的 API base 为空 |
+| 4/8 | `npm ci && npm run build -- --base=/mobile/`（移动端） | 构建产物复制到 `frontend/mobile`，与桌面端同源 |
+| 5/8 | 替换 frontend / jar | 先构建到 `.new`，成功后再替换，避免半成品 |
+| 6/8 | kill 旧 PID，启动新 jar | PID 文件 `/opt/admin-demo/run/backend.pid` |
+| 7/8 | 轮询 `/actuator/health` | 最长 120 秒；失败打印最后 80 行日志并退出 1 |
+| 8/8 | 独立 Nginx 启动/重载 | PID 为空或进程不在时重新启动，避免空 PID `reload` 失败 |
 
 > 生产建议：把 `-DskipTests` 改成完整测试；或拆成“构建”和“部署”两个自由风格任务，部署任务只允许发布已归档的 jar。
 
@@ -411,7 +453,7 @@ GET  http://192.168.1.167:8092/uploads/avatar/... → 200
 1. 本地 `git push` 到 Gitee `master`；
 2. Jenkins 打开 `admin-demo-deploy` → **Build Now**；
 3. 看 Console 最后一行是否为 `Finished: SUCCESS`；
-4. 打开 8092 验证。
+4. 打开 8092 验证桌面端，打开 8092/mobile/ 验证移动端。
 
 ### 11.2 查看日志
 
@@ -451,6 +493,9 @@ kill "$(cat /opt/admin-demo/run/backend.pid)"
 | Build #1：`invalid PID number "" in nginx.pid` | `nginx -t`/上次失败留下空 pid 文件，脚本直接 `-s reload` | 先判断 pid 文件非空且进程存活，否则删 pid 后重新启动 |
 | 页面“验证码加载失败”，POST `/auth/captcha` 403 | 部署域名不在后端 CORS 白名单（默认只允许 localhost） | 启动参数增加 `--admintem.security.cors-allowed-origins=...192.168.1.167:8092` |
 | 头像 404 | 数据库沿用旧数据，但 `/opt/admin-demo/uploads` 为空 | 把原 `uploads/avatar` 文件同步到部署目录（本次 3 个文件） |
+| 系统管理 405 `POST /sysAuthRole/paginQuery` | Nginx 反代正则写成 `sysAuth/`，只匹配 sysAuth 后带斜杠，`sysAuthRole` 落到静态 location | 正则改为 `^/(auth|sysAuth|uploads|actuator|swagger-ui|v3)`，不要求前缀后紧跟斜杠 |
+| 登录后 getUserInfo 401 | Nginx 默认 `underscores_in_headers off`，丢弃鉴权头 `admintem_token` | 在 `http` 块加 `underscores_in_headers on;` |
+| 移动端未部署 | 原脚本只构建桌面端 | 增加移动端构建，产物放 `frontend/mobile`，Nginx 增加 `/mobile/` |
 | Jenkins 容器没有 Node/Maven | Jenkins 镜像只负责调度 | 构建放到目标机执行，Jenkins 通过 SSH 触发 |
 
 ---
@@ -469,9 +514,12 @@ kill "$(cat /opt/admin-demo/run/backend.pid)"
 | 构建前 | [10-job-before-build.png](jenkins-deploy/10-job-before-build.png) |
 | 构建排队 | [11-build-queued.png](jenkins-deploy/11-build-queued.png) |
 | 构建运行中 | [12-build-running.png](jenkins-deploy/12-build-running.png) |
-| 第三次构建排队 | [19-build3-queued.png](jenkins-deploy/19-build3-queued.png) |
-| Build #3 控制台 | [20-build3-console.png](jenkins-deploy/20-build3-console.png) |
-| 构建历史（#3 成功） | [23-job-final.png](jenkins-deploy/23-job-final.png) |
+| 构建排队（历史 #3） | [19-build3-queued.png](jenkins-deploy/19-build3-queued.png) |
+| Build #4 控制台（含移动端） | [24-build4-console.png](jenkins-deploy/24-build4-console.png) |
+| 构建历史（#4 成功） | [25-job-after-mobile.png](jenkins-deploy/25-job-after-mobile.png) |
+| 桌面端角色管理（405 修复） | [26-desktop-role-page.png](jenkins-deploy/26-desktop-role-page.png) |
+| 移动端登录 | [27-mobile-login.png](jenkins-deploy/27-mobile-login.png) |
+| 移动端首页 | [28-mobile-home.png](jenkins-deploy/28-mobile-home.png) |
 | 部署后登录页 | [21-deployed-login.png](jenkins-deploy/21-deployed-login.png) |
 | 部署后工作台 | [22-deployed-dashboard.png](jenkins-deploy/22-deployed-dashboard.png) |
 

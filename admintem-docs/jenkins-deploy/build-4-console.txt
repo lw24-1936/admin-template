@@ -1,0 +1,175 @@
+Started by user admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/admin-demo-deploy
+[admin-demo-deploy] $ /bin/sh -xe /tmp/jenkins14382026538940707076.sh
++ set -e
++ ssh -i /var/jenkins_home/.ssh/admin_demo -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.1.167 bash /opt/admin-demo/deploy.sh
+Warning: Permanently added '192.168.1.167' (ED25519) to the list of known hosts.
+===== [1/8] 同步代码 =====
+来自 https://gitee.com/liuwei9599/admin-template
+ * branch            master     -> FETCH_HEAD
+   e4c496c..d629554  master     -> origin/master
+HEAD 现在位于 d629554 ﻿docs(deploy)：新增 Jenkins 自由风格任务部署教程与全流程截图
+commit=d629554 ﻿docs(deploy)：新增 Jenkins 自由风格任务部署教程与全流程截图
+===== [2/8] 构建后端（JDK21，target 17） =====
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------< com.admintem:admintem-backend >--------------------
+[INFO] Building admintem-backend 1.0.0
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:3.4.1:clean (default-clean) @ admintem-backend ---
+[INFO] Deleting /opt/admin-demo/src/admintem-backend/target
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ admintem-backend ---
+[INFO] Copying 13 resources from src/main/resources to target/classes
+[INFO] Copying 10 resources from ../admintem-docs/db/changelog to target/classes/db/migration
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.14.1:compile (default-compile) @ admintem-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 125 source files with javac [debug parameters release 17] to target/classes
+[INFO] 由于在类路径中发现了一个或多个处理程序，因此启用了
+  批注处理。未来发行版的 javac 可能会禁用批注处理，
+  除非至少按名称指定了一个处理程序 (-processor)，
+  或指定了搜索路径 (--processor-path, --processor-module-path)，
+  或显式启用了批注处理 (-proc:only, -proc:full)。
+  可使用 -Xlint:-options 隐藏此消息。
+  可使用 -proc:none 禁用批注处理。
+[WARNING] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/entity/vo/MenuVO.java:[18,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[WARNING] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/entity/vo/PermissionVO.java:[18,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[INFO] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/config/security/SecurityConfig.java: 某些输入文件使用或覆盖了已过时的 API。
+[INFO] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/config/security/SecurityConfig.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ admintem-backend ---
+[INFO] skip non existing resourceDirectory /opt/admin-demo/src/admintem-backend/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.14.1:testCompile (default-testCompile) @ admintem-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 23 source files with javac [debug parameters release 17] to target/test-classes
+[INFO] 由于在类路径中发现了一个或多个处理程序，因此启用了
+  批注处理。未来发行版的 javac 可能会禁用批注处理，
+  除非至少按名称指定了一个处理程序 (-processor)，
+  或指定了搜索路径 (--processor-path, --processor-module-path)，
+  或显式启用了批注处理 (-proc:only, -proc:full)。
+  可使用 -Xlint:-options 隐藏此消息。
+  可使用 -proc:none 禁用批注处理。
+[INFO] /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java: /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java使用或覆盖了已过时的 API。
+[INFO] /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.5.6:test (default-test) @ admintem-backend ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.4.2:jar (default-jar) @ admintem-backend ---
+[INFO] Building jar: /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.5.16:repackage (repackage) @ admintem-backend ---
+[INFO] Replacing main artifact /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  30.994 s
+[INFO] Finished at: 2026-10-27T01:00:56+08:00
+[INFO] ------------------------------------------------------------------------
+===== [3/8] 构建桌面端（Vue） =====
+
+added 288 packages in 8s
+
+82 packages are looking for funding
+  run `npm fund` for details
+
+> admintem-vue@0.0.0 build
+> vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 1851 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                      1.06 kB │ gzip:   0.54 kB
+dist/assets/dept-BntRilp0.css                        0.09 kB │ gzip:   0.10 kB
+dist/assets/PaginationBar-BixMoDTr.css               0.09 kB │ gzip:   0.10 kB
+dist/assets/TableToolbar-DbQrMWuB.css                0.52 kB │ gzip:   0.21 kB
+dist/assets/onlineSession-Bi32OwCh.css               0.61 kB │ gzip:   0.24 kB
+dist/assets/auditLog-CPsfDZ4B.css                    0.64 kB │ gzip:   0.30 kB
+dist/assets/StatusPage-BS4rS1_8.css                  2.75 kB │ gzip:   1.00 kB
+dist/assets/Layout-BtRujXyX.css                      4.53 kB │ gzip:   1.26 kB
+dist/assets/HomeView-CUXMfP3C.css                    4.72 kB │ gzip:   1.17 kB
+dist/assets/register-B4WJ59Y-.css                    5.00 kB │ gzip:   1.43 kB
+dist/assets/login-BJSaM9YS.css                       6.96 kB │ gzip:   1.83 kB
+dist/assets/index-DjRGfz7s.css                      18.97 kB │ gzip:   4.26 kB
+dist/assets/vendor-element-DC3w-ebf.css            231.47 kB │ gzip:  30.17 kB
+dist/assets/_plugin-vue_export-helper-BDNMzG2s.js    0.08 kB │ gzip:   0.09 kB
+dist/assets/dept-CrDJYDYB.js                         0.29 kB │ gzip:   0.17 kB
+dist/assets/role-B68rNM09.js                         0.66 kB │ gzip:   0.24 kB
+dist/assets/NotFound-CsISfMYr.js                     0.69 kB │ gzip:   0.56 kB
+dist/assets/Forbidden-C-jhP1Pe.js                    0.70 kB │ gzip:   0.58 kB
+dist/assets/rolldown-runtime-hePW80VL.js             0.71 kB │ gzip:   0.42 kB
+dist/assets/StatusPage-DVluQl4d.js                   0.75 kB │ gzip:   0.41 kB
+dist/assets/useQuerySync-CCsNqcuI.js                 0.80 kB │ gzip:   0.47 kB
+dist/assets/TableToolbar-6ZIXxDYO.js                 0.94 kB │ gzip:   0.45 kB
+dist/assets/PaginationBar-BGsJhxs3.js                0.98 kB │ gzip:   0.58 kB
+dist/assets/HomeView-DkEW4yqN.js                     3.90 kB │ gzip:   2.13 kB
+dist/assets/register-2KRdCCX2.js                     5.06 kB │ gzip:   2.23 kB
+dist/assets/onlineSession-DJ4HlHT1.js                5.29 kB │ gzip:   2.57 kB
+dist/assets/login-DVznc4Kl.js                        5.86 kB │ gzip:   2.87 kB
+dist/assets/dept-VffaUw5b.js                         6.50 kB │ gzip:   2.74 kB
+dist/assets/auditLog-Dq0q-7ee.js                     7.04 kB │ gzip:   2.77 kB
+dist/assets/RoleInfo-D6Or0pW3.js                     7.81 kB │ gzip:   3.21 kB
+dist/assets/PermissionInfo-Dt-_mE97.js               9.33 kB │ gzip:   3.19 kB
+dist/assets/Layout-BxrAGdcz.js                      11.22 kB │ gzip:   4.31 kB
+dist/assets/index-DAQIkaGE.js                       11.57 kB │ gzip:   4.93 kB
+dist/assets/UserInfo-BfN5wPII.js                    13.90 kB │ gzip:   4.51 kB
+dist/assets/vendor-vue-BJ4JFVWk.js                  28.81 kB │ gzip:  11.57 kB
+dist/assets/vendor-DMAqkq0X.js                     252.80 kB │ gzip:  92.98 kB
+dist/assets/vendor-element-Dk-y02OE.js             467.63 kB │ gzip: 143.25 kB
+
+✓ built in 2.69s
+===== [4/8] 构建移动端（Vant，挂载 /mobile/） =====
+
+added 103 packages in 2s
+
+28 packages are looking for funding
+  run `npm fund` for details
+
+> admintem-mobile@0.1.0 build
+> vite build --base=/mobile/
+
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 401 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                      1.10 kB │ gzip:  0.72 kB
+dist/assets/TabLayout-BcKHslfw.css                   2.26 kB │ gzip:  0.70 kB
+dist/assets/cell-Clsg_zf0.css                        3.01 kB │ gzip:  0.75 kB
+dist/assets/register-CqKqLvT4.css                    3.63 kB │ gzip:  1.09 kB
+dist/assets/home-DDFKZVpd.css                        3.67 kB │ gzip:  0.99 kB
+dist/assets/style-u37MGkvl.css                       5.05 kB │ gzip:  1.10 kB
+dist/assets/mine-BA_UV1TC.css                        6.09 kB │ gzip:  1.43 kB
+dist/assets/login-0l3yDGyu.css                       8.75 kB │ gzip:  1.97 kB
+dist/assets/index-CgbH9_HK.css                      73.75 kB │ gzip: 35.52 kB
+dist/assets/favicon-Ds9AXCcf.js                      0.04 kB │ gzip:  0.06 kB
+dist/assets/style-BGnyGdIB.js                        0.05 kB │ gzip:  0.06 kB
+dist/assets/_plugin-vue_export-helper-D3X12XXl.js    0.35 kB │ gzip:  0.26 kB
+dist/assets/use-placeholder-l8zToutv.js              0.38 kB │ gzip:  0.29 kB
+dist/assets/cell-DmNx4Kq1.js                         1.64 kB │ gzip:  0.80 kB
+dist/assets/TabLayout-EG6M_jAZ.js                    2.57 kB │ gzip:  1.31 kB
+dist/assets/home-DDlw_wVk.js                         3.89 kB │ gzip:  1.88 kB
+dist/assets/register-C68Nec25.js                     4.63 kB │ gzip:  2.07 kB
+dist/assets/login-CnFIH59M.js                        6.19 kB │ gzip:  2.83 kB
+dist/assets/mine-DkvZXp5L.js                         9.82 kB │ gzip:  3.96 kB
+dist/assets/style-cjZbpr8B.js                       11.61 kB │ gzip:  4.65 kB
+dist/assets/index-YaOV3DrW.js                      177.37 kB │ gzip: 68.29 kB
+
+✓ built in 259ms
+===== [5/8] 替换静态文件 =====
+===== [6/8] 重启后端 =====
+backend pid=1848527
+===== [7/8] 等待健康检查 =====
+backend health=UP
+===== [8/8] 启动/重载独立 Nginx（8092） =====
+2026/10/27 01:01:25 [notice] 1849162#1849162: signal process started
+frontend http=200
+===== 部署完成: http://192.168.1.167:8092 =====
+Finished: SUCCESS

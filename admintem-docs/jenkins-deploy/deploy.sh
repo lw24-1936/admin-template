@@ -9,7 +9,7 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 export JAVA_HOME
 export PATH="$JAVA_HOME/bin:/usr/local/bin:/usr/bin:/bin"
 
-echo "===== [1/7] 同步代码 ====="
+echo "===== [1/8] 同步代码 ====="
 mkdir -p "$BASE/src"
 cd "$BASE/src"
 if [ -d .git ]; then
@@ -20,7 +20,7 @@ else
 fi
 git --no-pager log -1 --format='commit=%h %s'
 
-echo "===== [2/7] 构建后端（JDK21，target 17） ====="
+echo "===== [2/8] 构建后端（JDK21，target 17） ====="
 cd "$BASE/src/admintem-backend"
 mvn -B -Pdev -DskipTests clean package
 JAR="$BASE/src/admintem-backend/target/admintem-backend.jar"
@@ -28,20 +28,27 @@ test -f "$JAR"
 mkdir -p "$BASE/backend" "$BASE/logs" "$BASE/run" "$BASE/config"
 cp "$JAR" "$BASE/backend/admintem-backend.jar.new"
 
-echo "===== [3/7] 构建前端（本机 Node） ====="
+echo "===== [3/8] 构建桌面端（Vue） ====="
 cd "$BASE/src/admintem-vue"
 npm ci
 npm run build
 rm -rf "$BASE/frontend.new"
 cp -a dist "$BASE/frontend.new"
 
-echo "===== [4/7] 替换静态文件 ====="
+echo "===== [4/8] 构建移动端（Vant，挂载 /mobile/） ====="
+cd "$BASE/src/admintem-mobile"
+npm ci
+npm run build -- --base=/mobile/
+mkdir -p "$BASE/frontend.new/mobile"
+cp -a dist/. "$BASE/frontend.new/mobile/"
+
+echo "===== [5/8] 替换静态文件 ====="
 rm -rf "$BASE/frontend"
 mv "$BASE/frontend.new" "$BASE/frontend"
 mv "$BASE/backend/admintem-backend.jar.new" "$BASE/backend/admintem-backend.jar"
 mkdir -p "$BASE/uploads/avatar"
 
-echo "===== [5/7] 重启后端 ====="
+echo "===== [6/8] 重启后端 ====="
 if [ -f "$BASE/run/backend.pid" ]; then
   OLD_PID=$(cat "$BASE/run/backend.pid" || true)
   if [ -n "${OLD_PID:-}" ] && kill -0 "$OLD_PID" 2>/dev/null; then
@@ -63,7 +70,7 @@ nohup "$JAVA_HOME/bin/java" \
 echo $! > "$BASE/run/backend.pid"
 echo "backend pid=$(cat "$BASE/run/backend.pid")"
 
-echo "===== [6/7] 等待健康检查 ====="
+echo "===== [7/8] 等待健康检查 ====="
 HEALTH=DOWN
 for _ in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:8090/actuator/health 2>/dev/null | grep -q '"status":"UP"'; then
@@ -79,7 +86,7 @@ if [ "$HEALTH" != "UP" ]; then
 fi
 echo "backend health=UP"
 
-echo "===== [7/7] 启动/重载独立 Nginx（8092） ====="
+echo "===== [8/8] 启动/重载独立 Nginx（8092） ====="
 mkdir -p "$BASE/nginx" "$BASE/logs"
 # nginx -t 或上次失败可能留下空的 pid；只有 pid 非空且进程存活才 reload
 if [ -s "$BASE/nginx/nginx.pid" ] && kill -0 "$(cat "$BASE/nginx/nginx.pid")" 2>/dev/null; then
