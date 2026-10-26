@@ -1,0 +1,5 @@
+# 复制到服务器 /opt/admin-demo/config/application-local.yml
+# chmod 600，禁止提交到 Git
+ADMINTEM_DB_PASSWORD: "<MySQL root 密码>"
+ADMINTEM_REDIS_PASSWORD: "<Redis 密码>"
+ADMINTEM_MINIO_SECRET_KEY: "<MinIO secret，可选；local 存储不需要>"

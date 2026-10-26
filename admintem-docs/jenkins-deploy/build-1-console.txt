@@ -1,0 +1,760 @@
+Started by user admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/admin-demo-deploy
+[admin-demo-deploy] $ /bin/sh -xe /tmp/jenkins16737213392633582894.sh
++ set -e
++ ssh -i /var/jenkins_home/.ssh/admin_demo -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@192.168.1.167 bash /opt/admin-demo/deploy.sh
+Warning: Permanently added '192.168.1.167' (ED25519) to the list of known hosts.
+===== [1/7] 同步代码 =====
+正克隆到 '.'...
+commit=e4c496c ﻿style(layout)：顶栏头像左侧不再展示角色胶囊
+===== [2/7] 构建后端（JDK21，target 17） =====
+[INFO] Scanning for projects...
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-parent/3.5.16/spring-boot-starter-parent-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-parent/3.5.16/spring-boot-starter-parent-3.5.16.pom (13 kB at 21 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-dependencies/3.5.16/spring-boot-dependencies-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-dependencies/3.5.16/spring-boot-dependencies-3.5.16.pom (97 kB at 862 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/activemq/activemq-bom/6.1.8/activemq-bom-6.1.8.pom (7.9 kB at 32 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/groovy/groovy-bom/4.0.32/groovy-bom-4.0.32.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/groovy/groovy-bom/4.0.32/groovy-bom-4.0.32.pom (27 kB at 505 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/infinispan/infinispan-bom/15.2.6.Final/infinispan-bom-15.2.6.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/infinispan/infinispan-bom/15.2.6.Final/infinispan-bom-15.2.6.Final.pom (17 kB at 63 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/infinispan/infinispan-build-configuration-parent/15.2.6.Final/infinispan-build-configuration-parent-15.2.6.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/infinispan/infinispan-build-configuration-parent/15.2.6.Final/infinispan-build-configuration-parent-15.2.6.Final.pom (17 kB at 71 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.21.4/jackson-bom-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.21.4/jackson-bom-2.21.4.pom (20 kB at 375 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/glassfish/jersey/jersey-bom/3.1.11/jersey-bom-3.1.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/glassfish/jersey/jersey-bom/3.1.11/jersey-bom-3.1.11.pom (21 kB at 301 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.36/jetty-ee10-bom-12.0.36.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.36/jetty-ee10-bom-12.0.36.pom (9.6 kB at 177 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/jetty-bom/12.0.36/jetty-bom-12.0.36.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/jetty-bom/12.0.36/jetty-bom-12.0.36.pom (15 kB at 261 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-bom/1.15.12/micrometer-bom-1.15.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-bom/1.15.12/micrometer-bom-1.15.12.pom (8.6 kB at 183 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mongodb/mongodb-driver-bom/5.5.2/mongodb-driver-bom-5.5.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mongodb/mongodb-driver-bom/5.5.2/mongodb-driver-bom-5.5.2.pom (4.2 kB at 53 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.135.Final/netty-bom-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.135.Final/netty-bom-4.1.135.Final.pom (15 kB at 92 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/prometheus/prometheus-metrics-bom/1.3.10/prometheus-metrics-bom-1.3.10.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/prometheus/prometheus-metrics-bom/1.3.10/prometheus-metrics-bom-1.3.10.pom (5.8 kB at 21 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/prometheus/client_java_parent/1.3.10/client_java_parent-1.3.10.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/prometheus/client_java_parent/1.3.10/client_java_parent-1.3.10.pom (4.4 kB at 54 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/pulsar/pulsar-bom/4.0.11/pulsar-bom-4.0.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/pulsar/pulsar-bom/4.0.11/pulsar-bom-4.0.11.pom (25 kB at 311 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-bom/2024.0.18/reactor-bom-2024.0.18.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-bom/2024.0.18/reactor-bom-2024.0.18.pom (4.8 kB at 94 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/rest-assured/rest-assured-bom/5.5.7/rest-assured-bom-5.5.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/rest-assured/rest-assured-bom/5.5.7/rest-assured-bom-5.5.7.pom (4.7 kB at 51 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/amqp/spring-amqp-bom/3.2.12/spring-amqp-bom-3.2.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/amqp/spring-amqp-bom/3.2.12/spring-amqp-bom-3.2.12.pom (3.9 kB at 70 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/batch/spring-batch-bom/5.2.6/spring-batch-bom-5.2.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/batch/spring-batch-bom/5.2.6/spring-batch-bom-5.2.6.pom (3.2 kB at 38 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/data/spring-data-bom/2025.0.13/spring-data-bom-2025.0.13.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/data/spring-data-bom/2025.0.13/spring-data-bom-2025.0.13.pom (5.5 kB at 88 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-framework-bom/6.2.19/spring-framework-bom-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-framework-bom/6.2.19/spring-framework-bom-6.2.19.pom (5.8 kB at 62 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/integration/spring-integration-bom/6.5.10/spring-integration-bom-6.5.10.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/integration/spring-integration-bom/6.5.10/spring-integration-bom-6.5.10.pom (10 kB at 181 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/pulsar/spring-pulsar-bom/1.2.18/spring-pulsar-bom-1.2.18.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/pulsar/spring-pulsar-bom/1.2.18/spring-pulsar-bom-1.2.18.pom (2.9 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/restdocs/spring-restdocs-bom/3.0.6/spring-restdocs-bom-3.0.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/restdocs/spring-restdocs-bom/3.0.6/spring-restdocs-bom-3.0.6.pom (2.6 kB at 25 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-bom/6.5.11/spring-security-bom-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-bom/6.5.11/spring-security-bom-6.5.11.pom (5.3 kB at 84 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/session/spring-session-bom/3.5.7/spring-session-bom-3.5.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/session/spring-session-bom/3.5.7/spring-session-bom-3.5.7.pom (2.9 kB at 34 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/ws/spring-ws-bom/4.1.4/spring-ws-bom-4.1.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/ws/spring-ws-bom/4.1.4/spring-ws-bom-4.1.4.pom (2.3 kB at 32 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/testcontainers/testcontainers-bom/1.21.4/testcontainers-bom-1.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/testcontainers/testcontainers-bom/1.21.4/testcontainers-bom-1.21.4.pom (12 kB at 251 kB/s)
+[INFO] 
+[INFO] -------------------< com.admintem:admintem-backend >--------------------
+[INFO] Building admintem-backend 1.0.0
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-maven-plugin/3.5.16/spring-boot-maven-plugin-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-maven-plugin/3.5.16/spring-boot-maven-plugin-3.5.16.pom (4.0 kB at 46 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-maven-plugin/3.5.16/spring-boot-maven-plugin-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-maven-plugin/3.5.16/spring-boot-maven-plugin-3.5.16.jar (138 kB at 1.6 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-compiler-plugin/3.14.1/maven-compiler-plugin-3.14.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-compiler-plugin/3.14.1/maven-compiler-plugin-3.14.1.pom (9.9 kB at 102 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-compiler-plugin/3.14.1/maven-compiler-plugin-3.14.1.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-compiler-plugin/3.14.1/maven-compiler-plugin-3.14.1.jar (84 kB at 1.2 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/minio/minio/8.2.0/minio-8.2.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/minio/minio/8.2.0/minio-8.2.0.pom (2.7 kB at 8.9 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava/29.0-jre/guava-29.0-jre.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava/29.0-jre/guava-29.0-jre.pom (11 kB at 56 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava-parent/29.0-jre/guava-parent-29.0-jre.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava-parent/29.0-jre/guava-parent-29.0-jre.pom (13 kB at 398 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.pom (2.4 kB at 5.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okhttp3/okhttp/4.8.1/okhttp-4.8.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okhttp3/okhttp/4.8.1/okhttp-4.8.1.pom (1.8 kB at 49 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okio/okio/2.7.0/okio-2.7.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okio/okio/2.7.0/okio-2.7.0.pom (1.8 kB at 62 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-core/2.21.4/jackson-core-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-core/2.21.4/jackson-core-2.21.4.pom (9.7 kB at 141 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-base/2.21.4/jackson-base-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-base/2.21.4/jackson-base-2.21.4.pom (13 kB at 284 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-databind/2.21.4/jackson-databind-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-databind/2.21.4/jackson-databind-2.21.4.pom (23 kB at 397 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-web/3.5.16/spring-boot-starter-web-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-web/3.5.16/spring-boot-starter-web-3.5.16.pom (2.9 kB at 38 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter/3.5.16/spring-boot-starter-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter/3.5.16/spring-boot-starter-3.5.16.pom (3.0 kB at 57 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot/3.5.16/spring-boot-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot/3.5.16/spring-boot-3.5.16.pom (2.2 kB at 32 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-core/6.2.19/spring-core-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-core/6.2.19/spring-core-6.2.19.pom (2.0 kB at 41 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jcl/6.2.19/spring-jcl-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jcl/6.2.19/spring-jcl-6.2.19.pom (1.8 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-context/6.2.19/spring-context-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-context/6.2.19/spring-context-6.2.19.pom (2.8 kB at 44 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-aop/6.2.19/spring-aop-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-aop/6.2.19/spring-aop-6.2.19.pom (2.2 kB at 37 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-beans/6.2.19/spring-beans-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-beans/6.2.19/spring-beans-6.2.19.pom (2.0 kB at 31 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-expression/6.2.19/spring-expression-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-expression/6.2.19/spring-expression-6.2.19.pom (2.1 kB at 44 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-observation/1.15.12/micrometer-observation-1.15.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-observation/1.15.12/micrometer-observation-1.15.12.pom (3.8 kB at 42 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-commons/1.15.12/micrometer-commons-1.15.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-commons/1.15.12/micrometer-commons-1.15.12.pom (3.4 kB at 45 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-autoconfigure/3.5.16/spring-boot-autoconfigure-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-autoconfigure/3.5.16/spring-boot-autoconfigure-3.5.16.pom (2.1 kB at 36 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-logging/3.5.16/spring-boot-starter-logging-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-logging/3.5.16/spring-boot-starter-logging-3.5.16.pom (2.5 kB at 29 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-classic/1.5.34/logback-classic-1.5.34.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-classic/1.5.34/logback-classic-1.5.34.pom (16 kB at 128 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-parent/1.5.34/logback-parent-1.5.34.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-parent/1.5.34/logback-parent-1.5.34.pom (20 kB at 222 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-core/1.5.34/logback-core-1.5.34.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-core/1.5.34/logback-core-1.5.34.pom (9.4 kB at 126 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-json/3.5.16/spring-boot-starter-json-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-json/3.5.16/spring-boot-starter-json-3.5.16.pom (3.1 kB at 38 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-web/6.2.19/spring-web-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-web/6.2.19/spring-web-6.2.19.pom (2.4 kB at 23 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.4/jackson-datatype-jdk8-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.4/jackson-datatype-jdk8-2.21.4.pom (2.8 kB at 33 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-modules-java8/2.21.4/jackson-modules-java8-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-modules-java8/2.21.4/jackson-modules-java8-2.21.4.pom (3.1 kB at 31 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.21.4/jackson-datatype-jsr310-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.21.4/jackson-datatype-jsr310-2.21.4.pom (5.3 kB at 76 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.4/jackson-module-parameter-names-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.4/jackson-module-parameter-names-2.21.4.pom (4.2 kB at 37 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-tomcat/3.5.16/spring-boot-starter-tomcat-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-tomcat/3.5.16/spring-boot-starter-tomcat-3.5.16.pom (3.1 kB at 45 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-core/10.1.55/tomcat-embed-core-10.1.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-core/10.1.55/tomcat-embed-core-10.1.55.pom (1.7 kB at 33 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-el/10.1.55/tomcat-embed-el-10.1.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-el/10.1.55/tomcat-embed-el-10.1.55.pom (1.5 kB at 28 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.55/tomcat-embed-websocket-10.1.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.55/tomcat-embed-websocket-10.1.55.pom (1.7 kB at 22 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-webmvc/6.2.19/spring-webmvc-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-webmvc/6.2.19/spring-webmvc-6.2.19.pom (3.0 kB at 52 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-validation/3.5.16/spring-boot-starter-validation-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-validation/3.5.16/spring-boot-starter-validation-3.5.16.pom (2.5 kB at 33 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/hibernate/validator/hibernate-validator/8.0.3.Final/hibernate-validator-8.0.3.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/hibernate/validator/hibernate-validator/8.0.3.Final/hibernate-validator-8.0.3.Final.pom (5.3 kB at 156 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-security/3.5.16/spring-boot-starter-security-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-security/3.5.16/spring-boot-starter-security-3.5.16.pom (2.7 kB at 8.0 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-config/6.5.11/spring-security-config-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-config/6.5.11/spring-security-config-6.5.11.pom (2.8 kB at 32 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-core/6.5.11/spring-security-core-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-core/6.5.11/spring-security-core-6.5.11.pom (3.2 kB at 32 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-crypto/6.5.11/spring-security-crypto-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-crypto/6.5.11/spring-security-crypto-6.5.11.pom (2.1 kB at 30 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-web/6.5.11/spring-security-web-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-web/6.5.11/spring-security-web-6.5.11.pom (3.2 kB at 36 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson/3.52.0/redisson-3.52.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson/3.52.0/redisson-3.52.0.pom (22 kB at 75 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson-parent/3.52.0/redisson-parent-3.52.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson-parent/3.52.0/redisson-parent-3.52.0.pom (18 kB at 56 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/testcontainers/testcontainers-bom/1.21.3/testcontainers-bom-1.21.3.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/testcontainers/testcontainers-bom/1.21.3/testcontainers-bom-1.21.3.pom (12 kB at 428 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.127.Final/netty-bom-4.1.127.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.127.Final/netty-bom-4.1.127.Final.pom (15 kB at 250 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.20.0/jackson-bom-2.20.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.20.0/jackson-bom-2.20.0.pom (20 kB at 297 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-parent/2.20/jackson-parent-2.20.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-parent/2.20/jackson-parent-2.20.pom (6.8 kB at 94 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/oss-parent/70/oss-parent-70.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/oss-parent/70/oss-parent-70.pom (24 kB at 338 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-common/4.1.135.Final/netty-common-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-common/4.1.135.Final/netty-common-4.1.135.Final.pom (10 kB at 26 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-parent/4.1.135.Final/netty-parent-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-parent/4.1.135.Final/netty-parent-4.1.135.Final.pom (101 kB at 372 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec/4.1.135.Final/netty-codec-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec/4.1.135.Final/netty-codec-4.1.135.Final.pom (6.1 kB at 26 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-buffer/4.1.135.Final/netty-buffer-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-buffer/4.1.135.Final/netty-buffer-4.1.135.Final.pom (2.2 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport/4.1.135.Final/netty-transport-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport/4.1.135.Final/netty-transport-4.1.135.Final.pom (2.9 kB at 14 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver/4.1.135.Final/netty-resolver-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver/4.1.135.Final/netty-resolver-4.1.135.Final.pom (2.2 kB at 9.3 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver-dns/4.1.135.Final/netty-resolver-dns-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver-dns/4.1.135.Final/netty-resolver-dns-4.1.135.Final.pom (3.8 kB at 15 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec-dns/4.1.135.Final/netty-codec-dns-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec-dns/4.1.135.Final/netty-codec-dns-4.1.135.Final.pom (3.3 kB at 16 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-handler/4.1.135.Final/netty-handler-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-handler/4.1.135.Final/netty-handler-4.1.135.Final.pom (5.4 kB at 23 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport-native-unix-common/4.1.135.Final/netty-transport-native-unix-common-4.1.135.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport-native-unix-common/4.1.135.Final/netty-transport-native-unix-common-4.1.135.Final.pom (34 kB at 129 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-core/3.7.19/reactor-core-3.7.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-core/3.7.19/reactor-core-3.7.19.pom (2.1 kB at 9.5 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/reactivex/rxjava3/rxjava/3.1.12/rxjava-3.1.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/reactivex/rxjava3/rxjava/3.1.12/rxjava-3.1.12.pom (1.8 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo/5.6.2/kryo-5.6.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo/5.6.2/kryo-5.6.2.pom (4.7 kB at 68 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo-parent/5.6.2/kryo-parent-5.6.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo-parent/5.6.2/kryo-parent-5.6.2.pom (16 kB at 155 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/reflectasm/1.11.9/reflectasm-1.11.9.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/reflectasm/1.11.9/reflectasm-1.11.9.pom (4.1 kB at 49 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis/3.4/objenesis-3.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis/3.4/objenesis-3.4.pom (3.0 kB at 44 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis-parent/3.4/objenesis-parent-3.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis-parent/3.4/objenesis-parent-3.4.pom (19 kB at 347 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.pom (3.6 kB at 42 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.21.4/jackson-dataformat-yaml-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.21.4/jackson-dataformat-yaml-2.21.4.pom (3.0 kB at 36 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.21.4/jackson-dataformats-text-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformats-text/2.21.4/jackson-dataformats-text-2.21.4.pom (3.5 kB at 16 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy/1.17.8/byte-buddy-1.17.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy/1.17.8/byte-buddy-1.17.8.pom (19 kB at 204 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-parent/1.17.8/byte-buddy-parent-1.17.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-parent/1.17.8/byte-buddy-parent-1.17.8.pom (66 kB at 673 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jodd/jodd-util/6.3.0/jodd-util-6.3.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jodd/jodd-util/6.3.0/jodd-util-6.3.0.pom (1.4 kB at 22 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-aop/3.5.16/spring-boot-starter-aop-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-aop/3.5.16/spring-boot-starter-aop-3.5.16.pom (2.5 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/aspectj/aspectjweaver/1.9.25.1/aspectjweaver-1.9.25.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/aspectj/aspectjweaver/1.9.25.1/aspectjweaver-1.9.25.1.pom (1.7 kB at 4.3 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-actuator/3.5.16/spring-boot-starter-actuator-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-actuator/3.5.16/spring-boot-starter-actuator-3.5.16.pom (2.8 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator-autoconfigure/3.5.16/spring-boot-actuator-autoconfigure-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator-autoconfigure/3.5.16/spring-boot-actuator-autoconfigure-3.5.16.pom (2.9 kB at 7.5 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator/3.5.16/spring-boot-actuator-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator/3.5.16/spring-boot-actuator-3.5.16.pom (2.0 kB at 8.3 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-jakarta9/1.15.12/micrometer-jakarta9-1.15.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-jakarta9/1.15.12/micrometer-jakarta9-1.15.12.pom (3.8 kB at 88 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-core/1.15.12/micrometer-core-1.15.12.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-core/1.15.12/micrometer-core-1.15.12.pom (11 kB at 76 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/latencyutils/LatencyUtils/2.0.3/LatencyUtils-2.0.3.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/latencyutils/LatencyUtils/2.0.3/LatencyUtils-2.0.3.pom (7.2 kB at 29 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-core/11.7.2/flyway-core-11.7.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-core/11.7.2/flyway-core-11.7.2.pom (5.6 kB at 14 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-parent/11.7.2/flyway-parent-11.7.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-parent/11.7.2/flyway-parent-11.7.2.pom (36 kB at 560 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-toml/2.21.4/jackson-dataformat-toml-2.21.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-toml/2.21.4/jackson-dataformat-toml-2.21.4.pom (3.8 kB at 17 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-mysql/11.7.2/flyway-mysql-11.7.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-mysql/11.7.2/flyway-mysql-11.7.2.pom (2.7 kB at 26 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot3-starter/3.5.17/mybatis-plus-spring-boot3-starter-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot3-starter/3.5.17/mybatis-plus-spring-boot3-starter-3.5.17.pom (4.0 kB at 8.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-dependencies/3.5.9/spring-boot-dependencies-3.5.9.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-dependencies/3.5.9/spring-boot-dependencies-3.5.9.pom (96 kB at 233 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/assertj/assertj-bom/3.27.6/assertj-bom-3.27.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/assertj/assertj-bom/3.27.6/assertj-bom-3.27.6.pom (3.3 kB at 18 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/zipkin/reporter2/zipkin-reporter-bom/3.5.1/zipkin-reporter-bom-3.5.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/zipkin/reporter2/zipkin-reporter-bom/3.5.1/zipkin-reporter-bom-3.5.1.pom (6.3 kB at 209 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/cassandra/java-driver-bom/4.19.2/java-driver-bom-4.19.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/cassandra/java-driver-bom/4.19.2/java-driver-bom-4.19.2.pom (5.5 kB at 14 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/glassfish/jaxb/jaxb-bom/4.0.6/jaxb-bom-4.0.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/glassfish/jaxb/jaxb-bom/4.0.6/jaxb-bom-4.0.6.pom (12 kB at 228 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/groovy/groovy-bom/4.0.29/groovy-bom-4.0.29.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/groovy/groovy-bom/4.0.29/groovy-bom-4.0.29.pom (27 kB at 440 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.19.4/jackson-bom-2.19.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/jackson-bom/2.19.4/jackson-bom-2.19.4.pom (20 kB at 274 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.31/jetty-ee10-bom-12.0.31.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.31/jetty-ee10-bom-12.0.31.pom (9.6 kB at 45 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/jetty-bom/12.0.31/jetty-bom-12.0.31.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/eclipse/jetty/jetty-bom/12.0.31/jetty-bom-12.0.31.pom (15 kB at 53 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-bom/1.15.7/micrometer-bom-1.15.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-bom/1.15.7/micrometer-bom-1.15.7.pom (8.6 kB at 39 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-tracing-bom/1.5.7/micrometer-tracing-bom-1.5.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-tracing-bom/1.5.7/micrometer-tracing-bom-1.5.7.pom (4.5 kB at 22 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.130.Final/netty-bom-4.1.130.Final.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-bom/4.1.130.Final/netty-bom-4.1.130.Final.pom (15 kB at 461 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/pulsar/pulsar-bom/4.0.8/pulsar-bom-4.0.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/pulsar/pulsar-bom/4.0.8/pulsar-bom-4.0.8.pom (25 kB at 494 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-bom/2024.0.13/reactor-bom-2024.0.13.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-bom/2024.0.13/reactor-bom-2024.0.13.pom (4.8 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/rest-assured/rest-assured-bom/5.5.6/rest-assured-bom-5.5.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/rest-assured/rest-assured-bom/5.5.6/rest-assured-bom-5.5.6.pom (4.7 kB at 138 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/amqp/spring-amqp-bom/3.2.8/spring-amqp-bom-3.2.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/amqp/spring-amqp-bom/3.2.8/spring-amqp-bom-3.2.8.pom (3.9 kB at 58 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/batch/spring-batch-bom/5.2.4/spring-batch-bom-5.2.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/batch/spring-batch-bom/5.2.4/spring-batch-bom-5.2.4.pom (3.2 kB at 48 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/data/spring-data-bom/2025.0.7/spring-data-bom-2025.0.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/data/spring-data-bom/2025.0.7/spring-data-bom-2025.0.7.pom (5.5 kB at 19 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-framework-bom/6.2.15/spring-framework-bom-6.2.15.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-framework-bom/6.2.15/spring-framework-bom-6.2.15.pom (5.8 kB at 14 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/integration/spring-integration-bom/6.5.5/spring-integration-bom-6.5.5.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/integration/spring-integration-bom/6.5.5/spring-integration-bom-6.5.5.pom (10 kB at 38 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/pulsar/spring-pulsar-bom/1.2.13/spring-pulsar-bom-1.2.13.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/pulsar/spring-pulsar-bom/1.2.13/spring-pulsar-bom-1.2.13.pom (2.9 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/restdocs/spring-restdocs-bom/3.0.5/spring-restdocs-bom-3.0.5.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/restdocs/spring-restdocs-bom/3.0.5/spring-restdocs-bom-3.0.5.pom (2.6 kB at 56 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-bom/6.5.7/spring-security-bom-6.5.7.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-bom/6.5.7/spring-security-bom-6.5.7.pom (5.3 kB at 24 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/session/spring-session-bom/3.5.4/spring-session-bom-3.5.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/session/spring-session-bom/3.5.4/spring-session-bom-3.5.4.pom (2.9 kB at 6.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/ws/spring-ws-bom/4.1.2/spring-ws-bom-4.1.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/ws/spring-ws-bom/4.1.2/spring-ws-bom-4.1.2.pom (2.3 kB at 24 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus/3.5.17/mybatis-plus-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus/3.5.17/mybatis-plus-3.5.17.pom (2.6 kB at 42 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-core/3.5.17/mybatis-plus-core-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-core/3.5.17/mybatis-plus-core-3.5.17.pom (2.2 kB at 5.3 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-annotation/3.5.17/mybatis-plus-annotation-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-annotation/3.5.17/mybatis-plus-annotation-3.5.17.pom (1.4 kB at 16 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis/3.5.19/mybatis-3.5.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis/3.5.19/mybatis-3.5.19.pom (16 kB at 179 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-parent/48/mybatis-parent-48.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-parent/48/mybatis-parent-48.pom (50 kB at 1.2 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring/3.5.17/mybatis-plus-spring-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring/3.5.17/mybatis-plus-spring-3.5.17.pom (2.7 kB at 6.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-extension/3.5.17/mybatis-plus-extension-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-extension/3.5.17/mybatis-plus-extension-3.5.17.pom (3.8 kB at 54 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-spring/3.0.5/mybatis-spring-3.0.5.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-spring/3.0.5/mybatis-spring-3.0.5.pom (15 kB at 215 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-parent/50/mybatis-parent-50.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-parent/50/mybatis-parent-50.pom (50 kB at 601 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-autoconfigure/3.5.17/mybatis-plus-spring-boot-autoconfigure-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-autoconfigure/3.5.17/mybatis-plus-spring-boot-autoconfigure-3.5.17.pom (3.0 kB at 35 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-native-image/3.5.17/mybatis-plus-spring-boot-native-image-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-native-image/3.5.17/mybatis-plus-spring-boot-native-image-3.5.17.pom (1.2 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-jdbc/3.5.16/spring-boot-starter-jdbc-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-jdbc/3.5.16/spring-boot-starter-jdbc-3.5.16.pom (2.5 kB at 52 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/zaxxer/HikariCP/6.3.3/HikariCP-6.3.3.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/zaxxer/HikariCP/6.3.3/HikariCP-6.3.3.pom (29 kB at 73 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jdbc/6.2.19/spring-jdbc-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jdbc/6.2.19/spring-jdbc-6.2.19.pom (2.4 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-tx/6.2.19/spring-tx-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-tx/6.2.19/spring-tx-6.2.19.pom (2.2 kB at 39 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser/3.5.17/mybatis-plus-jsqlparser-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser/3.5.17/mybatis-plus-jsqlparser-3.5.17.pom (2.4 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/github/jsqlparser/jsqlparser/5.2/jsqlparser-5.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/github/jsqlparser/jsqlparser/5.2/jsqlparser-5.2.pom (27 kB at 501 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser-common/3.5.17/mybatis-plus-jsqlparser-common-3.5.17.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser-common/3.5.17/mybatis-plus-jsqlparser-common-3.5.17.pom (1.6 kB at 38 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/mysql/mysql-connector-j/9.7.0/mysql-connector-j-9.7.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/mysql/mysql-connector-j/9.7.0/mysql-connector-j-9.7.0.pom (3.2 kB at 33 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-api/0.12.6/jjwt-api-0.12.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-api/0.12.6/jjwt-api-0.12.6.pom (1.8 kB at 4.7 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-root/0.12.6/jjwt-root-0.12.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-root/0.12.6/jjwt-root-0.12.6.pom (37 kB at 149 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-impl/0.12.6/jjwt-impl-0.12.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-impl/0.12.6/jjwt-impl-0.12.6.pom (2.5 kB at 5.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-jackson/0.12.6/jjwt-jackson-0.12.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-jackson/0.12.6/jjwt-jackson-0.12.6.pom (2.9 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/projectlombok/lombok/1.18.46/lombok-1.18.46.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/projectlombok/lombok/1.18.46/lombok-1.18.46.pom (1.5 kB at 21 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-ui/2.9.1/springdoc-openapi-starter-webmvc-ui-2.9.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-ui/2.9.1/springdoc-openapi-starter-webmvc-ui-2.9.1.pom (2.0 kB at 4.5 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi/2.9.1/springdoc-openapi-2.9.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi/2.9.1/springdoc-openapi-2.9.1.pom (9.0 kB at 22 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-api/2.9.1/springdoc-openapi-starter-webmvc-api-2.9.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-api/2.9.1/springdoc-openapi-starter-webmvc-api-2.9.1.pom (2.0 kB at 5.0 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-common/2.9.1/springdoc-openapi-starter-common-2.9.1.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-common/2.9.1/springdoc-openapi-starter-common-2.9.1.pom (5.2 kB at 13 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-core-jakarta/2.2.55/swagger-core-jakarta-2.2.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-core-jakarta/2.2.55/swagger-core-jakarta-2.2.55.pom (5.6 kB at 63 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-project-jakarta/2.2.55/swagger-project-jakarta-2.2.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-project-jakarta/2.2.55/swagger-project-jakarta-2.2.55.pom (22 kB at 308 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-annotations-jakarta/2.2.55/swagger-annotations-jakarta-2.2.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-annotations-jakarta/2.2.55/swagger-annotations-jakarta-2.2.55.pom (3.3 kB at 39 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-models-jakarta/2.2.55/swagger-models-jakarta-2.2.55.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-models-jakarta/2.2.55/swagger-models-jakarta-2.2.55.pom (3.4 kB at 62 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/swagger-ui/5.32.14/swagger-ui-5.32.14.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/swagger-ui/5.32.14/swagger-ui-5.32.14.pom (1.4 kB at 29 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/webjars-locator-lite/1.1.3/webjars-locator-lite-1.1.3.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/webjars-locator-lite/1.1.3/webjars-locator-lite-1.1.3.pom (6.9 kB at 90 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-test/3.5.16/spring-boot-starter-test-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-test/3.5.16/spring-boot-starter-test-3.5.16.pom (4.9 kB at 68 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test/3.5.16/spring-boot-test-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test/3.5.16/spring-boot-test-3.5.16.pom (2.2 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-test/6.2.19/spring-test-6.2.19.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-test/6.2.19/spring-test-6.2.19.pom (2.1 kB at 42 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test-autoconfigure/3.5.16/spring-boot-test-autoconfigure-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test-autoconfigure/3.5.16/spring-boot-test-autoconfigure-3.5.16.pom (2.5 kB at 36 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility/4.2.2/awaitility-4.2.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility/4.2.2/awaitility-4.2.2.pom (3.5 kB at 49 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility-parent/4.2.2/awaitility-parent-4.2.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility-parent/4.2.2/awaitility-parent-4.2.2.pom (11 kB at 162 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.pom (14 kB at 55 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-core/2.10.4/xmlunit-core-2.10.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-core/2.10.4/xmlunit-core-2.10.4.pom (2.8 kB at 97 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-parent/2.10.4/xmlunit-parent-2.10.4.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-parent/2.10.4/xmlunit-parent-2.10.4.pom (23 kB at 832 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-test/6.5.11/spring-security-test-6.5.11.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-test/6.5.11/spring-security-test-6.5.11.pom (2.7 kB at 16 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/minio/minio/8.2.0/minio-8.2.0.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava/29.0-jre/guava-29.0-jre.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okhttp3/okhttp/4.8.1/okhttp-4.8.1.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okio/okio/2.7.0/okio-2.7.0.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/checkerframework/checker-qual/2.11.1/checker-qual-2.11.1.jar (201 kB at 1.0 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-core/2.21.4/jackson-core-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/google/guava/guava/29.0-jre/guava-29.0-jre.jar (2.8 MB at 14 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-databind/2.21.4/jackson-databind-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-core/2.21.4/jackson-core-2.21.4.jar (594 kB at 1.7 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-web/3.5.16/spring-boot-starter-web-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/core/jackson-databind/2.21.4/jackson-databind-2.21.4.jar (1.7 MB at 4.3 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter/3.5.16/spring-boot-starter-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-web/3.5.16/spring-boot-starter-web-3.5.16.jar (4.8 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot/3.5.16/spring-boot-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okio/okio/2.7.0/okio-2.7.0.jar (244 kB at 559 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-logging/3.5.16/spring-boot-starter-logging-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/squareup/okhttp3/okhttp/4.8.1/okhttp-4.8.1.jar (796 kB at 1.7 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-classic/1.5.34/logback-classic-1.5.34.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/minio/minio/8.2.0/minio-8.2.0.jar (335 kB at 701 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter/3.5.16/spring-boot-starter-3.5.16.jar (4.8 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-core/1.5.34/logback-core-1.5.34.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-json/3.5.16/spring-boot-starter-json-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-json/3.5.16/spring-boot-starter-json-3.5.16.jar (4.7 kB at 7.8 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.4/jackson-datatype-jdk8-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-classic/1.5.34/logback-classic-1.5.34.jar (287 kB at 463 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.4/jackson-module-parameter-names-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/ch/qos/logback/logback-core/1.5.34/logback-core-1.5.34.jar (645 kB at 1.0 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-tomcat/3.5.16/spring-boot-starter-tomcat-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot/3.5.16/spring-boot-3.5.16.jar (1.9 MB at 2.9 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-core/10.1.55/tomcat-embed-core-10.1.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-logging/3.5.16/spring-boot-starter-logging-3.5.16.jar (4.8 kB at 7.0 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.55/tomcat-embed-websocket-10.1.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-tomcat/3.5.16/spring-boot-starter-tomcat-3.5.16.jar (4.8 kB at 6.9 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-web/6.2.19/spring-web-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.4/jackson-datatype-jdk8-2.21.4.jar (36 kB at 52 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-beans/6.2.19/spring-beans-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.4/jackson-module-parameter-names-2.21.4.jar (10 kB at 14 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-webmvc/6.2.19/spring-webmvc-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-websocket/10.1.55/tomcat-embed-websocket-10.1.55.jar (284 kB at 304 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-context/6.2.19/spring-context-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-beans/6.2.19/spring-beans-6.2.19.jar (892 kB at 903 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-expression/6.2.19/spring-expression-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-webmvc/6.2.19/spring-webmvc-6.2.19.jar (1.1 MB at 1.1 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-validation/3.5.16/spring-boot-starter-validation-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-web/6.2.19/spring-web-6.2.19.jar (2.1 MB at 1.9 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-el/10.1.55/tomcat-embed-el-10.1.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-expression/6.2.19/spring-expression-6.2.19.jar (321 kB at 284 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/hibernate/validator/hibernate-validator/8.0.3.Final/hibernate-validator-8.0.3.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-validation/3.5.16/spring-boot-starter-validation-3.5.16.jar (4.8 kB at 4.2 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-security/3.5.16/spring-boot-starter-security-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-context/6.2.19/spring-context-6.2.19.jar (1.4 MB at 1.1 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-aop/6.2.19/spring-aop-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-security/3.5.16/spring-boot-starter-security-3.5.16.jar (4.7 kB at 3.9 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-config/6.5.11/spring-security-config-6.5.11.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-core/10.1.55/tomcat-embed-core-10.1.55.jar (3.7 MB at 2.9 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-web/6.5.11/spring-security-web-6.5.11.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/tomcat/embed/tomcat-embed-el/10.1.55/tomcat-embed-el-10.1.55.jar (264 kB at 206 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson/3.52.0/redisson-3.52.0.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/hibernate/validator/hibernate-validator/8.0.3.Final/hibernate-validator-8.0.3.Final.jar (1.3 MB at 1.0 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-common/4.1.135.Final/netty-common-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-aop/6.2.19/spring-aop-6.2.19.jar (420 kB at 281 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec/4.1.135.Final/netty-codec-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-config/6.5.11/spring-security-config-6.5.11.jar (2.1 MB at 1.4 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-buffer/4.1.135.Final/netty-buffer-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-web/6.5.11/spring-security-web-6.5.11.jar (1.1 MB at 686 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport/4.1.135.Final/netty-transport-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-buffer/4.1.135.Final/netty-buffer-4.1.135.Final.jar (359 kB at 219 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver/4.1.135.Final/netty-resolver-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport/4.1.135.Final/netty-transport-4.1.135.Final.jar (522 kB at 315 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver-dns/4.1.135.Final/netty-resolver-dns-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-common/4.1.135.Final/netty-common-4.1.135.Final.jar (739 kB at 428 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec-dns/4.1.135.Final/netty-codec-dns-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec/4.1.135.Final/netty-codec-4.1.135.Final.jar (359 kB at 208 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-handler/4.1.135.Final/netty-handler-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/redisson/redisson/3.52.0/redisson-3.52.0.jar (2.8 MB at 1.6 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport-native-unix-common/4.1.135.Final/netty-transport-native-unix-common-4.1.135.Final.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver-dns/4.1.135.Final/netty-resolver-dns-4.1.135.Final.jar (189 kB at 100 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-core/3.7.19/reactor-core-3.7.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-resolver/4.1.135.Final/netty-resolver-4.1.135.Final.jar (38 kB at 20 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/reactivex/rxjava3/rxjava/3.1.12/rxjava-3.1.12.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-handler/4.1.135.Final/netty-handler-4.1.135.Final.jar (587 kB at 294 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo/5.6.2/kryo-5.6.2.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-transport-native-unix-common/4.1.135.Final/netty-transport-native-unix-common-4.1.135.Final.jar (44 kB at 22 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/reflectasm/1.11.9/reflectasm-1.11.9.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/netty/netty-codec-dns/4.1.135.Final/netty-codec-dns-4.1.135.Final.jar (68 kB at 34 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis/3.4/objenesis-3.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/kryo/5.6.2/kryo-5.6.2.jar (374 kB at 178 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/reflectasm/1.11.9/reflectasm-1.11.9.jar (72 kB at 34 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.21.4/jackson-dataformat-yaml-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/objenesis/objenesis/3.4/objenesis-3.4.jar (49 kB at 23 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.21.4/jackson-datatype-jsr310-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/esotericsoftware/minlog/1.3.1/minlog-1.3.1.jar (5.9 kB at 2.7 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy/1.17.8/byte-buddy-1.17.8.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.21.4/jackson-dataformat-yaml-2.21.4.jar (61 kB at 27 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jodd/jodd-util/6.3.0/jodd-util-6.3.0.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.21.4/jackson-datatype-jsr310-2.21.4.jar (137 kB at 60 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-aop/3.5.16/spring-boot-starter-aop-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/reactivex/rxjava3/rxjava/3.1.12/rxjava-3.1.12.jar (2.7 MB at 1.2 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/aspectj/aspectjweaver/1.9.25.1/aspectjweaver-1.9.25.1.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jodd/jodd-util/6.3.0/jodd-util-6.3.0.jar (338 kB at 145 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-actuator/3.5.16/spring-boot-starter-actuator-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/projectreactor/reactor-core/3.7.19/reactor-core-3.7.19.jar (1.9 MB at 791 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator-autoconfigure/3.5.16/spring-boot-actuator-autoconfigure-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-actuator/3.5.16/spring-boot-starter-actuator-3.5.16.jar (4.8 kB at 1.9 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-aop/3.5.16/spring-boot-starter-aop-3.5.16.jar (4.8 kB at 1.8 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator/3.5.16/spring-boot-actuator-3.5.16.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-observation/1.15.12/micrometer-observation-1.15.12.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator-autoconfigure/3.5.16/spring-boot-actuator-autoconfigure-3.5.16.jar (843 kB at 315 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/aspectj/aspectjweaver/1.9.25.1/aspectjweaver-1.9.25.1.jar (2.2 MB at 818 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-commons/1.15.12/micrometer-commons-1.15.12.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-jakarta9/1.15.12/micrometer-jakarta9-1.15.12.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-observation/1.15.12/micrometer-observation-1.15.12.jar (76 kB at 28 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-core/1.15.12/micrometer-core-1.15.12.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-commons/1.15.12/micrometer-commons-1.15.12.jar (49 kB at 18 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/latencyutils/LatencyUtils/2.0.3/LatencyUtils-2.0.3.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/latencyutils/LatencyUtils/2.0.3/LatencyUtils-2.0.3.jar (30 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-core/11.7.2/flyway-core-11.7.2.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-actuator/3.5.16/spring-boot-actuator-3.5.16.jar (708 kB at 247 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-toml/2.21.4/jackson-dataformat-toml-2.21.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy/1.17.8/byte-buddy-1.17.8.jar (9.0 MB at 3.1 MB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-mysql/11.7.2/flyway-mysql-11.7.2.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-core/1.15.12/micrometer-core-1.15.12.jar (867 kB at 298 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot3-starter/3.5.17/mybatis-plus-spring-boot3-starter-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/micrometer/micrometer-jakarta9/1.15.12/micrometer-jakarta9-1.15.12.jar (33 kB at 11 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus/3.5.17/mybatis-plus-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/fasterxml/jackson/dataformat/jackson-dataformat-toml/2.21.4/jackson-dataformat-toml-2.21.4.jar (58 kB at 19 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-core/3.5.17/mybatis-plus-core-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-mysql/11.7.2/flyway-mysql-11.7.2.jar (29 kB at 9.9 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-annotation/3.5.17/mybatis-plus-annotation-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-core/3.5.17/mybatis-plus-core-3.5.17.jar (397 kB at 126 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring/3.5.17/mybatis-plus-spring-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot3-starter/3.5.17/mybatis-plus-spring-boot3-starter-3.5.17.jar (14 kB at 4.5 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis/3.5.19/mybatis-3.5.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring/3.5.17/mybatis-plus-spring-3.5.17.jar (25 kB at 7.8 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-spring/3.0.5/mybatis-spring-3.0.5.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/flyway-core/11.7.2/flyway-core-11.7.2.jar (698 kB at 216 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-autoconfigure/3.5.17/mybatis-plus-spring-boot-autoconfigure-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus/3.5.17/mybatis-plus-3.5.17.jar (261 B at 80 B/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-native-image/3.5.17/mybatis-plus-spring-boot-native-image-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis-spring/3.0.5/mybatis-spring-3.0.5.jar (83 kB at 25 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-autoconfigure/3.5.16/spring-boot-autoconfigure-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-autoconfigure/3.5.17/mybatis-plus-spring-boot-autoconfigure-3.5.17.jar (33 kB at 10 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-jdbc/3.5.16/spring-boot-starter-jdbc-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-spring-boot-native-image/3.5.17/mybatis-plus-spring-boot-native-image-3.5.17.jar (39 kB at 12 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/zaxxer/HikariCP/6.3.3/HikariCP-6.3.3.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-jdbc/3.5.16/spring-boot-starter-jdbc-3.5.16.jar (4.8 kB at 1.4 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jdbc/6.2.19/spring-jdbc-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/zaxxer/HikariCP/6.3.3/HikariCP-6.3.3.jar (172 kB at 50 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-tx/6.2.19/spring-tx-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jdbc/6.2.19/spring-jdbc-6.2.19.jar (476 kB at 137 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser/3.5.17/mybatis-plus-jsqlparser-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-annotation/3.5.17/mybatis-plus-annotation-3.5.17.jar (14 kB at 3.9 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/github/jsqlparser/jsqlparser/5.2/jsqlparser-5.2.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/mybatis/mybatis/3.5.19/mybatis-3.5.19.jar (1.8 MB at 514 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser-common/3.5.17/mybatis-plus-jsqlparser-common-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-tx/6.2.19/spring-tx-6.2.19.jar (290 kB at 82 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-extension/3.5.17/mybatis-plus-extension-3.5.17.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser-common/3.5.17/mybatis-plus-jsqlparser-common-3.5.17.jar (4.3 kB at 1.2 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/com/mysql/mysql-connector-j/9.7.0/mysql-connector-j-9.7.0.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-autoconfigure/3.5.16/spring-boot-autoconfigure-3.5.16.jar (2.1 MB at 571 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-api/0.12.6/jjwt-api-0.12.6.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/github/jsqlparser/jsqlparser/5.2/jsqlparser-5.2.jar (1.2 MB at 338 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-impl/0.12.6/jjwt-impl-0.12.6.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-extension/3.5.17/mybatis-plus-extension-3.5.17.jar (177 kB at 48 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-jackson/0.12.6/jjwt-jackson-0.12.6.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/baomidou/mybatis-plus-jsqlparser/3.5.17/mybatis-plus-jsqlparser-3.5.17.jar (94 kB at 25 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-api/0.12.6/jjwt-api-0.12.6.jar (140 kB at 37 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-ui/2.9.1/springdoc-openapi-starter-webmvc-ui-2.9.1.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-jackson/0.12.6/jjwt-jackson-0.12.6.jar (9.4 kB at 2.5 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/jsonwebtoken/jjwt-impl/0.12.6/jjwt-impl-0.12.6.jar (473 kB at 124 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-api/2.9.1/springdoc-openapi-starter-webmvc-api-2.9.1.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-common/2.9.1/springdoc-openapi-starter-common-2.9.1.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/com/mysql/mysql-connector-j/9.7.0/mysql-connector-j-9.7.0.jar (2.6 MB at 671 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-core-jakarta/2.2.55/swagger-core-jakarta-2.2.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-core-jakarta/2.2.55/swagger-core-jakarta-2.2.55.jar (273 kB at 69 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-annotations-jakarta/2.2.55/swagger-annotations-jakarta-2.2.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-annotations-jakarta/2.2.55/swagger-annotations-jakarta-2.2.55.jar (51 kB at 13 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-models-jakarta/2.2.55/swagger-models-jakarta-2.2.55.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/swagger/core/v3/swagger-models-jakarta/2.2.55/swagger-models-jakarta-2.2.55.jar (147 kB at 36 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/swagger-ui/5.32.14/swagger-ui-5.32.14.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-ui/2.9.1/springdoc-openapi-starter-webmvc-ui-2.9.1.jar (25 kB at 6.0 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/webjars-locator-lite/1.1.3/webjars-locator-lite-1.1.3.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-webmvc-api/2.9.1/springdoc-openapi-starter-webmvc-api-2.9.1.jar (41 kB at 10.0 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-test/3.5.16/spring-boot-starter-test-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springdoc/springdoc-openapi-starter-common/2.9.1/springdoc-openapi-starter-common-2.9.1.jar (577 kB at 139 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test/3.5.16/spring-boot-test-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/swagger-ui/5.32.14/swagger-ui-5.32.14.jar (1.2 MB at 282 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test-autoconfigure/3.5.16/spring-boot-test-autoconfigure-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/webjars/webjars-locator-lite/1.1.3/webjars-locator-lite-1.1.3.jar (8.7 kB at 2.1 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility/4.2.2/awaitility-4.2.2.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar (2.0 MB at 487 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test-autoconfigure/3.5.16/spring-boot-test-autoconfigure-3.5.16.jar (230 kB at 54 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-core/6.2.19/spring-core-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/awaitility/awaitility/4.2.2/awaitility-4.2.2.jar (97 kB at 23 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jcl/6.2.19/spring-jcl-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-test/3.5.16/spring-boot-test-3.5.16.jar (258 kB at 61 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-test/6.2.19/spring-test-6.2.19.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-starter-test/3.5.16/spring-boot-starter-test-3.5.16.jar (4.8 kB at 1.1 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-core/2.10.4/xmlunit-core-2.10.4.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/bytebuddy/byte-buddy-agent/1.17.8/byte-buddy-agent-1.17.8.jar (367 kB at 84 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-test/6.5.11/spring-security-test-6.5.11.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/xmlunit/xmlunit-core/2.10.4/xmlunit-core-2.10.4.jar (178 kB at 40 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-core/6.5.11/spring-security-core-6.5.11.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-test/6.2.19/spring-test-6.2.19.jar (1.0 MB at 232 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-crypto/6.5.11/spring-security-crypto-6.5.11.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-test/6.5.11/spring-security-test-6.5.11.jar (136 kB at 31 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-core/6.2.19/spring-core-6.2.19.jar (2.0 MB at 444 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/spring-jcl/6.2.19/spring-jcl-6.2.19.jar (24 kB at 5.4 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-crypto/6.5.11/spring-security-crypto-6.5.11.jar (105 kB at 23 kB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/security/spring-security-core/6.5.11/spring-security-core-6.5.11.jar (623 kB at 132 kB/s)
+[INFO] 
+[INFO] --- maven-clean-plugin:3.4.1:clean (default-clean) @ admintem-backend ---
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:resources (default-resources) @ admintem-backend ---
+[INFO] Copying 13 resources from src/main/resources to target/classes
+[INFO] Copying 10 resources from ../admintem-docs/db/changelog to target/classes/db/migration
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.14.1:compile (default-compile) @ admintem-backend ---
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-java/1.5.0/plexus-java-1.5.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-java/1.5.0/plexus-java-1.5.0.pom (4.1 kB at 63 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-languages/1.5.0/plexus-languages-1.5.0.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-languages/1.5.0/plexus-languages-1.5.0.pom (3.9 kB at 96 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.8/asm-9.8.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-java/1.5.0/plexus-java-1.5.0.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.8/asm-9.8.jar (126 kB at 1.8 MB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/plexus/plexus-java/1.5.0/plexus-java-1.5.0.jar (57 kB at 377 kB/s)
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 125 source files with javac [debug parameters release 17] to target/classes
+[INFO] 由于在类路径中发现了一个或多个处理程序，因此启用了
+  批注处理。未来发行版的 javac 可能会禁用批注处理，
+  除非至少按名称指定了一个处理程序 (-processor)，
+  或指定了搜索路径 (--processor-path, --processor-module-path)，
+  或显式启用了批注处理 (-proc:only, -proc:full)。
+  可使用 -Xlint:-options 隐藏此消息。
+  可使用 -proc:none 禁用批注处理。
+[WARNING] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/entity/vo/MenuVO.java:[18,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[WARNING] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/entity/vo/PermissionVO.java:[18,1] Generating equals/hashCode implementation but without a call to superclass, even though this class does not extend java.lang.Object. If this is intentional, add '@EqualsAndHashCode(callSuper=false)' to your type.
+[INFO] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/config/security/SecurityConfig.java: 某些输入文件使用或覆盖了已过时的 API。
+[INFO] /opt/admin-demo/src/admintem-backend/src/main/java/com/admintem/web/config/security/SecurityConfig.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-resources-plugin:3.3.1:testResources (default-testResources) @ admintem-backend ---
+[INFO] skip non existing resourceDirectory /opt/admin-demo/src/admintem-backend/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.14.1:testCompile (default-testCompile) @ admintem-backend ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 23 source files with javac [debug parameters release 17] to target/test-classes
+[INFO] 由于在类路径中发现了一个或多个处理程序，因此启用了
+  批注处理。未来发行版的 javac 可能会禁用批注处理，
+  除非至少按名称指定了一个处理程序 (-processor)，
+  或指定了搜索路径 (--processor-path, --processor-module-path)，
+  或显式启用了批注处理 (-proc:only, -proc:full)。
+  可使用 -Xlint:-options 隐藏此消息。
+  可使用 -proc:none 禁用批注处理。
+[INFO] /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java: /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java使用或覆盖了已过时的 API。
+[INFO] /opt/admin-demo/src/admintem-backend/src/test/java/com/admintem/web/security/LoginRiskGuardTest.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] 
+[INFO] --- maven-surefire-plugin:3.5.6:test (default-test) @ admintem-backend ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- maven-jar-plugin:3.4.2:jar (default-jar) @ admintem-backend ---
+[INFO] Building jar: /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar
+[INFO] 
+[INFO] --- spring-boot-maven-plugin:3.5.16:repackage (repackage) @ admintem-backend ---
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-buildpack-platform/3.5.16/spring-boot-buildpack-platform-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-buildpack-platform/3.5.16/spring-boot-buildpack-platform-3.5.16.pom (3.2 kB at 21 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.2/httpclient5-5.5.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.2/httpclient5-5.5.2.pom (6.1 kB at 127 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5-parent/5.5.2/httpclient5-parent-5.5.2.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5-parent/5.5.2/httpclient5-parent-5.5.2.pom (17 kB at 440 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.pom (3.9 kB at 164 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-parent/5.3.6/httpcore5-parent-5.3.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-parent/5.3.6/httpcore5-parent-5.3.6.pom (14 kB at 303 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.pom (3.6 kB at 57 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-loader-tools/3.5.16/spring-boot-loader-tools-3.5.16.pom
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-loader-tools/3.5.16/spring-boot-loader-tools-3.5.16.pom (2.2 kB at 37 kB/s)
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-buildpack-platform/3.5.16/spring-boot-buildpack-platform-3.5.16.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.2/httpclient5-5.5.2.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.jar
+[INFO] Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-loader-tools/3.5.16/spring-boot-loader-tools-3.5.16.jar
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-buildpack-platform/3.5.16/spring-boot-buildpack-platform-3.5.16.jar (325 kB at 2.7 MB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.jar (243 kB at 1.7 MB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/spring-boot-loader-tools/3.5.16/spring-boot-loader-tools-3.5.16.jar (468 kB at 3.3 MB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.jar (909 kB at 5.9 MB/s)
+[INFO] Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.2/httpclient5-5.5.2.jar (961 kB at 4.8 MB/s)
+[INFO] Replacing main artifact /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /opt/admin-demo/src/admintem-backend/target/admintem-backend.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:02 min
+[INFO] Finished at: 2026-10-27T00:47:40+08:00
+[INFO] ------------------------------------------------------------------------
+===== [3/7] 构建前端（本机 Node） =====
+
+added 288 packages in 9s
+
+82 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.9.8 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice
+
+> admintem-vue@0.0.0 build
+> vite build
+
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 1851 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                      1.06 kB │ gzip:   0.54 kB
+dist/assets/dept-BntRilp0.css                        0.09 kB │ gzip:   0.10 kB
+dist/assets/PaginationBar-BixMoDTr.css               0.09 kB │ gzip:   0.10 kB
+dist/assets/TableToolbar-DbQrMWuB.css                0.52 kB │ gzip:   0.21 kB
+dist/assets/onlineSession-Bi32OwCh.css               0.61 kB │ gzip:   0.24 kB
+dist/assets/auditLog-CPsfDZ4B.css                    0.64 kB │ gzip:   0.30 kB
+dist/assets/StatusPage-BS4rS1_8.css                  2.75 kB │ gzip:   1.00 kB
+dist/assets/Layout-BtRujXyX.css                      4.53 kB │ gzip:   1.26 kB
+dist/assets/HomeView-CUXMfP3C.css                    4.72 kB │ gzip:   1.17 kB
+dist/assets/register-B4WJ59Y-.css                    5.00 kB │ gzip:   1.43 kB
+dist/assets/login-BJSaM9YS.css                       6.96 kB │ gzip:   1.83 kB
+dist/assets/index-DjRGfz7s.css                      18.97 kB │ gzip:   4.26 kB
+dist/assets/vendor-element-DC3w-ebf.css            231.47 kB │ gzip:  30.17 kB
+dist/assets/_plugin-vue_export-helper-BDNMzG2s.js    0.08 kB │ gzip:   0.09 kB
+dist/assets/dept-CrDJYDYB.js                         0.29 kB │ gzip:   0.17 kB
+dist/assets/role-B68rNM09.js                         0.66 kB │ gzip:   0.24 kB
+dist/assets/NotFound-CsISfMYr.js                     0.69 kB │ gzip:   0.56 kB
+dist/assets/Forbidden-C-jhP1Pe.js                    0.70 kB │ gzip:   0.58 kB
+dist/assets/rolldown-runtime-hePW80VL.js             0.71 kB │ gzip:   0.42 kB
+dist/assets/StatusPage-DVluQl4d.js                   0.75 kB │ gzip:   0.41 kB
+dist/assets/useQuerySync-CCsNqcuI.js                 0.80 kB │ gzip:   0.47 kB
+dist/assets/TableToolbar-6ZIXxDYO.js                 0.94 kB │ gzip:   0.45 kB
+dist/assets/PaginationBar-BGsJhxs3.js                0.98 kB │ gzip:   0.58 kB
+dist/assets/HomeView-DkEW4yqN.js                     3.90 kB │ gzip:   2.13 kB
+dist/assets/register-2KRdCCX2.js                     5.06 kB │ gzip:   2.23 kB
+dist/assets/onlineSession-DJ4HlHT1.js                5.29 kB │ gzip:   2.57 kB
+dist/assets/login-DVznc4Kl.js                        5.86 kB │ gzip:   2.87 kB
+dist/assets/dept-VffaUw5b.js                         6.50 kB │ gzip:   2.74 kB
+dist/assets/auditLog-Dq0q-7ee.js                     7.04 kB │ gzip:   2.77 kB
+dist/assets/RoleInfo-D6Or0pW3.js                     7.81 kB │ gzip:   3.21 kB
+dist/assets/PermissionInfo-Dt-_mE97.js               9.33 kB │ gzip:   3.19 kB
+dist/assets/Layout-BxrAGdcz.js                      11.22 kB │ gzip:   4.31 kB
+dist/assets/index-DAQIkaGE.js                       11.57 kB │ gzip:   4.93 kB
+dist/assets/UserInfo-BfN5wPII.js                    13.90 kB │ gzip:   4.51 kB
+dist/assets/vendor-vue-BJ4JFVWk.js                  28.81 kB │ gzip:  11.57 kB
+dist/assets/vendor-DMAqkq0X.js                     252.80 kB │ gzip:  92.98 kB
+dist/assets/vendor-element-Dk-y02OE.js             467.63 kB │ gzip: 143.25 kB
+
+✓ built in 1.07s
+===== [4/7] 替换静态文件 =====
+===== [5/7] 重启后端 =====
+backend pid=1812966
+===== [6/7] 等待健康检查 =====
+backend health=UP
+===== [7/7] 启动/重载独立 Nginx（8092） =====
+2026/10/27 00:48:05 [notice] 1813824#1813824: signal process started
+2026/10/27 00:48:05 [error] 1813824#1813824: invalid PID number "" in "/opt/admin-demo/nginx/nginx.pid"
+Build step 'Execute shell' marked build as failure
+Finished: FAILURE
