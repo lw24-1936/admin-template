@@ -22,7 +22,7 @@ public abstract class AbstractFileStorageStrategy implements StorageStrategy {
     }
 
     @Override
-    public final String storeAvatar(MultipartFile file) {
+    public String storeAvatar(MultipartFile file) {
         // 校验只做一次，所有实现共享同一套规则
         String extension = ImageUploadValidator.validate(file, properties.getUpload());
         String key = LocalDate.now().format(MONTH) + "/"
@@ -32,7 +32,7 @@ public abstract class AbstractFileStorageStrategy implements StorageStrategy {
     }
 
     @Override
-    public final void deleteByUrl(String url) {
+    public void deleteByUrl(String url) {
         String key = keyOf(url);
         if (key != null) {
             doDelete(key);

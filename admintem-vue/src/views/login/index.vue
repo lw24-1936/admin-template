@@ -44,13 +44,20 @@
             @keyup.enter="handleLogin"
           >
             <el-form-item label="账号" prop="username">
-              <el-input v-model="form.username" placeholder="admin" clearable autofocus />
+              <el-input
+                v-model="form.username"
+                placeholder="admin"
+                clearable
+                autofocus
+                autocomplete="username"
+              />
             </el-form-item>
             <el-form-item label="密码" prop="password">
               <el-input
                 v-model="form.password"
                 type="password"
                 placeholder="请输入密码"
+                autocomplete="current-password"
                 show-password
               />
             </el-form-item>

@@ -21,7 +21,12 @@
         <el-row :gutter="18">
           <el-col :xs="24" :sm="12">
             <el-form-item label="账号" prop="userName">
-              <el-input v-model="form.userName" placeholder="字母、数字或下划线" clearable />
+              <el-input
+                v-model="form.userName"
+                placeholder="字母、数字或下划线"
+                clearable
+                autocomplete="username"
+              />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12">
@@ -32,7 +37,13 @@
 
           <el-col :xs="24" :sm="12">
             <el-form-item label="密码" prop="password">
-              <el-input v-model="form.password" type="password" show-password placeholder="至少 6 位" />
+              <el-input
+                v-model="form.password"
+                type="password"
+                show-password
+                autocomplete="new-password"
+                placeholder="至少 6 位"
+              />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12">
@@ -41,6 +52,7 @@
                 v-model="form.confirmPassword"
                 type="password"
                 show-password
+                autocomplete="new-password"
                 placeholder="再次输入密码"
               />
             </el-form-item>
@@ -48,12 +60,22 @@
 
           <el-col :xs="24" :sm="12">
             <el-form-item label="邮箱（选填）" prop="email">
-              <el-input v-model="form.email" placeholder="用于找回密码" clearable />
+              <el-input
+                v-model="form.email"
+                placeholder="用于找回密码"
+                clearable
+                autocomplete="email"
+              />
             </el-form-item>
           </el-col>
           <el-col :xs="24" :sm="12">
             <el-form-item label="手机号（选填）" prop="phone">
-              <el-input v-model="form.phone" placeholder="便于联系与找回账号" clearable />
+              <el-input
+                v-model="form.phone"
+                placeholder="便于联系与找回账号"
+                clearable
+                autocomplete="tel"
+              />
             </el-form-item>
           </el-col>
 

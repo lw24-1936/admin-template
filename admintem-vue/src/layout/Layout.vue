@@ -1,5 +1,6 @@
 <template>
   <el-container class="layout-root">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
     <!-- 左侧导航 -->
     <el-aside width="220px" class="layout-aside">
       <!-- 品牌区：编辑式双行锁定（标记 + 名称 + 副标题） -->
@@ -38,7 +39,7 @@
         </el-breadcrumb>
         <el-dropdown trigger="click">
           <span class="user-entry">
-            <!-- 角色标签：编辑式细边胶囊，弱化但可读（过长时省略，悬停显示完整） -->
+            <!-- 当前用户：头像 + 昵称 + 下拉箭头 -->
             <el-avatar :size="28" :src="avatarUrl" class="user-avatar">{{ avatarText }}</el-avatar>
             <span class="user-name">{{ displayName }}</span>
             <el-icon class="user-caret"><ArrowDown /></el-icon>
@@ -147,7 +148,7 @@
  * - 左侧：基于后端菜单树（store.menus）渲染的导航
  * - 顶部：折叠状态 + 面包屑/标题 + 用户下拉（个人资料、修改密码、退出）
  */
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -159,6 +160,15 @@ import MenuItem from './MenuItem.vue'
 import { filterVisibleMenus } from '@/utils/menu'
 
 const route = useRoute()
+
+/** SPA 路由切换后把焦点移回主内容，避免键盘/读屏用户停留在旧菜单 */
+watch(
+  () => route.path,
+  async () => {
+    await nextTick()
+    document.getElementById('main-content')?.focus({ preventScroll: true })
+  }
+)
 
 /** 系统管理页：外壳 6px + 表格内部滚动（其余页面保持默认滚动方式） */
 const FILL_PATHS = ['/userInfo', '/roleInfo', '/permissionInfo', '/auditLog', '/onlineSession', '/dept']
@@ -662,5 +672,21 @@ async function handleUploadAvatar(options) {
 .avatar-editor__hint {
   font-size: var(--lc-fs-hint);
   color: var(--lc-ink-faint);
+}
+.skip-link {
+  position: fixed;
+  top: -48px;
+  left: 12px;
+  z-index: 3000;
+  padding: 8px 14px;
+  font-size: var(--lc-fs-label);
+  color: var(--lc-paper-card);
+  background: var(--lc-brand);
+  border-radius: var(--lc-radius-ctl);
+  box-shadow: var(--lc-shadow-card);
+  transition: top var(--lc-motion-fast) var(--lc-ease-out);
+}
+.skip-link:focus {
+  top: 12px;
 }
 </style>

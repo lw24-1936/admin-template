@@ -55,6 +55,7 @@
     <section class="lc-card">
       <h2 class="lc-card__title">账号操作</h2>
       <van-cell-group :border="false">
+        <van-cell title="编辑资料" icon="edit" is-link @click="openProfile" />
         <van-cell title="修改密码" icon="lock" is-link @click="openPassword" />
         <van-cell title="关于移动端" icon="info-o" is-link @click="showAbout" />
       </van-cell-group>
@@ -65,6 +66,86 @@
     </van-button>
 
     <p class="mine-foot">admintem 移动端 v0.1.0 · 后端共享 admintem-backend</p>
+
+    <!-- 编辑资料弹层 -->
+    <van-popup v-model:show="profileVisible" position="bottom" round :style="{ paddingBottom: '20px' }">
+      <div class="mine-popup">
+        <h3 class="mine-popup__title">编辑资料</h3>
+        <div class="profile-avatar-row">
+          <van-uploader
+            :after-read="onAvatarRead"
+            :before-read="beforeAvatarRead"
+            :max-count="1"
+            :preview-image="false"
+            :max-size="2 * 1024 * 1024"
+            reupload
+            @oversize="onAvatarOversize"
+          >
+            <div class="profile-avatar">
+              <img v-if="avatarUrl" :src="avatarUrl" alt="当前头像" />
+              <span v-else>{{ userStore.avatarText }}</span>
+            </div>
+          </van-uploader>
+          <div class="profile-avatar__hint">
+            <strong>点击更换头像</strong>
+            <span>支持 png / jpg / webp / gif，不超过 2MB</span>
+          </div>
+        </div>
+        <van-form @submit="submitProfile">
+          <van-cell-group inset>
+            <van-field
+              v-model="profileForm.nickName"
+              name="nickName"
+              label="昵称"
+              maxlength="32"
+              placeholder="请输入昵称"
+              :rules="[{ required: true, message: '请输入昵称' }]"
+            />
+            <van-field
+              v-model="profileForm.email"
+              name="email"
+              label="邮箱"
+              type="email"
+              placeholder="选填，name@example.com"
+              :rules="[{ validator: validateEmail, message: '邮箱格式不正确' }]"
+            />
+            <van-field
+              v-model="profileForm.phone"
+              name="phone"
+              label="手机号"
+              type="tel"
+              maxlength="11"
+              placeholder="选填，11 位手机号"
+              :rules="[{ validator: validatePhone, message: '手机号格式不正确' }]"
+            />
+            <van-field label="性别">
+              <template #input>
+                <van-radio-group v-model="profileForm.sex" direction="horizontal">
+                  <van-radio :name="1">男</van-radio>
+                  <van-radio :name="0">女</van-radio>
+                </van-radio-group>
+              </template>
+            </van-field>
+            <van-field
+              v-model="profileForm.introduce"
+              name="introduce"
+              label="个人简介"
+              type="textarea"
+              rows="2"
+              maxlength="255"
+              show-word-limit
+              placeholder="选填，最多 255 个字符"
+            />
+          </van-cell-group>
+          <div class="mine-popup__actions">
+            <van-button block plain @click="profileVisible = false">取消</van-button>
+            <van-button block type="primary" native-type="submit" :loading="profileLoading">
+              保存资料
+            </van-button>
+          </div>
+        </van-form>
+      </div>
+    </van-popup>
 
     <!-- 修改密码弹层 -->
     <van-popup v-model:show="passwordVisible" position="bottom" round :style="{ paddingBottom: '20px' }">
@@ -128,8 +209,13 @@ import {
   Field as VanField,
   Form as VanForm,
   Popup as VanPopup,
+  Radio as VanRadio,
+  RadioGroup as VanRadioGroup,
   Tag as VanTag,
+  Uploader as VanUploader,
+  closeToast,
   showConfirmDialog,
+  showLoadingToast,
   showSuccessToast,
   showToast,
 } from 'vant'
@@ -139,7 +225,9 @@ import 'vant/es/cell-group/style/index'
 import 'vant/es/field/style/index'
 import 'vant/es/form/style/index'
 import 'vant/es/popup/style/index'
+import 'vant/es/radio/style/index'
 import 'vant/es/tag/style/index'
+import 'vant/es/uploader/style/index'
 import { useUserStore } from '@/stores/user'
 import * as authApi from '@/api/auth'
 
@@ -161,6 +249,18 @@ const avatarUrl = computed(() => {
 const logoutLoading = ref(false)
 const passwordVisible = ref(false)
 const passwordLoading = ref(false)
+const profileVisible = ref(false)
+const profileLoading = ref(false)
+const avatarUploading = ref(false)
+
+const profileForm = reactive({
+  nickName: '',
+  email: '',
+  phone: '',
+  sex: 1,
+  introduce: '',
+  avatar: '',
+})
 
 const passwordForm = reactive({
   oldPassword: '',
@@ -174,6 +274,88 @@ const statusText = computed(() => {
   if (status === 1) return '已禁用'
   return '正常'
 })
+
+/** 打开编辑资料弹层，回填当前用户资料 */
+function openProfile() {
+  const user = userStore.user || {}
+  profileForm.nickName = user.nickName || ''
+  profileForm.email = user.email || ''
+  profileForm.phone = user.phone || ''
+  profileForm.sex = user.sex === 0 ? 0 : 1
+  profileForm.introduce = user.introduce || ''
+  profileForm.avatar = user.avatar || ''
+  profileVisible.value = true
+}
+
+/** 选图前校验：类型与大小（后端同样会校验） */
+function beforeAvatarRead(file) {
+  const target = Array.isArray(file) ? file[0] : file
+  if (!target || !String(target.type || '').startsWith('image/')) {
+    showToast('请选择图片文件')
+    return false
+  }
+  if (target.size > 2 * 1024 * 1024) {
+    showToast('头像不能超过 2MB')
+    return false
+  }
+  return true
+}
+
+function onAvatarOversize() {
+  showToast('头像不能超过 2MB')
+}
+
+/** 头像上传成功即写入用户表；这里同步本地会话，避免需要重新登录 */
+async function onAvatarRead(item) {
+  if (!item || !item.file) return
+  avatarUploading.value = true
+  showLoadingToast({ message: '上传头像...', forbidClick: true, duration: 0 })
+  try {
+    const res = await authApi.uploadAvatar(item.file)
+    profileForm.avatar = res.data || ''
+    if (userStore.user) userStore.user.avatar = res.data || ''
+    showSuccessToast('头像已更新')
+  } catch (e) {
+    // 错误提示由 request 拦截器统一处理
+  } finally {
+    closeToast()
+    avatarUploading.value = false
+  }
+}
+
+/** 邮箱选填：为空放行，非空按后端 @Email 规则校验 */
+function validateEmail(value) {
+  if (!value) return true
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+/** 手机号选填：为空放行，非空按后端 ^1\d{10}$ 校验 */
+function validatePhone(value) {
+  if (!value) return true
+  return /^1\d{10}$/.test(value)
+}
+
+/** 保存资料：与桌面端共用 /auth/updateProfile */
+async function submitProfile() {
+  profileLoading.value = true
+  try {
+    await authApi.updateProfile({
+      nickName: profileForm.nickName,
+      email: profileForm.email,
+      phone: profileForm.phone,
+      sex: profileForm.sex,
+      introduce: profileForm.introduce,
+      avatar: profileForm.avatar,
+    })
+    await userStore.fetchUserInfo()
+    profileVisible.value = false
+    showSuccessToast('资料已保存')
+  } catch (e) {
+    // 错误提示由 request 拦截器统一处理
+  } finally {
+    profileLoading.value = false
+  }
+}
 
 /** 打开修改密码弹层并重置表单 */
 function openPassword() {
@@ -368,6 +550,44 @@ async function handleLogout() {
   text-align: center;
   font-size: var(--lc-fs-kicker);
   color: var(--lc-ink-faint);
+}
+
+.profile-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px 16px;
+}
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--lc-paper-card);
+  background: var(--lc-brand);
+  border: 1px solid var(--lc-line);
+  border-radius: 50%;
+}
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-avatar__hint {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--lc-fs-hint);
+  color: var(--lc-ink-muted);
+}
+.profile-avatar__hint strong {
+  font-size: var(--lc-fs-label);
+  font-weight: 600;
+  color: var(--lc-ink);
 }
 
 .mine-popup {

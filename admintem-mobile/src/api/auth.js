@@ -27,3 +27,15 @@ export function getUserInfo() {
 export function updatePassword(data) {
   return request({ url: '/auth/updatePassword', method: 'post', data })
 }
+
+/** 修改本人资料（昵称/邮箱/手机号/性别/简介/头像） */
+export function updateProfile(data) {
+  return request({ url: '/auth/updateProfile', method: 'post', data })
+}
+
+/** 上传头像（multipart/form-data） */
+export function uploadAvatar(file) {
+  const data = new FormData()
+  data.append('file', file)
+  return request({ url: '/auth/uploadAvatar', method: 'post', data })
+}
