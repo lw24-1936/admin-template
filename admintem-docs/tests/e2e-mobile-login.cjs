@@ -135,6 +135,18 @@ await page.waitForSelector('input', { timeout: 60000 })
   check('展示登录账号 admin', mineText.includes('admin'))
   check('展示角色标签 admin', mineText.includes('admin'))
   check('存在退出登录按钮', await page.locator('button:has-text("退出登录")').count() > 0)
+  console.log('E2. 资料编辑弹层与头像选择器')
+  await page.click('.van-cell:has-text("编辑资料")')
+  await page.waitForSelector('.profile-avatar-btn')
+  check('资料编辑弹层已打开', (await page.locator('input[name="nickName"]').count()) === 1)
+  check('昵称已回填当前账号', (await page.inputValue('input[name="nickName"]')) === 'admin')
+  const chooserPromise = page.waitForEvent('filechooser', { timeout: 2500 }).catch(() => null)
+  await page.click('.profile-avatar-btn')
+  const chooser = await chooserPromise
+  check('头像按钮可打开文件选择器', !!chooser)
+  await page.locator('.van-popup:visible button:has-text("取消")').last().click()
+  await page.waitForTimeout(300)
+
 
   await page.click('button:has-text("退出登录")')
   await page.waitForTimeout(300)

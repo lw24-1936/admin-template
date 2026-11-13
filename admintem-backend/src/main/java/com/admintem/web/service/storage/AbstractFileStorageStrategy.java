@@ -21,6 +21,8 @@ public abstract class AbstractFileStorageStrategy implements StorageStrategy {
         this.properties = properties;
     }
 
+    // 注意：不能加 final。ApiLogAspect 会以 CGLIB 代理 service，final 方法绕过代理，
+    // 直接读取代理对象上未注入的 properties，头像上传会 NPE。
     @Override
     public String storeAvatar(MultipartFile file) {
         // 校验只做一次，所有实现共享同一套规则
@@ -31,6 +33,7 @@ public abstract class AbstractFileStorageStrategy implements StorageStrategy {
         return doStore(key, file, contentType);
     }
 
+    // 同上：deleteByUrl 也不能是 final。
     @Override
     public void deleteByUrl(String url) {
         String key = keyOf(url);

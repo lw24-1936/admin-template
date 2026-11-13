@@ -72,23 +72,33 @@
       <div class="mine-popup">
         <h3 class="mine-popup__title">编辑资料</h3>
         <div class="profile-avatar-row">
-          <van-uploader
-            :after-read="onAvatarRead"
-            :before-read="beforeAvatarRead"
-            :max-count="1"
-            :preview-image="false"
-            :max-size="2 * 1024 * 1024"
-            reupload
-            @oversize="onAvatarOversize"
+          <!-- 用原生 file input + 真实 button：Vant 自定义插槽不会自动打开文件选择，
+               且 div 包装对键盘不可用；保留 Vant 的视觉，交互用原生控件保证可访问性 -->
+          <input
+            ref="avatarInput"
+            class="profile-avatar-input"
+            type="file"
+            tabindex="-1"
+            aria-hidden="true"
+            accept="image/png,image/jpeg,image/webp,image/gif"
+            @change="onAvatarChange"
+          />
+          <button
+            type="button"
+            class="profile-avatar-btn"
+            :disabled="avatarUploading"
+            aria-label="更换头像"
+            @click="openAvatarPicker"
           >
-            <div class="profile-avatar">
+            <span class="profile-avatar">
               <img v-if="avatarUrl" :src="avatarUrl" alt="当前头像" />
               <span v-else>{{ userStore.avatarText }}</span>
-            </div>
-          </van-uploader>
+            </span>
+          </button>
           <div class="profile-avatar__hint">
             <strong>点击更换头像</strong>
             <span>支持 png / jpg / webp / gif，不超过 2MB</span>
+            <span v-if="avatarUploading" class="profile-avatar__status" role="status">上传中...</span>
           </div>
         </div>
         <van-form @submit="submitProfile">
@@ -211,11 +221,7 @@ import {
   Popup as VanPopup,
   Radio as VanRadio,
   RadioGroup as VanRadioGroup,
-  Tag as VanTag,
-  Uploader as VanUploader,
-  closeToast,
   showConfirmDialog,
-  showLoadingToast,
   showSuccessToast,
   showToast,
 } from 'vant'
@@ -226,8 +232,6 @@ import 'vant/es/field/style/index'
 import 'vant/es/form/style/index'
 import 'vant/es/popup/style/index'
 import 'vant/es/radio/style/index'
-import 'vant/es/tag/style/index'
-import 'vant/es/uploader/style/index'
 import { useUserStore } from '@/stores/user'
 import * as authApi from '@/api/auth'
 
@@ -252,6 +256,7 @@ const passwordLoading = ref(false)
 const profileVisible = ref(false)
 const profileLoading = ref(false)
 const avatarUploading = ref(false)
+const avatarInput = ref(null)
 
 const profileForm = reactive({
   nickName: '',
@@ -288,37 +293,37 @@ function openProfile() {
 }
 
 /** 选图前校验：类型与大小（后端同样会校验） */
-function beforeAvatarRead(file) {
-  const target = Array.isArray(file) ? file[0] : file
-  if (!target || !String(target.type || '').startsWith('image/')) {
+function isValidAvatar(file) {
+  if (!file || !String(file.type || '').startsWith('image/')) {
     showToast('请选择图片文件')
     return false
   }
-  if (target.size > 2 * 1024 * 1024) {
+  if (file.size > 2 * 1024 * 1024) {
     showToast('头像不能超过 2MB')
     return false
   }
   return true
 }
 
-function onAvatarOversize() {
-  showToast('头像不能超过 2MB')
+function openAvatarPicker() {
+  if (!avatarUploading.value) avatarInput.value?.click()
 }
 
 /** 头像上传成功即写入用户表；这里同步本地会话，避免需要重新登录 */
-async function onAvatarRead(item) {
-  if (!item || !item.file) return
+async function onAvatarChange(event) {
+  const input = event.target
+  const file = input?.files?.[0]
+  if (input) input.value = ''
+  if (!file || !isValidAvatar(file) || avatarUploading.value) return
   avatarUploading.value = true
-  showLoadingToast({ message: '上传头像...', forbidClick: true, duration: 0 })
   try {
-    const res = await authApi.uploadAvatar(item.file)
+    const res = await authApi.uploadAvatar(file)
     profileForm.avatar = res.data || ''
     if (userStore.user) userStore.user.avatar = res.data || ''
     showSuccessToast('头像已更新')
   } catch (e) {
     // 错误提示由 request 拦截器统一处理
   } finally {
-    closeToast()
     avatarUploading.value = false
   }
 }
@@ -550,6 +555,32 @@ async function handleLogout() {
   text-align: center;
   font-size: var(--lc-fs-kicker);
   color: var(--lc-ink-faint);
+}
+
+.profile-avatar-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.profile-avatar-btn {
+  display: block;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.profile-avatar-btn:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.profile-avatar__status {
+  color: var(--lc-brand);
 }
 
 .profile-avatar-row {

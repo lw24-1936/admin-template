@@ -689,4 +689,9 @@ async function handleUploadAvatar(options) {
 .skip-link:focus {
   top: 12px;
 }
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
 </style>
