@@ -3,7 +3,7 @@
  *
  * 运行前提：
  *   1. 后端运行于 8090（dev profile），移动端 dev 运行于 5174（admintem-mobile: npm run dev）；
- *   2. 本机装有 Edge（默认路径 C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe）；
+ *   2. 浏览器：优先本机 Edge；无 Edge 时回退 Playwright Chromium；
  *   3. playwright-core 可被解析：优先本目录 node_modules，其次全局 playwright 自带副本。
  * 运行：node e2e-mobile-login.cjs
  *
@@ -40,6 +40,11 @@ function loadChromium() {
 const chromium = loadChromium()
 
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+const HAS_EDGE = fs.existsSync(EDGE)
+// 本地优先真实 Edge；CI/Linux 回退到 Playwright Chromium。
+const LAUNCH_OPTIONS = HAS_EDGE
+  ? { executablePath: EDGE, headless: true }
+  : { headless: true }
 // 基址可由环境变量覆盖（原因见 e2e-admin-login.cjs 同名注释）
 // 优先用 MOBILE_BASE_URL：桌面与移动的 E2E 常共用 E2E_BASE_URL，
 // 混用时会把移动端脚本指到桌面端口（曾因此误报「标题不是移动端登录」）
@@ -67,8 +72,8 @@ async function waitHash(page, hash, timeout = 8000) {
 }
 
 ;(async () => {
-  if (!fs.existsSync(EDGE)) throw new Error('未找到 Edge：' + EDGE)
-  const browser = await chromium.launch({ executablePath: EDGE, headless: true })
+  if (!HAS_EDGE) console.log('  INFO 未找到 Edge，使用 Playwright Chromium')
+  const browser = await chromium.launch(LAUNCH_OPTIONS)
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 3,

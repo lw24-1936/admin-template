@@ -3,7 +3,7 @@
  *
  * 运行前提：
  *   1. 后端运行于 8090（dev profile），桌面端 dev 运行于 5173（admintem-vue: npm run dev）；
- *   2. 本机装有 Edge（默认路径 C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe）；
+ *   2. 浏览器：优先本机 Edge；无 Edge 时回退 Playwright Chromium；
  *   3. playwright-core 可被解析：优先本目录 node_modules，其次全局 playwright 自带副本
  *      （无需再手动 npm i playwright-core）。
  * 运行：node e2e-admin-login.cjs
@@ -42,6 +42,12 @@ function loadChromium() {
 
 const chromium = loadChromium()
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+const HAS_EDGE = fs.existsSync(EDGE)
+// 本地优先真实 Edge；GitHub Actions/无 Edge 的 Linux 环境回退到
+// npx playwright install chromium 下载的浏览器，避免硬编码 Windows 路径。
+const LAUNCH_OPTIONS = HAS_EDGE
+  ? { executablePath: EDGE, headless: true }
+  : { headless: true }
 // 基址允许用环境变量覆盖：本机常有其他项目的 dev server 也监听 5173
 // （Windows 下两个进程可以同时绑定同一端口），硬编码会让 E2E 打到别人的页面上，
 // 表现为"选择器等不到"这种看似脚本损坏、实为环境串台的假故障。
@@ -58,8 +64,8 @@ function check(label, ok, extra) {
 }
 
 ;(async () => {
-  if (!fs.existsSync(EDGE)) throw new Error('未找到 Edge：' + EDGE)
-  const browser = await chromium.launch({ executablePath: EDGE, headless: true })
+  if (!HAS_EDGE) console.log('  INFO 未找到 Edge，使用 Playwright Chromium')
+  const browser = await chromium.launch(LAUNCH_OPTIONS)
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } })
 // 同移动端：dev server 冷启动可能超过默认 30s，放宽到 60s
 page.setDefaultTimeout(60000)
