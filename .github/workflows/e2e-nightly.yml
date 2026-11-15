@@ -113,6 +113,14 @@ jobs:
           done
           echo "dev server 未就绪" && exit 1
 
+      - name: 安装 Playwright Node 依赖
+        run: |
+          set -euo pipefail
+          # e2e 脚本 require('playwright-core')；仅 npx playwright install 只下载浏览器，
+          # 不会把 Node 包放到脚本可解析的位置。
+          cd admintem-docs/tests
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --no-save --no-package-lock --ignore-scripts playwright-core
+
       - name: 桌面端 E2E（21 项）+ 移动端 E2E（41 项）
         run: |
           node admintem-docs/tests/e2e-admin-login.cjs

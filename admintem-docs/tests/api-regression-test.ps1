@@ -1,4 +1,4 @@
-﻿# ============================================================================
+# ============================================================================
 # admintem-backend API 全功能回归测试脚本
 # ----------------------------------------------------------------------------
 # 覆盖范围：登录/注册/登出、用户管理、角色管理、权限管理、按钮级权限校验、
@@ -13,6 +13,14 @@ param(
 $script:Pass = 0
 $script:Fail = 0
 $script:Failures = @()
+$TempDir = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
+$CurlExe = if (Get-Command curl.exe -ErrorAction SilentlyContinue) {
+    'curl.exe'
+} elseif (Get-Command curl -ErrorAction SilentlyContinue) {
+    'curl'
+} else {
+    throw '未找到 curl，可在 Windows 使用 curl.exe，Linux 使用 curl'
+}
 
 function Write-Check {
     param([string]$Name, [bool]$Ok, [string]$Detail = '')
@@ -28,8 +36,8 @@ function Write-Check {
 }
 
 # 统一请求封装：返回 { Http, Code, Message, Data }
-# 说明：使用 Windows 自带 curl.exe，避免 PowerShell 5.1 非交互模式下
-#       Invoke-WebRequest 的凭据/交互限制。
+# 说明：使用系统 curl（Windows: curl.exe，Linux: curl），避免 PowerShell 5.1
+#       非交互模式下 Invoke-WebRequest 的凭据/交互限制。
 function Invoke-Api {
     param(
         [string]$Method = 'POST',
@@ -37,19 +45,19 @@ function Invoke-Api {
         [string]$Token = '',
         $Body = $null
     )
-    $outFile = Join-Path $env:TEMP ("iwe_{0}.out" -f ([guid]::NewGuid().ToString('N')))
+    $outFile = Join-Path $TempDir ("iwe_{0}.out" -f ([guid]::NewGuid().ToString('N')))
     $curlArgs = @('-sS', '-o', $outFile, '-w', '%{http_code}', '-X', $Method, "$BaseUrl$Path")
     if ($Token) {
         $curlArgs += @('-H', "admintem_token: LAUNCH $Token")
     }
     if ($null -ne $Body) {
-        $jsonFile = Join-Path $env:TEMP ("iwe_{0}.json" -f ([guid]::NewGuid().ToString('N')))
+        $jsonFile = Join-Path $TempDir ("iwe_{0}.json" -f ([guid]::NewGuid().ToString('N')))
         [System.IO.File]::WriteAllText($jsonFile, ($Body | ConvertTo-Json -Depth 10), (New-Object System.Text.UTF8Encoding($false)))
         $curlArgs += @('-H', 'Content-Type: application/json; charset=utf-8', '--data-binary', "@$jsonFile")
     }
     $httpStatus = -1
     try {
-        $statusLine = (& curl.exe @curlArgs 2>&1 | Out-String).Trim()
+        $statusLine = (& $CurlExe @curlArgs 2>&1 | Out-String).Trim()
         $httpStatus = [int]$statusLine
     }
     catch {
@@ -441,4 +449,5 @@ Write-Host "通过: $($script:Pass)   失败: $($script:Fail)"
 if ($script:Fail -gt 0) {
     Write-Host "失败明细:" -ForegroundColor Red
     $script:Failures | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+    exit 1
 }
