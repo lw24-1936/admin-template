@@ -2,7 +2,7 @@
  * 全站页面截图脚本（用于《12-页面与界面说明》文档配图）
  *
  * 运行前提：
- *   1. 后端运行于 8090、桌面端 dev 运行于 5173、移动端 dev 运行于 5174；
+ *   1. 后端运行于 8090、桌面端 dev 运行于 5175、移动端 dev 运行于 5174；
  *   2. 本机装有 Edge；playwright-core 可被解析（优先本目录，其次全局 playwright 自带副本）。
  * 运行：node capture-screenshots.cjs
  *
@@ -32,7 +32,7 @@ function loadChromium() {
 
 const chromium = loadChromium()
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
-const DESKTOP = process.env.DESKTOP_BASE_URL || 'http://localhost:5173'
+const DESKTOP = process.env.DESKTOP_BASE_URL || 'http://localhost:5175'
 const MOBILE = process.env.MOBILE_BASE_URL || 'http://localhost:5174'
 // 输出目录：默认写入 admintem-docs/images（文档配图）；可用 CAPTURE_OUT 覆盖（用于改版前后对比）
 const OUT = process.env.CAPTURE_OUT

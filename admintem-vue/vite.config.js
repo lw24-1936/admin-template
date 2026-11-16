@@ -27,7 +27,7 @@ export default defineConfig(({ command }) => ({
   },
   server: {
     host: '0.0.0.0', // 允许局域网访问（可按需收紧）
-    port: 5173,
+    port: 5175,
     open: false,
   },
   build: {

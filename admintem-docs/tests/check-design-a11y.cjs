@@ -15,7 +15,7 @@
  *   ③ 移动端三档宽度（360 / 390 / 430）：同样无横向溢出，且触摸目标 ≥ 44px
  *      （底部标签项、首页管理入口、登录按钮）。
  *
- * 运行前提（与两端 E2E 相同）：后端 8090、桌面端 dev 5173、移动端 dev 5174 已启动。
+ * 运行前提（与两端 E2E 相同）：后端 8090、桌面端 dev 5175、移动端 dev 5174 已启动。
  * 运行：node check-design-a11y.cjs    退出码 0 = 全部通过
  */
 const fs = require('fs')
@@ -41,8 +41,8 @@ function loadChromium() {
 
 const chromium = loadChromium()
 const EDGE = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
-// 基址可覆盖：本机 5173 可能被其他项目的 dev server 占用（Windows 允许同端口双绑定）
-const DESKTOP = process.env.DESKTOP_BASE_URL || 'http://localhost:5173'
+// 基址可覆盖：本机 5175 可能被其他项目的 dev server 占用（Windows 允许同端口双绑定）
+const DESKTOP = process.env.DESKTOP_BASE_URL || 'http://localhost:5175'
 const MOBILE = process.env.MOBILE_BASE_URL || 'http://localhost:5174'
 const ROOT = path.resolve(__dirname, '..', '..')
 

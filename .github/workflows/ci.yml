@@ -13,7 +13,7 @@ name: ci
 
 on:
   push:
-    branches: [ master, 'backup/**' ]
+    branches: [ main, master, 'backup/**' ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -24,7 +24,7 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 后端：编译 + 129 项单元测试
+  # 后端：编译 + 159 项单元测试
   # ---------------------------------------------------------------------------
   backend:
     name: 后端（mvn verify，单测）
@@ -83,7 +83,7 @@ jobs:
   # 文档与设计层静态检查（不需要服务）
   # ---------------------------------------------------------------------------
   docs:
-    name: 文档一致性（4 个检查器）
+    name: 文档一致性（5 个检查器）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

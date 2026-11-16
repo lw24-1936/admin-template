@@ -204,7 +204,7 @@ public Result<Long> addSysAuthUser(@Valid @RequestBody UserSaveRequest request) 
 ## 十二、测试
 
 ```powershell
-# 后端全量接口回归（60 项断言，需服务运行在 8090）
+# 后端全量接口回归（78 项断言，需服务运行在 8090）
 cd ../admintem-docs/tests
 pwsh api-regression-test.ps1
 

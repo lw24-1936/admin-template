@@ -5,7 +5,7 @@
 #   1. 起 MySQL 8 / Redis 7（service containers）
 #   2. 执行一键初始化脚本（建表 + 种子 + 唯一索引）
 #   3. 启动后端，跑 78 项接口回归（含 401/403/唯一性/内置保护等断言）
-#   4. 起两端 dev server，跑桌面 21 项 + 移动 41 项 E2E
+#   4. 起两端 dev server，跑桌面 21 项 + 移动 44 项 E2E
 #
 # 说明：E2E 使用 Playwright 的 Chromium（npx playwright install --with-deps chromium），
 #      与本地脚本"优先使用系统 Edge/Chrome"的解析顺序兼容。
@@ -121,7 +121,7 @@ jobs:
           cd admintem-docs/tests
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --no-save --no-package-lock --ignore-scripts playwright-core
 
-      - name: 桌面端 E2E（21 项）+ 移动端 E2E（41 项）
+      - name: 桌面端 E2E（21 项）+ 移动端 E2E（44 项）
         run: |
           node admintem-docs/tests/e2e-admin-login.cjs
           node admintem-docs/tests/e2e-mobile-login.cjs

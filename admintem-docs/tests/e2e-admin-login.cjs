@@ -2,7 +2,7 @@
  * 桌面端 E2E：真实 Edge headless 验证登录 -> 工作台 -> 全部业务页面与弹层
  *
  * 运行前提：
- *   1. 后端运行于 8090（dev profile），桌面端 dev 运行于 5173（admintem-vue: npm run dev）；
+ *   1. 后端运行于 8090（dev profile），桌面端 dev 运行于 5175（admintem-vue: npm run dev）；
  *   2. 浏览器：优先本机 Edge；无 Edge 时回退 Playwright Chromium；
  *   3. playwright-core 可被解析：优先本目录 node_modules，其次全局 playwright 自带副本
  *      （无需再手动 npm i playwright-core）。
@@ -48,10 +48,10 @@ const HAS_EDGE = fs.existsSync(EDGE)
 const LAUNCH_OPTIONS = HAS_EDGE
   ? { executablePath: EDGE, headless: true }
   : { headless: true }
-// 基址允许用环境变量覆盖：本机常有其他项目的 dev server 也监听 5173
+// 基址允许用环境变量覆盖：本机常有其他项目的 dev server 也监听 5175
 // （Windows 下两个进程可以同时绑定同一端口），硬编码会让 E2E 打到别人的页面上，
 // 表现为"选择器等不到"这种看似脚本损坏、实为环境串台的假故障。
-const APP = process.env.E2E_BASE_URL || 'http://localhost:5173'
+const APP = process.env.E2E_BASE_URL || 'http://localhost:5175'
 
 let failed = 0
 function check(label, ok, extra) {

@@ -3,7 +3,7 @@
 基于 **Vue 3 + Vite + Element Plus** 的权限管理桌面端，与后端 `admintem-backend` 配合使用，
 实现登录注册、用户 / 角色 / 权限管理，以及**菜单级 + 按钮级**的权限控制与数据库驱动的动态路由。
 
-- 开发地址：http://localhost:5173
+- 开发地址：http://localhost:5175
 - 后端接口：默认 http://localhost:8090（dev）
 - 代码根目录：`src/`
 - 同仓库的移动端（`admintem-mobile`，登录后「首页 / 我的」，端口 5174）复用同一后端与同一套
@@ -42,7 +42,7 @@
 ```
 admintem-vue
 ├─ index.html
-├─ vite.config.js                 开发端口 5173、路径别名 @
+├─ vite.config.js                 开发端口 5175、路径别名 @
 ├─ .env.development / .env.test / .env.pre / .env.pro   多环境接口地址
 ├─ scripts/reorder-sfc.ps1        单文件组件结构顺序规整工具
 ├─ tests/unit/                    工具函数单测（Node 内置 node --test，零依赖）
@@ -68,7 +68,7 @@ admintem-vue
 ```powershell
 cd admintem-vue
 npm install
-npm run dev            # http://localhost:5173
+npm run dev            # http://localhost:5175
 ```
 
 构建产物输出到 `dist/`：
