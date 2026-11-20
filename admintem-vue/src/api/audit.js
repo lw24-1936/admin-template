@@ -25,3 +25,8 @@ export function pageAuditLogs(params) {
 export function queryActionDict() {
   return request.post('/sysAuthAuditLog/queryActions')
 }
+
+/** 导出审计 CSV（最多 500 行，返回 Blob） */
+export function exportAuditLogs(params) {
+  return request({ url: '/sysAuthAuditLog/export', method: 'post', data: params, responseType: 'blob' })
+}

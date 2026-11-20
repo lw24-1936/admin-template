@@ -56,6 +56,7 @@
       <template #actions>
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button @click="handleReset">重置</el-button>
+        <el-button v-perm="'sysAuthAuditLog:paginQuery'" :loading="exporting" @click="handleExport">导出 CSV</el-button>
       </template>
     </TableToolbar>
 
@@ -161,6 +162,7 @@ import PaginationBar from '@/components/PaginationBar.vue'
 import { useQuerySync } from '@/composables/useQuerySync'
 
 const loading = ref(false)
+const exporting = ref(false)
 const list = ref([])
 const total = ref(0)
 const actionOptions = ref([])
@@ -198,6 +200,30 @@ async function loadData() {
     console.error('[auditLog] 加载审计列表失败：', e)
   } finally {
     loading.value = false
+  }
+}
+
+/** 导出当前筛选结果（最多 500 行） */
+async function handleExport() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const payload = { ...query }
+    Object.keys(payload).forEach((k) => {
+      if (payload[k] === '' || payload[k] === null) delete payload[k]
+    })
+    const blob = await auditApi.exportAuditLogs(payload)
+    if (!(blob instanceof Blob)) throw new Error('导出响应不是文件')
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'audit-logs.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  } catch (e) {
+    console.error('[auditLog] 导出审计失败：', e)
+  } finally {
+    exporting.value = false
   }
 }
 

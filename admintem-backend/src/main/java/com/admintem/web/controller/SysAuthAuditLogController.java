@@ -7,6 +7,7 @@ import com.admintem.web.entity.vo.PageResult;
 import com.admintem.web.service.AuditLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -68,5 +73,46 @@ public class SysAuthAuditLogController {
     @Operation(summary = "查询动作字典")
     public Result<List<Map<String, Object>>> queryActions() {
         return Result.ok(auditLogService.queryActionDict());
+    }
+
+    @PostMapping("/export")
+    @PreAuthorize("@rbac.hasPerm('sysAuthAuditLog:paginQuery')")
+    @Operation(summary = "导出审计 CSV（最多 500 行）")
+    public void export(@Valid @RequestBody AuditLogPageQuery query, HttpServletResponse response)
+            throws IOException {
+        query.setPageNum(1);
+        query.setPageSize(500);
+        List<AuditLogVO> records = auditLogService.pageQuery(query).getRecords();
+        response.setContentType("text/csv;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=audit-logs.csv");
+        PrintWriter writer = new PrintWriter(
+                new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8));
+        writer.write('\uFEFF');
+        writer.println("id,traceId,operator,action,actionName,targetType,targetName,result,clientIp,costMs,createdTime,errorMsg");
+        for (AuditLogVO item : records) {
+            writer.println(String.join(",",
+                    csv(item.getId()),
+                    csv(item.getTraceId()),
+                    csv(item.getOperator()),
+                    csv(item.getAction()),
+                    csv(item.getActionName()),
+                    csv(item.getTargetType()),
+                    csv(item.getTargetName()),
+                    csv(item.getResultText()),
+                    csv(item.getClientIp()),
+                    csv(item.getCostMs()),
+                    csv(item.getCreatedTime()),
+                    csv(item.getErrorMsg())));
+        }
+        writer.flush();
+    }
+
+    private String csv(Object value) {
+        if (value == null) return "";
+        String text = String.valueOf(value);
+        if (!text.isEmpty() && "=+-@".indexOf(text.charAt(0)) >= 0) {
+            text = "'" + text;
+        }
+        return "\"" + text.replace("\"", "\"\"") + "\"";
     }
 }
