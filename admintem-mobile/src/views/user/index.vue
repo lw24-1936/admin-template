@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="lc-page user-page">
     <van-nav-bar title="用户管理" left-text="返回" left-arrow @click-left="router.back()" />
 
@@ -142,15 +142,15 @@ handleSearch()
   display: flex;
   justify-content: space-between;
   padding: 0 16px 8px;
-  color: var(--lc-text-muted, #8a8f99);
+  color: var(--lc-ink-muted);
   font-size: 12px;
 }
 
 .user-card {
   margin: 0 12px 10px;
   padding: 14px;
-  background: var(--lc-surface, #fff);
-  border: 1px solid var(--lc-border, #eef0f4);
+  background: var(--lc-paper-card);
+  border: 1px solid var(--lc-line);
   border-radius: 14px;
 }
 
@@ -165,12 +165,12 @@ handleSearch()
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--lc-text, #1f2430);
+  color: var(--lc-ink);
 }
 
 .user-card__account {
   margin: 4px 0 0;
-  color: var(--lc-text-muted, #8a8f99);
+  color: var(--lc-ink-muted);
   font-size: 12px;
 }
 
@@ -188,12 +188,12 @@ handleSearch()
 
 .user-card__meta dt {
   flex: 0 0 36px;
-  color: var(--lc-text-muted, #8a8f99);
+  color: var(--lc-ink-muted);
 }
 
 .user-card__meta dd {
   margin: 0;
-  color: var(--lc-text, #1f2430);
+  color: var(--lc-ink);
   overflow-wrap: anywhere;
 }
 
