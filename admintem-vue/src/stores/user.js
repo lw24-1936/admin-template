@@ -4,7 +4,7 @@
  * - 登录后调用 fetchUserInfo 一次性拉齐会话数据
  */
 import { defineStore } from 'pinia'
-import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
 import * as authApi from '@/api/auth'
 
 export const useUserStore = defineStore('user', {
