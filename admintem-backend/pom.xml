@@ -44,8 +44,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- 关键第三方依赖版本（显式声明，便于升级与追溯） -->
-        <mybatis-plus.version>3.5.17</mybatis-plus.version>
-        <jjwt.version>0.12.6</jjwt.version>
+        <mybatis-plus.version>3.5.18.1</mybatis-plus.version>
+        <jjwt.version>0.13.0</jjwt.version>
         <springdoc.version>2.9.1</springdoc.version>
         <redisson.version>3.52.0</redisson.version>
     </properties>
