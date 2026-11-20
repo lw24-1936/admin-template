@@ -83,7 +83,7 @@ jobs:
   # 文档与设计层静态检查（不需要服务）
   # ---------------------------------------------------------------------------
   docs:
-    name: 文档一致性（6 个检查器）
+    name: 文档一致性（6 个检查器 + 生成器测试）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -102,6 +102,8 @@ jobs:
         run: node admintem-docs/tests/check-tokens.cjs
       - name: OpenAPI 契约完整性
         run: node scripts/check-openapi.mjs
+      - name: 生成器单元测试
+        run: node --test scripts/generate-crud.test.mjs
 
   # ---------------------------------------------------------------------------
   # uni-app：lint + H5 / 微信小程序 / App 资源包三端构建

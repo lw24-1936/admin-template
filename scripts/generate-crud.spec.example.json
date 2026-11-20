@@ -1,0 +1,47 @@
+{
+  "module": "notice",
+  "entity": "SysNotice",
+  "table": "sys_notice",
+  "prefix": "sysNotice",
+  "version": "V1.0.16",
+  "menuParentId": 4,
+  "description": "通知公告",
+  "fields": [
+    {
+      "name": "title",
+      "type": "string",
+      "label": "标题",
+      "required": true,
+      "maxLength": 120,
+      "query": true,
+      "list": true,
+      "form": true
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "label": "内容",
+      "required": true,
+      "maxLength": 2000,
+      "textarea": true,
+      "list": false,
+      "form": true
+    },
+    {
+      "name": "status",
+      "type": "int",
+      "label": "状态",
+      "required": true,
+      "list": true,
+      "query": true,
+      "form": true
+    },
+    {
+      "name": "publishTime",
+      "type": "datetime",
+      "label": "发布时间",
+      "list": true,
+      "form": true
+    }
+  ]
+}

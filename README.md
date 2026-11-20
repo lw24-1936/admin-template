@@ -56,13 +56,14 @@
 | 文件中心 | 通用附件上传、列表、逻辑删除；扩展名/大小白名单；本地与 MinIO 共用存储策略 |
 | 前端平台组件 | `ProTable`（表格+分页+可选多选）、`FormDialog`（统一弹层）、`TableToolbar`、统一 500/错误兜底 |
 | i18n 基础版 | 桌面端中/英切换，覆盖应用外壳、登录页、错误页与已知菜单名；业务页文案可逐步用 `t()` 抽取 |
+| 代码生成器 | `scripts/generate-crud.mjs` 按 spec 生成 DTO/Mapper/Service/Controller/页面/迁移骨架；默认先输出到 tmp，生成物需人工复核 |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、CSV 导出、明细含 `traceId` 与变更前后 JSON |
 | 在线会话 | 查看在线设备、剩余有效期、角色、令牌摘要；按设备或按账号强制下线，同账号多端互不覆盖（传 deviceId 时） |
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、Prometheus 安全指标、JSON 结构化日志、告警规则样例 |
 
 **当前基线**：后端 166 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
-123 项设计层断言、前端 10 + 6 项单测；权限 37 条、受控接口 43 个，CI 全绿。
+123 项设计层断言、前端 10 + 6 项单测、生成器 2 项；权限 37 条、受控接口 43 个，CI 全绿。
 
 ## 界面预览
 
@@ -366,6 +367,7 @@ admin-template/
 | [14-文件存储策略与 MinIO 接入](admintem-docs/14-文件存储策略与MinIO接入.md) | 本地/MinIO 策略与切换 |
 | [15-后端方法日志规范](admintem-docs/15-后端方法日志规范.md) | 方法日志字段与脱敏 |
 | [16-Jenkins 自由风格部署教程](admintem-docs/16-Jenkins自由风格部署教程.md) | Jenkins 部署全流程 |
+| [17-代码生成器使用说明](admintem-docs/17-代码生成器使用说明.md) | CRUD spec、生成物与复核清单 |
 
 文档索引见 [`admintem-docs/README.md`](admintem-docs/README.md)。
 
