@@ -678,6 +678,68 @@
         }
       }
     },
+    "/sysAuthUser/batchStatus": {
+      "post": {
+        "tags": [
+          "02-用户管理"
+        ],
+        "summary": "批量启用/禁用用户",
+        "operationId": "batchStatus",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sysAuthUser/batchDelete": {
+      "post": {
+        "tags": [
+          "02-用户管理"
+        ],
+        "summary": "批量删除用户",
+        "operationId": "batchDelete",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchIdsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/sysAuthUser/assignRole": {
       "post": {
         "tags": [
@@ -1502,6 +1564,7 @@
         "tags": [
           "01-认证接口"
         ],
+        "summary": "生成图形验证码",
         "operationId": "captcha",
         "responses": {
           "200": {
@@ -1514,8 +1577,7 @@
               }
             }
           }
-        },
-        "summary": "生成图形验证码"
+        }
       }
     },
     "/auth/captcha/verify": {
@@ -1523,6 +1585,7 @@
         "tags": [
           "01-认证接口"
         ],
+        "summary": "校验图形验证码",
         "operationId": "verifyCaptcha",
         "requestBody": {
           "content": {
@@ -1545,8 +1608,7 @@
               }
             }
           }
-        },
-        "summary": "校验图形验证码"
+        }
       }
     },
     "/sysAuthRole/queryAll": {
@@ -2574,6 +2636,59 @@
         "required": [
           "id",
           "userName"
+        ]
+      },
+      "BatchStatusRequest": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "description": "用户 ID 列表",
+            "example": [
+              2,
+              3
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 200,
+            "minItems": 0
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "0 启用 / 1 禁用",
+            "example": 0,
+            "maximum": 1,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "ids",
+          "status"
+        ]
+      },
+      "BatchIdsRequest": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "description": "用户 ID 列表",
+            "example": [
+              2,
+              3
+            ],
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "maxItems": 200,
+            "minItems": 0
+          }
+        },
+        "required": [
+          "ids"
         ]
       },
       "AssignRoleRequest": {

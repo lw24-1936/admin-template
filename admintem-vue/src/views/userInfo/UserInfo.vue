@@ -43,12 +43,40 @@
         <el-button v-perm="'sysAuthUser:addSysAuthUser'" :loading="importing" @click="pickImport">
           导入 CSV
         </el-button>
+        <el-button
+          v-perm="'sysAuthUser:editSysAuthUser'"
+          type="success"
+          plain
+          :disabled="!selectedIds.length"
+          @click="handleBatchStatus(0)"
+        >
+          批量启用
+        </el-button>
+        <el-button
+          v-perm="'sysAuthUser:editSysAuthUser'"
+          type="warning"
+          plain
+          :disabled="!selectedIds.length"
+          @click="handleBatchStatus(1)"
+        >
+          批量禁用
+        </el-button>
+        <el-button
+          v-perm="'sysAuthUser:deleteById'"
+          type="danger"
+          plain
+          :disabled="!selectedIds.length"
+          @click="handleBatchDelete"
+        >
+          批量删除
+        </el-button>
         <input ref="importInput" type="file" accept=".csv,text/csv" class="hidden-file" @change="handleImportFile" />
       </template>
     </TableToolbar>
 
     <!-- 列头排序：sortable="custom" 交给后端排序（字段名经白名单校验） -->
-    <el-table v-loading="loading" :data="list" stripe border @sort-change="handleSortChange">
+    <el-table v-loading="loading" :data="list" stripe border @sort-change="handleSortChange" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="46" />
       <el-table-column prop="userName" label="账号" min-width="120" sortable="custom" />
       <el-table-column prop="nickName" label="昵称" min-width="110" sortable="custom" />
       <el-table-column prop="email" label="邮箱" min-width="145" sortable="custom" />
@@ -259,6 +287,7 @@ const loading = ref(false)
 const exporting = ref(false)
 const importing = ref(false)
 const importInput = ref()
+const selectedIds = ref([])
 const list = ref([])
 const total = ref(0)
 
@@ -293,6 +322,43 @@ async function loadData() {
     console.error('[userInfo] 加载用户列表失败：', e)
   } finally {
     loading.value = false
+  }
+}
+
+function handleSelectionChange(rows) {
+  selectedIds.value = rows.map((row) => row.id)
+}
+
+async function handleBatchStatus(status) {
+  if (!selectedIds.value.length) return
+  const action = status === 1 ? '禁用' : '启用'
+  try {
+    await ElMessageBox.confirm(`确定批量${action}选中的 ${selectedIds.value.length} 个用户吗？`, '批量确认', {
+      type: 'warning',
+    })
+    await userApi.batchUserStatus(selectedIds.value, status)
+    ElMessage.success(`已批量${action}`)
+    selectedIds.value = []
+    await loadData()
+  } catch (e) {
+    if (e !== 'cancel' && e !== 'close') console.error('[userInfo] 批量更新状态失败：', e)
+  }
+}
+
+async function handleBatchDelete() {
+  if (!selectedIds.value.length) return
+  try {
+    await ElMessageBox.confirm(
+      `确定批量删除选中的 ${selectedIds.value.length} 个用户吗？删除后不可恢复。`,
+      '批量删除确认',
+      { type: 'warning', confirmButtonText: '删除' }
+    )
+    await userApi.batchDeleteUsers(selectedIds.value)
+    ElMessage.success('批量删除成功')
+    selectedIds.value = []
+    await loadData()
+  } catch (e) {
+    if (e !== 'cancel' && e !== 'close') console.error('[userInfo] 批量删除失败：', e)
   }
 }
 

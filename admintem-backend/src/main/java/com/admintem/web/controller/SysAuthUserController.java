@@ -5,6 +5,8 @@ import com.admintem.web.aspect.AuditTargetType;
 import com.admintem.web.entity.vo.PageResult;
 import com.admintem.web.common.Result;
 import com.admintem.web.entity.dto.AssignRoleRequest;
+import com.admintem.web.entity.dto.BatchIdsRequest;
+import com.admintem.web.entity.dto.BatchStatusRequest;
 import com.admintem.web.entity.dto.IdRequest;
 import com.admintem.web.entity.dto.ResetPasswordRequest;
 import com.admintem.web.entity.dto.UserPageQuery;
@@ -168,6 +170,25 @@ public class SysAuthUserController {
     @Operation(summary = "删除用户")
     public Result<Void> deleteById(@Valid @RequestBody IdRequest request) {
         sysAuthUserService.deleteUser(request.getId(), SecurityUtils.currentUserName());
+        return Result.ok();
+    }
+
+    @PostMapping("/batchStatus")
+    @AuditLog(action = "USER_BATCH_STATUS", name = "批量更新用户状态", target = AuditTargetType.USER)
+    @PreAuthorize("@rbac.hasPerm('sysAuthUser:editSysAuthUser')")
+    @Operation(summary = "批量启用/禁用用户")
+    public Result<Void> batchStatus(@Valid @RequestBody BatchStatusRequest request) {
+        sysAuthUserService.batchUpdateStatus(
+                request.getIds(), request.getStatus(), SecurityUtils.currentUserName());
+        return Result.ok();
+    }
+
+    @PostMapping("/batchDelete")
+    @AuditLog(action = "USER_BATCH_DELETE", name = "批量删除用户", target = AuditTargetType.USER)
+    @PreAuthorize("@rbac.hasPerm('sysAuthUser:deleteById')")
+    @Operation(summary = "批量删除用户")
+    public Result<Void> batchDelete(@Valid @RequestBody BatchIdsRequest request) {
+        sysAuthUserService.batchDelete(request.getIds(), SecurityUtils.currentUserName());
         return Result.ok();
     }
 

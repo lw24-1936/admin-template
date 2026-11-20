@@ -54,3 +54,13 @@ export function importUsers(file) {
   form.append('file', file)
   return request({ url: '/sysAuthUser/import', method: 'post', data: form })
 }
+
+/** 批量启用/禁用用户 */
+export function batchUserStatus(ids, status) {
+  return request({ url: '/sysAuthUser/batchStatus', method: 'post', data: { ids, status } })
+}
+
+/** 批量删除用户 */
+export function batchDeleteUsers(ids) {
+  return request({ url: '/sysAuthUser/batchDelete', method: 'post', data: { ids } })
+}

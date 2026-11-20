@@ -57,6 +57,12 @@ public interface SysAuthUserService {
      */
     void deleteUser(Long id, String operator);
 
+    /** 批量启用/禁用（禁用会注销令牌并清理权限缓存）。 */
+    void batchUpdateStatus(List<Long> ids, Integer status, String operator);
+
+    /** 批量逻辑删除（内置超级管理员不可删除）。 */
+    void batchDelete(List<Long> ids, String operator);
+
     /**
      * 重置用户密码（管理员操作，被重置用户需重新登录）。
      *

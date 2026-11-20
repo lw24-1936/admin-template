@@ -358,6 +358,58 @@ public class SysAuthUserServiceImpl implements SysAuthUserService {
         log.info("删除用户成功: id={}, userName={}, operator={}", id, user.getUserName(), operator);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchUpdateStatus(List<Long> ids, Integer status, String operator) {
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "请选择至少一个用户");
+        }
+        if (status == null || (status != 0 && status != 1)) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "状态只能是 0 或 1");
+        }
+        List<String> revokedUsers = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+        for (Long id : ids) {
+            SysAuthUser user = userMapper.selectById(id);
+            if (user == null) {
+                throw new BusinessException(ResultCode.DATA_NOT_EXIST, "用户不存在: " + id);
+            }
+            if (status == 1 && (Long.valueOf(1L).equals(id) || userHasAdminRole(id))) {
+                throw new BusinessException(ResultCode.BUILT_IN_DATA, "超级管理员账号不可被禁用");
+            }
+            SysAuthUser patch = new SysAuthUser();
+            patch.setId(id);
+            patch.setStatus(status);
+            patch.setUpdateBy(operator);
+            patch.setUpdateTime(now);
+            userMapper.updateSelective(patch);
+            if (status == 1) {
+                revokedUsers.add(user.getUserName());
+            }
+        }
+        afterCommitExecutor.run(() -> {
+            for (Long id : ids) {
+                rbacCacheService.evictUser(id);
+            }
+            for (String userName : revokedUsers) {
+                jwtTokenService.revokeToken(userName);
+            }
+        });
+        log.info("批量更新用户状态完成: count={}, status={}, operator={}", ids.size(), status, operator);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDelete(List<Long> ids, String operator) {
+        if (CollectionUtils.isEmpty(ids)) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "请选择至少一个用户");
+        }
+        for (Long id : ids) {
+            deleteUser(id, operator);
+        }
+        log.info("批量删除用户完成: count={}, operator={}", ids.size(), operator);
+    }
+
     /**
      * {@inheritDoc}
      */

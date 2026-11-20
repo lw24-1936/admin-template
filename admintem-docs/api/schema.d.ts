@@ -327,6 +327,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sysAuthUser/batchStatus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 批量启用/禁用用户 */
+        post: operations["batchStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sysAuthUser/batchDelete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 批量删除用户 */
+        post: operations["batchDelete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sysAuthUser/assignRole": {
         parameters: {
             query?: never;
@@ -812,6 +846,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 生成图形验证码 */
         post: operations["captcha"];
         delete?: never;
         options?: never;
@@ -828,6 +863,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** 校验图形验证码 */
         post: operations["verifyCaptcha"];
         delete?: never;
         options?: never;
@@ -1438,6 +1474,32 @@ export interface components {
              *     ]
              */
             roleIds?: number[];
+        };
+        BatchStatusRequest: {
+            /**
+             * @description 用户 ID 列表
+             * @example [
+             *       2,
+             *       3
+             *     ]
+             */
+            ids: number[];
+            /**
+             * Format: int32
+             * @description 0 启用 / 1 禁用
+             * @example 0
+             */
+            status: number;
+        };
+        BatchIdsRequest: {
+            /**
+             * @description 用户 ID 列表
+             * @example [
+             *       2,
+             *       3
+             *     ]
+             */
+            ids: number[];
         };
         AssignRoleRequest: {
             /**
@@ -2630,6 +2692,54 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["IdRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
+                };
+            };
+        };
+    };
+    batchStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchStatusRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
+                };
+            };
+        };
+    };
+    batchDelete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BatchIdsRequest"];
             };
         };
         responses: {
