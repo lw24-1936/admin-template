@@ -60,6 +60,7 @@ const ICON_MAP = {
   'el-icon-document': 'Document',
   'el-icon-monitor': 'Monitor',
   'el-icon-office-building': 'OfficeBuilding',
+  'el-icon-setting': 'Setting',
 }
 
 /** 解析出的图标组件名 */

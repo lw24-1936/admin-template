@@ -232,6 +232,50 @@ CREATE TABLE `sys_auth_audit_log` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
   COMMENT = '操作审计日志（只追加；登录/登出与关键管理动作）' ROW_FORMAT = DYNAMIC;
 
+
+-- 7) 系统参数配置表（V1.0.12 新增；结构变更请同步 db/changelog/V1.0.12__add_sys_config.sql）
+DROP TABLE IF EXISTS `sys_config`;
+CREATE TABLE `sys_config` (
+    `id`           bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `config_key`   varchar(64)  NOT NULL COMMENT '参数键（唯一）',
+    `config_value` varchar(2000) DEFAULT NULL COMMENT '参数值',
+    `config_name`  varchar(64)  NOT NULL COMMENT '参数名称',
+    `config_group` varchar(32)  DEFAULT 'default' COMMENT '分组',
+    `remark`       varchar(255) DEFAULT NULL COMMENT '备注',
+    `created_by`   varchar(32)  DEFAULT NULL COMMENT '创建人',
+    `created_time` datetime     DEFAULT NULL COMMENT '创建时间',
+    `update_by`    varchar(32)  DEFAULT NULL COMMENT '更新人',
+    `update_time`  datetime     DEFAULT NULL COMMENT '更新时间',
+    `is_deleted`   int          NOT NULL DEFAULT 0 COMMENT '是否删除 0否 1是',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_config_key` (`config_key`),
+    UNIQUE KEY `uk_config_key_active` ((IF(`is_deleted` = 0, `config_key`, NULL)))
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+  COMMENT = '系统参数配置' ROW_FORMAT = DYNAMIC;
+
+
+-- 8) 数据字典表（V1.0.13 新增；结构变更请同步 db/changelog/V1.0.13__add_sys_dict.sql）
+DROP TABLE IF EXISTS `sys_dict`;
+CREATE TABLE `sys_dict` (
+    `id`         bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `dict_type`  varchar(32)  NOT NULL COMMENT '字典类型',
+    `dict_label` varchar(64)  NOT NULL COMMENT '显示文案',
+    `dict_value` varchar(64)  NOT NULL COMMENT '字典值',
+    `sort_num`   int          NOT NULL DEFAULT 0 COMMENT '排序',
+    `status`     tinyint      NOT NULL DEFAULT 0 COMMENT '状态 0启用 1禁用',
+    `remark`     varchar(255) DEFAULT NULL COMMENT '备注',
+    `created_by` varchar(32)  DEFAULT NULL COMMENT '创建人',
+    `created_time` datetime   DEFAULT NULL COMMENT '创建时间',
+    `update_by`  varchar(32)  DEFAULT NULL COMMENT '更新人',
+    `update_time` datetime    DEFAULT NULL COMMENT '更新时间',
+    `is_deleted` int          NOT NULL DEFAULT 0 COMMENT '是否删除 0否 1是',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_dict_type` (`dict_type`),
+    UNIQUE KEY `uk_dict_type_value_active`
+        ((IF(`is_deleted` = 0, CONCAT(`dict_type`, ':', `dict_value`), NULL)))
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+  COMMENT = '数据字典' ROW_FORMAT = DYNAMIC;
+
 -- ============================================================================
 -- 二、基础数据种子（与线上基线一致）
 -- ============================================================================
@@ -268,7 +312,15 @@ VALUES
 (23,'部门管理',2,6,0,'/dept','dept/index',NULL,0,0,'el-icon-office-building','dept:dept','admin',NOW(),0),
 (24,'新增部门',23,1,1,'','','/sysAuthDept/addDept',0,NULL,'','sysAuthDept:addDept','admin',NOW(),0),
 (25,'编辑部门',23,2,1,'','','/sysAuthDept/editDept',0,NULL,'','sysAuthDept:editDept','admin',NOW(),0),
-(26,'删除部门',23,3,1,'','','/sysAuthDept/deleteById',0,NULL,'','sysAuthDept:deleteById','admin',NOW(),0);
+(26,'删除部门',23,3,1,'','','/sysAuthDept/deleteById',0,NULL,'','sysAuthDept:deleteById','admin',NOW(),0),
+(27,'系统配置',2,7,0,'/sysConfig','sysConfig/index',NULL,0,0,'el-icon-setting','sysConfig:sysConfig','admin',NOW(),0),
+(28,'新增参数',27,1,1,'','','/sysConfig/add',0,NULL,'','sysConfig:add','admin',NOW(),0),
+(29,'编辑参数',27,2,1,'','','/sysConfig/edit',0,NULL,'','sysConfig:edit','admin',NOW(),0),
+(30,'删除参数',27,3,1,'','','/sysConfig/deleteById',0,NULL,'','sysConfig:delete','admin',NOW(),0),
+(31,'字典管理',2,8,0,'/sysDict','sysDict/index',NULL,0,0,'el-icon-document','sysDict:sysDict','admin',NOW(),0),
+(32,'新增字典',31,1,1,'','','/sysDict/add',0,NULL,'','sysDict:add','admin',NOW(),0),
+(33,'编辑字典',31,2,1,'','','/sysDict/edit',0,NULL,'','sysDict:edit','admin',NOW(),0),
+(34,'删除字典',31,3,1,'','','/sysDict/deleteById',0,NULL,'','sysDict:delete','admin',NOW(),0);
 
 -- 2) 角色：管理员(admin，超级角色) / 测试角色1(cehsi1) / 普通用户(common，注册默认)
 INSERT INTO `sys_auth_role` (`id`,`role_name`,`role_key`,`created_by`,`created_time`,`is_deleted`) VALUES
@@ -277,7 +329,7 @@ INSERT INTO `sys_auth_role` (`id`,`role_name`,`role_key`,`created_by`,`created_t
 (3,'普通用户','common','admin',NOW(),0);
 
 -- 3) 角色-权限授权
---    管理员：全部 1..20（虽为超级角色自动放行，仍建关联便于授权页回显）
+--    管理员：全部 1..34（虽为超级角色自动放行，仍建关联便于授权页回显）
 INSERT INTO `sys_auth_role_permission` (`role_id`,`permission_id`,`created_by`,`created_time`,`is_deleted`) VALUES
 (1,1,'admin',NOW(),0),(1,2,'admin',NOW(),0),(1,3,'admin',NOW(),0),(1,4,'admin',NOW(),0),(1,5,'admin',NOW(),0),
 (1,6,'admin',NOW(),0),(1,7,'admin',NOW(),0),(1,8,'admin',NOW(),0),(1,9,'admin',NOW(),0),(1,10,'admin',NOW(),0),
@@ -286,6 +338,8 @@ INSERT INTO `sys_auth_role_permission` (`role_id`,`permission_id`,`created_by`,`
 (1,19,'admin',NOW(),0),(1,20,'admin',NOW(),0),
     (1,21,'admin',NOW(),0),(1,22,'admin',NOW(),0),
     (1,23,'admin',NOW(),0),(1,24,'admin',NOW(),0),(1,25,'admin',NOW(),0),(1,26,'admin',NOW(),0),
+    (1,27,'admin',NOW(),0),(1,28,'admin',NOW(),0),(1,29,'admin',NOW(),0),(1,30,'admin',NOW(),0),
+    (1,31,'admin',NOW(),0),(1,32,'admin',NOW(),0),(1,33,'admin',NOW(),0),(1,34,'admin',NOW(),0),
 --    测试角色1：工作台 + 系统管理 + 用户管理/角色管理菜单 + 用户查询按钮（演示按钮级权限）
 (2,1,'admin',NOW(),0),(2,2,'admin',NOW(),0),(2,3,'admin',NOW(),0),(2,4,'admin',NOW(),0),(2,6,'admin',NOW(),0),
 --    普通用户：仅工作台
@@ -325,6 +379,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- 核对：
 --   SELECT COUNT(*) FROM sys_auth_user;                     -- 期望 2
 --   SELECT COUNT(*) FROM sys_auth_role;                     -- 期望 3
---   SELECT COUNT(*) FROM sys_auth_permission;               -- 期望 18
+--   SELECT COUNT(*) FROM sys_auth_permission;               -- 期望 34
 --   SELECT COUNT(*) FROM sys_auth_role_permission;          -- 期望 24(role1=18,role2=5,role3=1)
 --   SELECT COUNT(*) FROM sys_auth_user_role WHERE is_deleted=0; -- 期望 3

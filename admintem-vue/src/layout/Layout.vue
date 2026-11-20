@@ -37,7 +37,18 @@
             <template v-else>{{ item.name }}</template>
           </el-breadcrumb-item>
         </el-breadcrumb>
-        <el-dropdown trigger="click">
+        <div class="header-actions">
+          <el-button
+            class="theme-toggle"
+            text
+            circle
+            :aria-label="theme === 'dark' ? '切换到浅色主题' : '切换到深色主题'"
+            :title="theme === 'dark' ? '切换到浅色主题' : '切换到深色主题'"
+            @click="toggleTheme"
+          >
+            <el-icon><Sunny v-if="theme === 'dark'" /><Moon v-else /></el-icon>
+          </el-button>
+          <el-dropdown trigger="click">
           <span class="user-entry">
             <!-- 当前用户：头像 + 昵称 + 下拉箭头 -->
             <el-avatar :size="28" :src="avatarUrl" class="user-avatar">{{ avatarText }}</el-avatar>
@@ -52,6 +63,7 @@
             </el-dropdown-menu>
           </template>
         </el-dropdown>
+        </div>
       </el-header>
 
       <!-- 主内容 -->
@@ -152,7 +164,8 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, Moon, Sunny } from '@element-plus/icons-vue'
+import { theme, toggleTheme } from '@/composables/useTheme'
 import { useUserStore } from '@/stores/user'
 import { updateProfile, updatePassword, uploadAvatar } from '@/api/auth'
 import { resolveAssetUrl } from '@/utils/media'
@@ -580,6 +593,11 @@ async function handleUploadAvatar(options) {
 }
 
 /* 用户区：角色胶囊 + 头像 + 名称 + 箭头 */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-sp-2);
+}
 .user-entry {
   display: inline-flex;
   align-items: center;

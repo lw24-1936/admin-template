@@ -22,6 +22,14 @@ public interface AuthService {
     LoginVO login(LoginRequest request);
 
     /**
+     * 使用刷新令牌换取新的访问令牌（旋转刷新令牌）。
+     *
+     * @param refreshToken 登录时下发的刷新令牌
+     * @return 新访问令牌 + 新刷新令牌 + 用户会话
+     */
+    LoginVO refresh(String refreshToken);
+
+    /**
      * 自助注册：创建用户并分配默认角色（是否开放见配置 register-enabled）。
      *
      * @param request 注册请求体

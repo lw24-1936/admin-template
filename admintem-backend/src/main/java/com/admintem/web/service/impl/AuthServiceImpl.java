@@ -24,6 +24,7 @@ import com.admintem.web.security.LoginRiskGuard;
 import com.admintem.web.security.PasswordPolicy;
 import com.admintem.web.security.LoginUser;
 import com.admintem.web.security.RbacCacheService;
+import com.admintem.web.security.RefreshTokenService;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.AuthService;
 import com.admintem.web.service.FileStorageService;
@@ -64,6 +65,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final RbacCacheService rbacCacheService;
     private final UserRbacService userRbacService;
     private final PasswordEncoder passwordEncoder;
@@ -131,6 +133,7 @@ public class AuthServiceImpl implements AuthService {
         // 6. 组装登录响应
         LoginVO vo = new LoginVO();
         vo.setToken(token);
+        vo.setRefreshToken(refreshTokenService.issue(loginUser.getUserName(), remember));
         // 复用刚认证得到的快照，避免会话构建阶段重复查询角色与权限
         vo.setUser(buildUserSession(loginUser.getUserId(), loginUser));
         log.info("用户登录成功: userName={}, userId={}", loginUser.getUserName(), loginUser.getUserId());
@@ -175,9 +178,38 @@ public class AuthServiceImpl implements AuthService {
      * {@inheritDoc}
      */
     @Override
+    public LoginVO refresh(String refreshToken) {
+        String userName = refreshTokenService.consume(refreshToken);
+        if (userName == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        SysAuthUser user = userMapper.selectByUserName(userName);
+        if (user == null || !Integer.valueOf(0).equals(user.getStatus())) {
+            refreshTokenService.revokeAll(userName);
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        LoginUser loginUser = userRbacService.loadLoginUserSnapshot(user.getId(), userName);
+        if (loginUser == null || !loginUser.isEnabled()) {
+            refreshTokenService.revokeAll(userName);
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        String token = jwtTokenService.createToken(user.getId(), userName, false);
+        LoginVO vo = new LoginVO();
+        vo.setToken(token);
+        vo.setRefreshToken(refreshTokenService.issue(userName, false));
+        vo.setUser(buildUserSession(user.getId(), loginUser));
+        log.info("刷新访问令牌成功: userName={}, userId={}", userName, user.getId());
+        return vo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void logout(Long userId, String userName) {
         // 删除令牌白名单，使服务端令牌立即失效
         jwtTokenService.revokeToken(userName);
+        refreshTokenService.revokeAll(userName);
         rbacCacheService.evictUser(userId);
         log.info("用户退出登录: userId={}, userName={}", userId, userName);
     }
@@ -314,6 +346,7 @@ public class AuthServiceImpl implements AuthService {
         userMapper.updateSelective(user);
         // 修改密码后强制该账号重新登录（白名单删除 + 缓存清理）
         jwtTokenService.revokeToken(user.getUserName());
+        refreshTokenService.revokeAll(user.getUserName());
         rbacCacheService.evictUser(userId);
         log.info("用户修改密码成功: userId={}", userId);
     }

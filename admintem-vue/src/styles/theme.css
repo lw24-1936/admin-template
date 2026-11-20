@@ -102,3 +102,64 @@
   --el-menu-hover-bg-color: var(--lc-surface-hover-soft);
   --el-menu-bg-color: transparent;
 }
+
+/* ---------------------------------------------------------------------------
+ * 深色主题：只覆盖 token，业务组件继续使用 --lc-*，避免逐页写深色样式。
+ * Element Plus 的深色变量由 theme-chalk/dark/css-vars.css 提供，html.dark 生效。
+ * ------------------------------------------------------------------------- */
+[data-theme='dark'] {
+  --lc-paper: #0b1220;
+  --lc-paper-2: #111b2c;
+  --lc-paper-card: #141f32;
+  --lc-grid-line: rgba(148, 170, 205, 0.08);
+  --lc-surface-soft: #18253a;
+  --lc-surface-hover: #1d2c44;
+  --lc-surface-hover-soft: #19263b;
+  --lc-line-hover: #40536f;
+  --lc-danger-soft: #2a1a1d;
+
+  --lc-ink: #e8eef8;
+  --lc-ink-body: #cbd7e8;
+  --lc-ink-soft: #aebdd2;
+  --lc-ink-muted: #94a5bc;
+  --lc-ink-faint: #8799b2;
+  --lc-ink-disabled: #5d6d84;
+
+  --lc-line: #293a52;
+  --lc-line-strong: #344861;
+  --lc-line-soft: #223147;
+  --lc-line-input: #3a4d68;
+
+  --lc-brand: #5b91ee;
+  --lc-brand-hover: #7aa8f5;
+  --lc-brand-deep: #2f5ea8;
+  --lc-brand-soft: #1b2d4b;
+  --lc-brand-ring: rgba(91, 145, 238, 0.22);
+  --lc-brand-glow: rgba(91, 145, 238, 0.2);
+  --lc-accent: #6aa4ff;
+  --lc-accent-soft: rgba(106, 164, 255, 0.14);
+  --lc-danger: #f08c8c;
+  --lc-danger-line: #5b3038;
+  --lc-success: #6fce9e;
+  --lc-success-soft: #163328;
+  --lc-warning: #e3b56d;
+  --lc-warning-soft: #3a2b16;
+
+  --lc-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px -22px rgba(0, 0, 0, 0.7);
+  --lc-shadow-float: 0 24px 60px -30px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --lc-shadow-sheet: 0 24px 60px -40px rgba(0, 0, 0, 0.8);
+  --lc-gradient-hero: linear-gradient(135deg, #0b1220 0%, #111d31 46%, #16243b 100%);
+  --lc-gradient-brand: linear-gradient(135deg, #2f5ea8 0%, #5b91ee 100%);
+
+  --el-bg-color: var(--lc-paper-card);
+  --el-bg-color-page: var(--lc-paper);
+  --el-bg-color-overlay: var(--lc-paper-card);
+  --el-text-color-primary: var(--lc-ink);
+  --el-text-color-regular: var(--lc-ink-body);
+  --el-text-color-secondary: var(--lc-ink-muted);
+  --el-border-color: var(--lc-line);
+  --el-border-color-light: var(--lc-line-soft);
+  --el-fill-color-blank: var(--lc-paper-card);
+  --el-fill-color-light: var(--lc-surface-soft);
+  --el-mask-color: rgba(0, 0, 0, 0.55);
+}

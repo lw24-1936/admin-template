@@ -9,7 +9,7 @@
  */
 import axios from 'axios'
 import { showFailToast } from 'vant'
-import { getToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
 import { error as logError, warn } from '@/utils/logger'
 import router from '@/router'
 
@@ -20,6 +20,43 @@ const service = axios.create({
 
 /** 防止 401 时多个请求同时触发多次跳转 */
 let redirectingToLogin = false
+/** 并发 401 共享同一次刷新请求 */
+let refreshPromise = null
+
+function refreshAccessToken() {
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) return Promise.reject(new Error('无刷新令牌'))
+  if (!refreshPromise) {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+    refreshPromise = axios
+      .post(`${baseURL}/auth/refresh`, { refreshToken })
+      .then((response) => {
+        const data = response.data && response.data.data
+        if (!data || !data.token || !data.refreshToken) throw new Error('刷新令牌响应无效')
+        setToken(data.token)
+        setRefreshToken(data.refreshToken)
+        return data.token
+      })
+      .finally(() => {
+        refreshPromise = null
+      })
+  }
+  return refreshPromise
+}
+
+function redirectToLogin() {
+  removeToken()
+  removeRefreshToken()
+  if (redirectingToLogin) return
+  redirectingToLogin = true
+  const current = router.currentRoute.value
+  if (current.path !== '/login') {
+    router.replace({ path: '/login', query: { redirect: current.fullPath } })
+  }
+  setTimeout(() => {
+    redirectingToLogin = false
+  }, 800)
+}
 
 /** 从响应头取后端链路 ID（RequestTraceFilter 写入，便于与后端日志对齐） */
 function traceIdOf(response) {
@@ -63,6 +100,28 @@ service.interceptors.response.use(
     const traceId = traceIdOf(error.response)
     const suffix = traceId ? ' traceId=' + traceId : ''
 
+    const originalRequest = error.config || {}
+    const requestUrl = String(originalRequest.url || '')
+    const canRefresh = status === 401
+      && !originalRequest._retry
+      && !requestUrl.includes('/auth/login')
+      && !requestUrl.includes('/auth/refresh')
+      && !!getRefreshToken()
+    if (canRefresh) {
+      originalRequest._retry = true
+      return refreshAccessToken()
+        .then((token) => {
+          originalRequest.headers = originalRequest.headers || {}
+          originalRequest.headers['admintem_token'] = 'LAUNCH ' + token
+          return service(originalRequest)
+        })
+        .catch(() => {
+          redirectToLogin()
+          showFailToast('登录已过期，请重新登录')
+          return Promise.reject(error)
+        })
+    }
+
     let msg = '网络异常，请稍后重试'
     if (error.response && error.response.data && error.response.data.message) {
       msg = error.response.data.message
@@ -70,17 +129,7 @@ service.interceptors.response.use(
     if (status === 401) {
       warn('登录态失效:', method.toUpperCase(), url + suffix)
       msg = '登录已过期，请重新登录'
-      removeToken()
-      if (!redirectingToLogin) {
-        redirectingToLogin = true
-        const current = router.currentRoute.value
-        if (current.path !== '/login') {
-          router.replace({ path: '/login', query: { redirect: current.fullPath } })
-        }
-        setTimeout(() => {
-          redirectingToLogin = false
-        }, 800)
-      }
+      redirectToLogin()
     } else if (status === 403) {
       warn('无权限:', method.toUpperCase(), url + suffix)
       msg =

@@ -119,6 +119,7 @@ import {
   Menu as IconMenu,
   Monitor,
   OfficeBuilding,
+  Setting,
   Operation,
   User,
   UserFilled,
@@ -132,6 +133,8 @@ import './styles/tokens.css'
 import './styles/theme.css'
 import './styles/components.css'
 import './assets/main.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
+import './composables/useTheme'
 
 const app = createApp(App)
 
@@ -170,6 +173,7 @@ const menuIcons = {
   Document,
   Monitor,
   OfficeBuilding,
+  Setting,
 }
 for (const [name, component] of Object.entries(menuIcons)) {
   app.component(name, component)

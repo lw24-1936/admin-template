@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysDictMapper">
+
+    <sql id="Base_Column_List">
+        id, dict_type, dict_label, dict_value, sort_num, status, remark,
+        created_by, created_time, update_by, update_time
+    </sql>
+
+    <select id="selectDictPage" resultType="com.admintem.web.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict
+        <where>
+            is_deleted = 0
+            <if test="q.dictType != null and q.dictType != ''">
+                AND dict_type LIKE CONCAT('%', #{q.dictType}, '%')
+            </if>
+            <if test="q.dictLabel != null and q.dictLabel != ''">
+                AND dict_label LIKE CONCAT('%', #{q.dictLabel}, '%')
+            </if>
+            <if test="q.status != null">
+                AND status = #{q.status}
+            </if>
+        </where>
+        ORDER BY dict_type ASC, sort_num ASC, id ASC
+    </select>
+
+    <select id="selectByType" resultType="com.admintem.web.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict
+        WHERE is_deleted = 0 AND status = 0 AND dict_type = #{dictType}
+        ORDER BY sort_num ASC, id ASC
+    </select>
+
+    <select id="selectById" resultType="com.admintem.web.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="countByTypeValue" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_dict
+        WHERE dict_type = #{dictType} AND dict_value = #{dictValue} AND is_deleted = 0
+        <if test="excludeId != null">
+            AND id &lt;&gt; #{excludeId}
+        </if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.admintem.web.entity.SysDict">
+        INSERT INTO sys_dict
+        (dict_type, dict_label, dict_value, sort_num, status, remark,
+         created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{dictType}, #{dictLabel}, #{dictValue}, #{sortNum}, #{status}, #{remark},
+         #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <update id="updateSelective" parameterType="com.admintem.web.entity.SysDict">
+        UPDATE sys_dict
+        <set>
+            <if test="dictType != null">dict_type = #{dictType},</if>
+            <if test="dictLabel != null">dict_label = #{dictLabel},</if>
+            <if test="dictValue != null">dict_value = #{dictValue},</if>
+            <if test="sortNum != null">sort_num = #{sortNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="logicDelete">
+        UPDATE sys_dict
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{now}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+</mapper>

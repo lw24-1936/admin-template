@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysAuthConfigMapper">
+
+    <sql id="Base_Column_List">
+        id, config_key, config_value, config_name, config_group, remark,
+        created_by, created_time, update_by, update_time
+    </sql>
+
+    <select id="selectConfigPage" resultType="com.admintem.web.entity.SysConfig">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_config
+        <where>
+            is_deleted = 0
+            <if test="q.configKey != null and q.configKey != ''">
+                AND config_key LIKE CONCAT('%', #{q.configKey}, '%')
+            </if>
+            <if test="q.configName != null and q.configName != ''">
+                AND config_name LIKE CONCAT('%', #{q.configName}, '%')
+            </if>
+            <if test="q.configGroup != null and q.configGroup != ''">
+                AND config_group = #{q.configGroup}
+            </if>
+        </where>
+        ORDER BY update_time DESC, id DESC
+    </select>
+
+    <select id="selectAllOrdered" resultType="com.admintem.web.entity.SysConfig">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_config
+        WHERE is_deleted = 0
+        ORDER BY config_group ASC, config_key ASC
+    </select>
+
+    <select id="selectById" resultType="com.admintem.web.entity.SysConfig">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_config
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <select id="selectByKey" resultType="com.admintem.web.entity.SysConfig">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_config
+        WHERE config_key = #{configKey} AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <select id="countByKey" resultType="long">
+        SELECT COUNT(1)
+        FROM sys_config
+        WHERE config_key = #{configKey} AND is_deleted = 0
+        <if test="excludeId != null">
+            AND id &lt;&gt; #{excludeId}
+        </if>
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.admintem.web.entity.SysConfig">
+        INSERT INTO sys_config
+        (config_key, config_value, config_name, config_group, remark,
+         created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{configKey}, #{configValue}, #{configName}, #{configGroup}, #{remark},
+         #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <update id="updateSelective" parameterType="com.admintem.web.entity.SysConfig">
+        UPDATE sys_config
+        <set>
+            <if test="configKey != null">config_key = #{configKey},</if>
+            <if test="configValue != null">config_value = #{configValue},</if>
+            <if test="configName != null">config_name = #{configName},</if>
+            <if test="configGroup != null">config_group = #{configGroup},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <update id="logicDelete">
+        UPDATE sys_config
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{now}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+</mapper>

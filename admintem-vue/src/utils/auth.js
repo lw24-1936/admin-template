@@ -5,6 +5,7 @@
  */
 
 const TOKEN_KEY = 'admintem_token'
+const REFRESH_TOKEN_KEY = 'admintem_refresh_token'
 
 /** 读取令牌 */
 export function getToken() {
@@ -19,4 +20,19 @@ export function setToken(token) {
 /** 清除令牌 */
 export function removeToken() {
   localStorage.removeItem(TOKEN_KEY)
+}
+
+/** 读取刷新令牌 */
+export function getRefreshToken() {
+  return localStorage.getItem(REFRESH_TOKEN_KEY) || ''
+}
+
+/** 保存刷新令牌 */
+export function setRefreshToken(token) {
+  if (token) localStorage.setItem(REFRESH_TOKEN_KEY, token)
+}
+
+/** 清除刷新令牌 */
+export function removeRefreshToken() {
+  localStorage.removeItem(REFRESH_TOKEN_KEY)
 }

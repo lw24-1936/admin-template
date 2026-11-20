@@ -9,6 +9,7 @@ import com.admintem.web.mapper.SysAuthRoleMapper;
 import com.admintem.web.mapper.SysAuthUserMapper;
 import com.admintem.web.mapper.SysAuthUserRoleMapper;
 import com.admintem.web.security.JwtTokenService;
+import com.admintem.web.security.RefreshTokenService;
 import com.admintem.web.service.OnlineSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,7 @@ public class OnlineSessionServiceImpl implements OnlineSessionService {
 
     private final RedissonClient redissonClient;
     private final JwtTokenService jwtTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final SysAuthUserMapper userMapper;
     private final SysAuthUserRoleMapper userRoleMapper;
     private final SysAuthRoleMapper roleMapper;
@@ -128,6 +130,7 @@ public class OnlineSessionServiceImpl implements OnlineSessionService {
         // 因为快照只影响"已登录请求"的性能，令牌失效后它自然过期
         boolean existed = isOnline(userName);
         jwtTokenService.revokeToken(userName);
+        refreshTokenService.revokeAll(userName);
         log.info("强制下线: userName={}, 原会话存在={}", userName, existed);
         return existed;
     }

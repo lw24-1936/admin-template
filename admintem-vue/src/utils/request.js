@@ -7,7 +7,7 @@
  */
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { getToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
 import router from '@/router'
 
 // 创建 axios 实例：baseURL 来自 .env 中 VITE_API_BASE_URL
@@ -18,6 +18,48 @@ const service = axios.create({
 
 /** 防止 401 时多个请求同时触发多次跳转 */
 let redirectingToLogin = false
+/** 并发 401 共享同一次刷新请求，避免轮换刷新令牌互相覆盖 */
+let refreshPromise = null
+
+/** 用刷新令牌换新访问令牌；成功后写回本地存储 */
+function refreshAccessToken() {
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) return Promise.reject(new Error('无刷新令牌'))
+  if (!refreshPromise) {
+    const baseURL = import.meta.env.VITE_API_BASE_URL || ''
+    refreshPromise = axios
+      .post(`${baseURL}/auth/refresh`, { refreshToken })
+      .then((response) => {
+        const data = response.data && response.data.data
+        if (!data || !data.token || !data.refreshToken) throw new Error('刷新令牌响应无效')
+        setToken(data.token)
+        setRefreshToken(data.refreshToken)
+        return data.token
+      })
+      .finally(() => {
+        refreshPromise = null
+      })
+  }
+  return refreshPromise
+}
+
+/** 清理本地登录态并跳转登录页（并发 401 只跳一次） */
+function redirectToLogin() {
+  removeToken()
+  removeRefreshToken()
+  if (redirectingToLogin) return
+  redirectingToLogin = true
+  const current = router.currentRoute.value
+  if (current.path !== '/login' && current.path !== '/register') {
+    router.replace({
+      path: '/login',
+      query: { redirect: current.fullPath },
+    })
+  }
+  setTimeout(() => {
+    redirectingToLogin = false
+  }, 800)
+}
 
 // 请求拦截器：附加令牌
 service.interceptors.request.use(
@@ -50,6 +92,30 @@ service.interceptors.response.use(
     if (status === 401 && isLogoutRequest) {
       return Promise.reject(error)
     }
+
+    // 访问令牌过期时先用刷新令牌换新令牌，再重放一次原请求。
+    // 登录/刷新接口本身不重试，避免递归。
+    const originalRequest = error.config || {}
+    const requestUrl = String(originalRequest.url || '')
+    const canRefresh = status === 401
+      && !originalRequest._retry
+      && !requestUrl.includes('/auth/login')
+      && !requestUrl.includes('/auth/refresh')
+      && !!getRefreshToken()
+    if (canRefresh) {
+      originalRequest._retry = true
+      return refreshAccessToken()
+        .then((token) => {
+          originalRequest.headers = originalRequest.headers || {}
+          originalRequest.headers['admintem_token'] = 'LAUNCH ' + token
+          return service(originalRequest)
+        })
+        .catch(() => {
+          redirectToLogin()
+          ElMessage.error('登录已过期，请重新登录')
+          return Promise.reject(error)
+        })
+    }
     // 后端异常统一返回 { code, message, data }；data 可能是字符串或 HTML，非对象时不做取值
     const data = error.response ? error.response.data : null
     let msg = '网络异常，请稍后重试'
@@ -59,20 +125,7 @@ service.interceptors.response.use(
     if (status === 401) {
       // 未登录/令牌失效：清理本地登录态并跳转登录页（仅跳一次，避免并发 401 多跳）
       msg = '登录已过期，请重新登录'
-      if (!redirectingToLogin) {
-        redirectingToLogin = true
-        removeToken()
-        const current = router.currentRoute.value
-        if (current.path !== '/login' && current.path !== '/register') {
-          router.replace({
-            path: '/login',
-            query: { redirect: current.fullPath },
-          })
-        }
-        setTimeout(() => {
-          redirectingToLogin = false
-        }, 800)
-      }
+      redirectToLogin()
     } else if (status === 403) {
       msg = data && data.message ? data.message : '没有操作权限'
     } else if (status >= 500) {

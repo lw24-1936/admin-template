@@ -3,7 +3,7 @@
  * 与桌面端同源：登录后一次性拉齐用户、角色、菜单、权限标识
  */
 import { defineStore } from 'pinia'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
 import * as authApi from '@/api/auth'
 
 export const useUserStore = defineStore('user', {
@@ -54,8 +54,9 @@ export const useUserStore = defineStore('user', {
     /** 登录：请求令牌并写入本地 */
     async login(form) {
       const res = await authApi.login(form)
-      const { token, user } = res.data
+      const { token, refreshToken, user } = res.data
       setToken(token)
+      setRefreshToken(refreshToken)
       this.token = token
       this.applySession(user)
       this.loaded = true
@@ -101,6 +102,7 @@ export const useUserStore = defineStore('user', {
     /** 清空本地会话状态 */
     clearSession() {
       removeToken()
+      removeRefreshToken()
       this.token = ''
       this.user = null
       this.roles = []

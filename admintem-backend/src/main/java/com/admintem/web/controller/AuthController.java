@@ -9,6 +9,7 @@ import com.admintem.web.entity.vo.CaptchaTicketVO;
 import com.admintem.web.entity.vo.CaptchaVO;
 import com.admintem.web.security.CaptchaService;
 import com.admintem.web.entity.dto.RegisterRequest;
+import com.admintem.web.entity.dto.RefreshTokenRequest;
 import com.admintem.web.entity.dto.UpdatePasswordRequest;
 import com.admintem.web.entity.dto.UpdateProfileRequest;
 import com.admintem.web.security.LoginUser;
@@ -63,6 +64,12 @@ public class AuthController {
     public Result<?> login(@Valid @RequestBody LoginRequest request) {
         captchaService.assertTicket(request.getCaptchaTicket());
         return Result.ok("登录成功", authService.login(request));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "刷新访问令牌")
+    public Result<?> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        return Result.ok(authService.refresh(request.getRefreshToken()));
     }
 
     /**

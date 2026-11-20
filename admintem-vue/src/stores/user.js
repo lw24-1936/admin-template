@@ -4,7 +4,7 @@
  * - 登录后调用 fetchUserInfo 一次性拉齐会话数据
  */
 import { defineStore } from 'pinia'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getToken, setToken, removeToken, getRefreshToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
 import * as authApi from '@/api/auth'
 
 export const useUserStore = defineStore('user', {
@@ -43,8 +43,9 @@ export const useUserStore = defineStore('user', {
      */
     async login(form) {
       const res = await authApi.login(form)
-      const { token, user } = res.data
+      const { token, refreshToken, user } = res.data
       setToken(token)
+      setRefreshToken(refreshToken)
       this.token = token
       this.applySession(user)
       this.loaded = true
@@ -99,6 +100,7 @@ export const useUserStore = defineStore('user', {
     /** 清空本地会话状态 */
     clearSession() {
       removeToken()
+      removeRefreshToken()
       this.token = ''
       this.user = null
       this.roles = []
