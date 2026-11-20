@@ -113,7 +113,7 @@ docker-compose.yml      本地一键编排
   `main.js` 图标注册与 `MenuItem.vue` 的 `ICON_MAP`。
 - API 统一走 `src/utils/request.js`；收到 401 时会尝试 refreshToken 并重放一次，登录/刷新请求本身不重试。
 - 主题：使用 `--lc-*` token；深色主题通过 `data-theme="dark"` + `html.dark`，不要写死浅色背景。
-- 移动端/uni-app 保持与桌面端相同的认证头、返回体和权限标识；不要新造一套权限 key。
+- 移动端/uni-app 保持与桌面端相同的认证头、返回体和权限标识；移动端已有 `/users` 用户列表（查询 + 启停），其余完整管理操作仍以桌面端为主。
 
 ## 7. 测试与验收
 

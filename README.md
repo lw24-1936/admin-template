@@ -81,7 +81,7 @@
 | ---- | ---- |
 | 后端 | Spring Boot 3.5.16 · JDK 17 · Spring Security 6 · MyBatis-Plus 3.5.17 · MySQL 8 · Redis / Redisson · Flyway · springdoc-openapi |
 | 桌面端 | Vue 3.5 · Vite 8 · Element Plus 2.14 · Pinia · Vue Router · anime.js v4 |
-| 移动端 | Vue 3.5 · Vite 8 · Vant 4（底部 Tab） |
+| 移动端 | Vue 3.5 · Vite 8 · Vant 4（底部 Tab；用户列表与启停） |
 | uni-app | Vue 3 · uni-app 3 · pnpm（H5 / 微信小程序 / App 资源包） |
 | 官网模版 | Vue 3 · Vite 5（可选） |
 | 测试 | JUnit 5 / Mockito · node:test · Playwright（桌面 + 移动）· PowerShell 接口回归 |

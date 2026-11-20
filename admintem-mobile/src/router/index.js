@@ -39,6 +39,12 @@ const routes = [
         component: () => import('@/views/mine/index.vue'),
         meta: { title: '我的' },
       },
+      {
+        path: 'users',
+        name: 'users',
+        component: () => import('@/views/user/index.vue'),
+        meta: { title: '用户管理' },
+      },
     ],
   },
   // 兜底：未知地址回到首页

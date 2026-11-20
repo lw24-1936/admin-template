@@ -52,7 +52,7 @@
           v-perm="entry.perm"
           class="home-entry"
           type="button"
-          @click="notifyDesktop(entry.label)"
+          @click="openEntry(entry)"
         >
           <van-icon :name="entry.icon" size="22" />
           <span>{{ entry.label }}</span>
@@ -166,6 +166,15 @@ async function refreshSession() {
 /** 移动端暂不承载完整管理功能，给出明确提示 */
 function notifyDesktop(name) {
   showToast({ message: `${name} 请在桌面端使用`, position: 'bottom' })
+}
+
+/** 移动端已闭环的入口直接跳转，其余仍提示使用桌面端。 */
+function openEntry(entry) {
+  if (entry.label === '用户管理') {
+    router.push('/users')
+    return
+  }
+  notifyDesktop(entry.label)
 }
 </script>
 
