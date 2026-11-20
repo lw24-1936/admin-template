@@ -95,6 +95,12 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Prometheus 指标端点：供 Prometheus/Grafana 拉取；默认仍需登录访问 -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!--
           Flyway：数据库版本化迁移（版本由 spring-boot-parent 管理）。
           脚本唯一出处是 admintem-docs/db/changelog，构建时复制到 classpath:db/migration。

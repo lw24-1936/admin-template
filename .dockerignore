@@ -1,0 +1,12 @@
+# Docker 构建上下文裁剪：只保留构建需要的内容
+.git
+.idea
+.github
+**/node_modules
+**/dist
+**/target
+**/uploads
+**/.env
+**/*.log
+admintem-docs/images
+admintem-docs/design-preview

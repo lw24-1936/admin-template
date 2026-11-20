@@ -216,8 +216,12 @@ admintem:
     enable: true
     # 失败原因等长文本的入库截断长度（超长会截断而不是让插入失败）
     max-text-length: 200
-    # 审计日志保留天数（仅作为运维清理 SQL 的默认值，程序不做自动删除）
+    # 审计日志保留天数（配合 retention-enabled 使用）
     retention-days: 180
+    # 是否启用自动清理（默认关闭，避免误删；生产按合规要求显式开启）
+    retention-enabled: false
+    # 清理任务 cron（默认每天 03:30）
+    retention-cron: "0 30 3 * * ?"
     # 是否记录"越权被拒绝（403）"的尝试：这是安全审计里最有价值的信号，建议开启
     log-denied: true
 
@@ -253,7 +257,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        # metrics/prometheus 供内部监控拉取；安全白名单只放行 health，
+        # 监控端需通过内网代理或管理员令牌访问，不要直接暴露公网。
+        include: health,info,metrics,prometheus
   endpoint:
     health:
       # 不返回组件细节，避免泄露内部中间件拓扑

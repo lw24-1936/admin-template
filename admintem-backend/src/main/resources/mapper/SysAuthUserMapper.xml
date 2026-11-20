@@ -87,6 +87,23 @@
             <if test="q.status != null">
                 AND status = #{q.status}
             </if>
+            <!-- 行级数据权限：由 DataScopeService 写入，客户端不能伪造 -->
+            <if test="q.dataScope == 'SELF'">
+                AND id = #{q.dataScopeUserId}
+            </if>
+            <if test="q.dataScope == 'DEPT' or q.dataScope == 'DEPT_AND_CHILD'">
+                <choose>
+                    <when test="q.dataScopeDeptIds != null and q.dataScopeDeptIds.size() > 0">
+                        AND dept_id IN
+                        <foreach collection="q.dataScopeDeptIds" item="deptId" open="(" separator="," close=")">
+                            #{deptId}
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        AND 1 = 0
+                    </otherwise>
+                </choose>
+            </if>
         </where>
         <choose>
             <when test="orderBy != null and orderBy != ''">

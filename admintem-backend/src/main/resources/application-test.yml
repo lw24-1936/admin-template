@@ -14,8 +14,8 @@ spring:
     enabled: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://100.71.112.119:3306/admintem_new?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
-    username: root
+    url: jdbc:mysql://${ADMINTEM_DB_HOST:127.0.0.1}:${ADMINTEM_DB_PORT:3306}/${ADMINTEM_DB_NAME:admintem_new}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${ADMINTEM_DB_USERNAME:admintem}
     password: ${ADMINTEM_DB_PASSWORD:}
     hikari:
       pool-name: AdmintemHikariPool-Test
@@ -28,9 +28,9 @@ spring:
 
 # Redis（Redisson 客户端，键前缀 admintem:auth:*）
 redisson:
-  address: redis://100.71.112.119:6379
+  address: redis://${ADMINTEM_REDIS_HOST:127.0.0.1}:${ADMINTEM_REDIS_PORT:6379}
   password: ${ADMINTEM_REDIS_PASSWORD:}
-  database: 0
+  database: ${ADMINTEM_REDIS_DATABASE:0}
   connect-timeout-ms: 5000
   timeout-ms: 5000
   connection-pool-size: 16

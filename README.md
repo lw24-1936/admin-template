@@ -48,7 +48,7 @@
 | ---- | ---- |
 | 认证 | 登录（7 天免登录）、注册（可关闭）、退出、修改密码、个人资料、头像上传 |
 | 用户管理 | 分页查询、新增/编辑/删除、重置密码、分配角色、所属部门、头像 |
-| 角色管理 | 分页查询、新增/编辑/删除、权限树授权 |
+| 角色管理 | 分页查询、新增/编辑/删除、权限树授权、行级数据范围（全部/本部门/本部门及子部门/本人） |
 | 权限管理 | 菜单/按钮两级树表、增删改、父子成环保护 |
 | 部门管理 | 树形部门、负责人/电话、人数统计、删除保护（有子部门或用户时拒绝） |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、明细含 `traceId` |
@@ -56,7 +56,7 @@
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、结构化审计 |
 
-**当前基线**：后端 159 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
+**当前基线**：后端 162 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
 123 项设计层断言、前端 10 + 6 项单测；权限 26 条、受控接口 26 个，CI 全绿。
 
 ## 界面预览
@@ -135,6 +135,17 @@ sys_auth_permission（菜单 + 按钮）
 | Redis | 6+ | 令牌白名单与权限快照；**没有它后端会启动失败** |
 | pnpm | 10（可选） | 仅 uni-app 需要 |
 
+### 0. 一键启动（推荐）
+
+```bash
+cp .env.example .env       # Windows: copy .env.example .env
+docker compose up -d --build
+```
+
+启动完成后直接访问 <http://localhost:5175>（桌面端）或 <http://localhost:5174>（移动端）。
+Compose 会创建 MySQL/Redis、初始化数据库、构建后端与两端前端；详细配置见 `.env.example`。
+停止：`docker compose down`；清空本地数据并重建：`make db-reset`（或 `docker compose down -v`）。
+
 ### 1. 获取代码
 
 ```bash
@@ -165,7 +176,7 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 ```
 
 > 没有 `SET @admintem_confirm_reset = 1` 时脚本会 `SIGNAL` 中止，不会删除任何数据。
-> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.10）。
+> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.11）。
 
 ### 3. 配置本地口令
 
@@ -177,12 +188,21 @@ cp admintem-backend/config/application-local.yml.example \
 ```
 
 ```yaml
+ADMINTEM_DB_HOST: "127.0.0.1"
+ADMINTEM_DB_PORT: "3306"
+ADMINTEM_DB_NAME: "admintem_new"
+ADMINTEM_DB_USERNAME: "admintem"
 ADMINTEM_DB_PASSWORD: "你的 MySQL 密码"
+
+ADMINTEM_REDIS_HOST: "127.0.0.1"
+ADMINTEM_REDIS_PORT: "6379"
+ADMINTEM_REDIS_DATABASE: "0"
 ADMINTEM_REDIS_PASSWORD: "你的 Redis 密码"
 ```
 
 `application.yml` 通过 `spring.config.import: optional:file:./config/application-local.yml`
-自动加载；数据库地址与账号在各环境 `application-{dev,test,pre,pro}.yml` 中。
+自动加载；也可以直接用同名环境变量注入（容器/CI 推荐）。生产环境不要使用 `root`，
+应创建只拥有 `admintem_new` 库权限的应用账号。
 
 ### 4. 启动后端
 
@@ -301,7 +321,7 @@ admin-template/
 │   ├── config/                  本地口令示例（真实文件已 gitignore）
 │   ├── src/main/java/...        9 个控制器、service、mapper、security、aspect
 │   ├── src/main/resources/      application*.yml、mapper XML
-│   ├── src/test/java/           159 个单元测试
+│   ├── src/test/java/           162 个单元测试
 │   └── Dockerfile               多阶段构建、非 root、HEALTHCHECK
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）
@@ -309,7 +329,7 @@ admin-template/
 ├── admintem-site/               官网模版（可选）
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 全量初始化脚本（唯一出处）
-│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.10
+│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.11
 │   ├── images/                  21 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
@@ -321,7 +341,7 @@ admin-template/
 | ---- | ---- |
 | [01-需求与范围](admintem-docs/01-需求与范围.md) | 目标、边界、角色 |
 | [02-系统设计文档](admintem-docs/02-系统设计文档.md) | 架构、鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.10 变更与回滚 |
+| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.11 变更与回滚 |
 | [04-部署与操作手册](admintem-docs/04-部署与操作手册.md) | 环境、配置、启动、故障处理 |
 | [05-接口与权限标识对照表](admintem-docs/05-接口与权限标识对照表.md) | 接口与权限标识矩阵 |
 | [06-测试报告](admintem-docs/06-测试报告.md) | 各轮验证的实测数据 |
@@ -350,7 +370,7 @@ admin-template/
 
 ## 后续规划
 
-- 数据权限（本人 / 本部门 / 全部）
+- ~~数据权限（本人 / 本部门 / 全部）~~（已落地：角色 `data_scope`）
 - 令牌续期（refresh token）与并发登录策略
 - 用户/审计导出 Excel、批量操作
 - 审计归档定时任务、趋势图表

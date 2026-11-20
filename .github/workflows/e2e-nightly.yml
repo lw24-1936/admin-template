@@ -46,6 +46,7 @@ jobs:
 
     env:
       ADMINTEM_DB_PASSWORD: root_ci_secret
+      ADMINTEM_DB_USERNAME: root
       ADMINTEM_REDIS_PASSWORD: ''
       E2E_BASE_URL: http://localhost:5175
       MOBILE_BASE_URL: http://localhost:5174

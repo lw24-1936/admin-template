@@ -273,8 +273,14 @@ public class AdmintemProperties {
         /** 失败原因等长文本的截断长度（避免超长导致插入失败） */
         private int maxTextLength = 200;
 
-        /** 审计日志保留天数（仅用于运维清理 SQL 的默认值，程序不做自动删除） */
+        /** 审计日志保留天数（配合 retention-enabled 定时清理；默认 180 天） */
         private int retentionDays = 180;
+
+        /** 是否启用审计自动清理（默认关闭，避免误删；生产按合规要求显式开启） */
+        private boolean retentionEnabled = false;
+
+        /** 清理任务 cron（默认每天 03:30） */
+        private String retentionCron = "0 30 3 * * ?";
 
         /** 是否记录"越权被拒绝（403）"的尝试（安全审计信号，建议开启） */
         private boolean logDenied = true;

@@ -5,14 +5,15 @@ import com.admintem.web.entity.SysAuthAuditLog;
 import com.admintem.web.entity.dto.AuditLogPageQuery;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 操作审计日志 Mapper（sys_auth_audit_log）。
  *
- * <p>写操作只提供 {@link #insert}：审计记录只追加，不提供更新与删除，
- * 避免业务代码误改历史留痕（如需归档清理，见《04-部署与操作手册》的运维 SQL）。</p>
+ * <p>写操作提供 {@link #insert} 与仅由保留期任务调用的 {@link #deleteBefore}；
+ * 业务代码不得删除审计记录，避免误改历史留痕。</p>
  *
  * <p>读操作提供分页查询与动作字典：查询条件与索引一一对应
  * （operator / action / created_time 均有联合索引，见 V1.0.5 建表脚本），
@@ -29,6 +30,15 @@ public interface SysAuthAuditLogMapper {
      * @return 影响行数
      */
     int insert(SysAuthAuditLog auditLog);
+
+    /**
+     * 删除早于指定时间的审计记录（仅保留期任务使用；单批上限避免长事务）。
+     *
+     * @param before 截止时间（不含）
+     * @param limit  单批最多删除行数
+     * @return 实际删除行数
+     */
+    int deleteBefore(@Param("before") LocalDateTime before, @Param("limit") int limit);
 
     /**
      * 分页查询审计日志（按发生时间倒序，同一毫秒内按 id 倒序保证稳定）。

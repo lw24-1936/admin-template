@@ -103,6 +103,7 @@ CREATE TABLE `sys_auth_role` (
     `id`           bigint      NOT NULL AUTO_INCREMENT COMMENT '角色ID',
     `role_name`    varchar(32) DEFAULT NULL COMMENT '角色名称',
     `role_key`     varchar(64) DEFAULT NULL COMMENT '角色唯一标识(admin=超级)',
+    `data_scope`   varchar(20) NOT NULL DEFAULT 'ALL' COMMENT '数据范围：ALL/DEPT/DEPT_AND_CHILD/SELF',
     `created_by`   varchar(32) DEFAULT NULL COMMENT '创建人',
     `created_time` datetime    DEFAULT NULL COMMENT '创建时间',
     `update_by`    varchar(32) DEFAULT NULL COMMENT '更新人',

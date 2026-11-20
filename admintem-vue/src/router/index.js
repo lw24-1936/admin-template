@@ -22,6 +22,7 @@ const Login = () => import('@/views/login/index.vue')
 const Register = () => import('@/views/register/index.vue')
 const Layout = () => import('@/layout/Layout.vue')
 const Forbidden = () => import('@/views/error/Forbidden.vue')
+const ServerError = () => import('@/views/error/ServerError.vue')
 const NotFound = () => import('@/views/error/NotFound.vue')
 
 const router = createRouter({
@@ -33,6 +34,8 @@ const router = createRouter({
     { path: '/', name: 'Root', component: Layout },
     // 无权限页（需要登录）
     { path: '/403', name: 'Forbidden', component: Forbidden, meta: { title: '无权限' } },
+    // 渲染异常兜底页（需要登录）
+    { path: '/500', name: 'ServerError', component: ServerError, meta: { title: '系统异常' } },
   ],
 })
 

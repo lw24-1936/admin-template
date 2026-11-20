@@ -1,0 +1,17 @@
+{
+  "name": "admintem",
+  "version": "1.0.0",
+  "private": true,
+  "description": "菜单 + 按钮级权限的一体化后台管理模板",
+  "scripts": {
+    "dev": "docker compose up -d --build",
+    "dev:logs": "docker compose logs -f",
+    "down": "docker compose down",
+    "ps": "docker compose ps",
+    "db:reset": "docker compose down -v && docker compose up -d --build",
+    "test:backend": "mvn -f admintem-backend/pom.xml test",
+    "test:docs": "node admintem-docs/tests/check-doc-images.cjs && node admintem-docs/tests/check-tokens.cjs && node admintem-docs/tests/check-perm-keys.cjs && node admintem-docs/tests/check-permission-doc-consistency.cjs && node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check",
+    "test:desktop": "npm --prefix admintem-vue run lint && npm --prefix admintem-vue test && npm --prefix admintem-vue run build",
+    "test:mobile": "npm --prefix admintem-mobile test && npm --prefix admintem-mobile run build"
+  }
+}

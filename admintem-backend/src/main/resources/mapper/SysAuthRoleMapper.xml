@@ -8,7 +8,7 @@
 <mapper namespace="com.admintem.web.mapper.SysAuthRoleMapper">
 
     <sql id="Base_Column_List">
-        id, role_name, role_key, created_by, created_time, update_by, update_time
+        id, role_name, role_key, data_scope, created_by, created_time, update_by, update_time
     </sql>
 
     <!-- 按主键查询 -->
@@ -96,9 +96,9 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.admintem.web.entity.SysAuthRole">
         INSERT INTO sys_auth_role
-        (role_name, role_key, created_by, created_time, update_by, update_time, is_deleted)
+        (role_name, role_key, data_scope, created_by, created_time, update_by, update_time, is_deleted)
         VALUES
-        (#{roleName}, #{roleKey}, #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+        (#{roleName}, #{roleKey}, #{dataScope}, #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
     </insert>
 
     <!-- 选择性更新角色 -->
@@ -107,6 +107,7 @@
         <set>
             <if test="roleName != null">role_name = #{roleName},</if>
             <if test="roleKey != null">role_key = #{roleKey},</if>
+        <if test="dataScope != null">data_scope = #{dataScope},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </set>

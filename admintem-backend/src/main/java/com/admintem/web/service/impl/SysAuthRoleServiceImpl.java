@@ -113,6 +113,7 @@ public class SysAuthRoleServiceImpl implements SysAuthRoleService {
         SysAuthRole role = new SysAuthRole();
         role.setRoleName(request.getRoleName());
         role.setRoleKey(request.getRoleKey());
+        role.setDataScope(StringUtils.hasText(request.getDataScope()) ? request.getDataScope() : "ALL");
         role.setCreatedBy(operator);
         role.setCreatedTime(LocalDateTime.now());
         try {
@@ -147,6 +148,7 @@ public class SysAuthRoleServiceImpl implements SysAuthRoleService {
         }
         role.setRoleName(request.getRoleName());
         role.setRoleKey(request.getRoleKey());
+        role.setDataScope(StringUtils.hasText(request.getDataScope()) ? request.getDataScope() : "ALL");
         role.setUpdateBy(operator);
         role.setUpdateTime(LocalDateTime.now());
         roleMapper.updateSelective(role);
@@ -281,6 +283,7 @@ public class SysAuthRoleServiceImpl implements SysAuthRoleService {
         vo.setId(role.getId());
         vo.setRoleName(role.getRoleName());
         vo.setRoleKey(role.getRoleKey());
+        vo.setDataScope(role.getDataScope());
         return vo;
     }
 

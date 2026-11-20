@@ -28,6 +28,10 @@ public class SysAuthRole implements Serializable {
     @Schema(description = "角色唯一标识")
     private String roleKey;
 
+    /** 数据范围：ALL/DEPT/DEPT_AND_CHILD/SELF */
+    @Schema(description = "数据范围", example = "ALL")
+    private String dataScope;
+
     /** 创建人 */
     @Schema(description = "创建人")
     private String createdBy;

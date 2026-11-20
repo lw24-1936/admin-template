@@ -3,7 +3,8 @@
   SysAuthAuditLogMapper XML —— sys_auth_audit_log 操作审计日志
   约定同其它 Mapper：字段显式列举 + 下划线自动映射。
 
-  本表只追加：写语句只有 insert；读语句为分页查询 + 动作字典。
+  本表默认只追加：写语句有 insert，以及仅由保留期任务调用的 deleteBefore；
+  读语句为分页查询 + 动作字典。
   索引对应关系（V1.0.5）：
     operator  -> idx_audit_operator_time (operator, created_time)
     action    -> idx_audit_action_time   (action, created_time)
@@ -33,6 +34,16 @@
             #{result}, #{errorCode}, #{errorMsg}, #{costMs}, #{createdTime}
         )
     </insert>
+
+    <!--
+      保留期清理：仅由 AuditRetentionJob 调用，按时间删除并限制单批行数，
+      避免一次删除过多导致长事务/锁表。
+    -->
+    <delete id="deleteBefore">
+        DELETE FROM sys_auth_audit_log
+        WHERE created_time &lt; #{before}
+        LIMIT #{limit}
+    </delete>
 
     <!--
       分页查询。

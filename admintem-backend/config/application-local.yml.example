@@ -1,7 +1,7 @@
 # ============================================================================
 # 本地私有配置示例（admintem-backend/config/application-local.yml.example）
 # ----------------------------------------------------------------------------
-# 用途：数据库 / Redis 口令等敏感项不进入版本库，集中放在本文件中。
+# 用途：数据库 / Redis 连接与口令等环境相关项不进入版本库。
 #
 # 使用步骤：
 #   1. 复制本文件为同目录下的 application-local.yml：
@@ -12,15 +12,24 @@
 #      自动加载（文件不存在时忽略，不会报错）。
 #
 # 说明：application-{dev,test,pre,pro}.yml 中对应写法为
+#        url: jdbc:mysql://${ADMINTEM_DB_HOST:127.0.0.1}:${ADMINTEM_DB_PORT:3306}/${ADMINTEM_DB_NAME:admintem_new}
+#        username: ${ADMINTEM_DB_USERNAME:admintem}
 #        password: ${ADMINTEM_DB_PASSWORD:}
-#        password: ${ADMINTEM_REDIS_PASSWORD:}
-#      引用下面两个键；生产也可改用系统环境变量 / 容器 Secret 注入同名变量。
+#        address: redis://${ADMINTEM_REDIS_HOST:127.0.0.1}:${ADMINTEM_REDIS_PORT:6379}
+#      引用下面的键；生产也可改用系统环境变量 / 容器 Secret 注入同名变量。
 # ============================================================================
 
-# 数据库口令（MySQL）
+# 数据库连接
+ADMINTEM_DB_HOST: "127.0.0.1"
+ADMINTEM_DB_PORT: "3306"
+ADMINTEM_DB_NAME: "admintem_new"
+ADMINTEM_DB_USERNAME: "admintem"
 ADMINTEM_DB_PASSWORD: "your-mysql-password"
 
-# Redis 口令（Redisson 客户端）
+# Redis 连接
+ADMINTEM_REDIS_HOST: "127.0.0.1"
+ADMINTEM_REDIS_PORT: "6379"
+ADMINTEM_REDIS_DATABASE: "0"
 ADMINTEM_REDIS_PASSWORD: "your-redis-password"
 
 # MinIO（可选；仅 admintem.storage.type=minio 时使用）

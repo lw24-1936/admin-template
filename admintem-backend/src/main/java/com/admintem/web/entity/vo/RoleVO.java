@@ -20,4 +20,7 @@ public class RoleVO implements Serializable {
 
     /** 角色唯一标识 */
     private String roleKey;
+
+    /** 数据范围：ALL/DEPT/DEPT_AND_CHILD/SELF */
+    private String dataScope;
 }

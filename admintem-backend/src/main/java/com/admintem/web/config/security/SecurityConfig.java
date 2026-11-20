@@ -108,6 +108,14 @@ public class SecurityConfig {
                 // 关闭表单登录与 HTTP Basic
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                // 基础安全响应头（HSTS 由 HTTPS 入口负责；CSP 需按前端资源单独设计）
+                .headers(headers -> headers
+                        .addHeaderWriter((request, response) -> {
+                            response.setHeader("X-Content-Type-Options", "nosniff");
+                            response.setHeader("X-Frame-Options", "SAMEORIGIN");
+                            response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+                            response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+                        }))
                 // 启用自定义 CORS（见 CorsConfig）
                 .cors(cors -> {
                 })

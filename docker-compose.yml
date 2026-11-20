@@ -1,0 +1,125 @@
+name: admintem
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: admintem-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change-me-mysql-root}
+      MYSQL_DATABASE: ${ADMINTEM_DB_NAME:-admintem_new}
+      MYSQL_USER: ${ADMINTEM_DB_USERNAME:-admintem}
+      MYSQL_PASSWORD: ${ADMINTEM_DB_PASSWORD:-change-me-db-password}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: admintem-redis
+    command: ["redis-server", "--requirepass", "${ADMINTEM_REDIS_PASSWORD:-change-me-redis-password}"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a '$$ADMINTEM_REDIS_PASSWORD' ping | grep -q PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    environment:
+      ADMINTEM_REDIS_PASSWORD: ${ADMINTEM_REDIS_PASSWORD:-change-me-redis-password}
+    restart: unless-stopped
+
+  db-init:
+    image: mysql:8.4
+    container_name: admintem-db-init
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_PWD: ${MYSQL_ROOT_PASSWORD:-change-me-mysql-root}
+      ADMINTEM_DB_NAME: ${ADMINTEM_DB_NAME:-admintem_new}
+    volumes:
+      - ./admintem-docs/db/init:/sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mysql -h mysql -uroot \
+          -e "CREATE DATABASE IF NOT EXISTS \`$${ADMINTEM_DB_NAME}\` DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;"
+        {
+          echo "SET @admintem_confirm_reset = 1;"
+          cat /sql/00_admintem_full_init.sql
+        } | mysql -h mysql -uroot --default-character-set=utf8mb4 "$${ADMINTEM_DB_NAME}"
+        echo "database initialized: $${ADMINTEM_DB_NAME}"
+    restart: "no"
+
+  backend:
+    build:
+      context: .
+      dockerfile: admintem-backend/Dockerfile
+    container_name: admintem-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      ADMINTEM_DB_HOST: mysql
+      ADMINTEM_DB_PORT: 3306
+      ADMINTEM_DB_NAME: ${ADMINTEM_DB_NAME:-admintem_new}
+      ADMINTEM_DB_USERNAME: ${ADMINTEM_DB_USERNAME:-admintem}
+      ADMINTEM_DB_PASSWORD: ${ADMINTEM_DB_PASSWORD:-change-me-db-password}
+      ADMINTEM_REDIS_HOST: redis
+      ADMINTEM_REDIS_PORT: 6379
+      ADMINTEM_REDIS_DATABASE: 0
+      ADMINTEM_REDIS_PASSWORD: ${ADMINTEM_REDIS_PASSWORD:-change-me-redis-password}
+      ADMINTEM_JWT_SECRET: ${ADMINTEM_JWT_SECRET:-change-me-use-a-long-random-jwt-secret-at-least-32-bytes}
+    ports:
+      - "${ADMINTEM_BACKEND_PORT:-8090}:8090"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8090/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    restart: unless-stopped
+
+  desktop:
+    build:
+      context: ./admintem-vue
+      dockerfile: Dockerfile
+    container_name: admintem-desktop
+    ports:
+      - "${ADMINTEM_DESKTOP_PORT:-5175}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mobile:
+    build:
+      context: ./admintem-mobile
+      dockerfile: Dockerfile
+    container_name: admintem-mobile
+    ports:
+      - "${ADMINTEM_MOBILE_PORT:-5174}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
+  uploads:

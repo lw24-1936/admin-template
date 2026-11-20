@@ -39,6 +39,11 @@
           <span style="margin-left: 4px">{{ row.roleKey }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="dataScope" label="数据范围" min-width="130">
+        <template #default="{ row }">
+          {{ scopeLabel(row.dataScope) }}
+        </template>
+      </el-table-column>
       <el-table-column prop="createdBy" label="创建人" width="120" />
       <el-table-column prop="createdTime" label="创建时间" width="170" sortable="custom" />
       <el-table-column label="操作" width="220" fixed="right">
@@ -87,6 +92,11 @@
         </el-form-item>
         <el-form-item label="角色标识" prop="roleKey">
           <el-input v-model="form.roleKey" :disabled="editingBuiltIn" placeholder="如：operator" />
+        </el-form-item>
+        <el-form-item label="数据范围" prop="dataScope">
+          <el-select v-model="form.dataScope" style="width: 100%">
+            <el-option v-for="item in scopeOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -211,7 +221,18 @@ const dialogTitle = ref('新增角色')
 const saving = ref(false)
 const editingBuiltIn = ref(false)
 const formRef = ref()
-const form = reactive({ id: null, roleName: '', roleKey: '' })
+const form = reactive({ id: null, roleName: '', roleKey: '', dataScope: 'ALL' })
+
+const scopeOptions = [
+  { value: 'ALL', label: '全部数据' },
+  { value: 'DEPT_AND_CHILD', label: '本部门及子部门' },
+  { value: 'DEPT', label: '本部门' },
+  { value: 'SELF', label: '仅本人' },
+]
+
+function scopeLabel(value) {
+  return scopeOptions.find((item) => item.value === value)?.label || '全部数据'
+}
 
 const rules = {
   roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
@@ -224,14 +245,14 @@ const rules = {
 function openAdd() {
   dialogTitle.value = '新增角色'
   editingBuiltIn.value = false
-  Object.assign(form, { id: null, roleName: '', roleKey: '' })
+  Object.assign(form, { id: null, roleName: '', roleKey: '', dataScope: 'ALL' })
   dialogVisible.value = true
 }
 
 function openEdit(row) {
   dialogTitle.value = '编辑角色'
   editingBuiltIn.value = isBuiltIn(row)
-  Object.assign(form, { id: row.id, roleName: row.roleName, roleKey: row.roleKey })
+  Object.assign(form, { id: row.id, roleName: row.roleName, roleKey: row.roleKey, dataScope: row.dataScope || 'ALL' })
   dialogVisible.value = true
 }
 

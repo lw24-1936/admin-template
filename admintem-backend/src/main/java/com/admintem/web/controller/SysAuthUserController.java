@@ -12,6 +12,7 @@ import com.admintem.web.entity.dto.UserSaveRequest;
 import com.admintem.web.entity.dto.validation.ValidationGroups;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.SysAuthUserService;
+import com.admintem.web.service.DataScopeService;
 import com.admintem.web.entity.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SysAuthUserController {
 
     private final SysAuthUserService sysAuthUserService;
+    private final DataScopeService dataScopeService;
 
     /**
      * 分页查询用户列表（需要"用户管理"菜单权限）。
@@ -61,6 +63,8 @@ public class SysAuthUserController {
     @PreAuthorize("@rbac.hasPerm('userInfo:userInfo')")
     @Operation(summary = "分页查询用户")
     public Result<PageResult<UserVO>> paginQuery(@Valid @RequestBody UserPageQuery query) {
+        // 行级数据权限由服务端注入，忽略客户端伪造的 dataScope 字段
+        dataScopeService.apply(query);
         return Result.ok(sysAuthUserService.pageQuery(query));
     }
 

@@ -3,6 +3,7 @@ package com.admintem.web;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * 环境由 Maven Profile 切换（dev 默认/test/pre/pro），端口分别 8090/8091/8092/8093。</p>
  */
 @Slf4j
+@EnableScheduling
 @SpringBootApplication
 public class AdmintemApplication {
 

@@ -181,4 +181,12 @@ app.directive('perm', permission)
 app.use(createPinia())
 app.use(router)
 
+// 渲染异常兜底：记录完整错误，再跳转到 500 页面；错误页自身异常时不再递归跳转
+app.config.errorHandler = (err, instance, info) => {
+  console.error('[app] 未处理的渲染异常：', err, info)
+  if (router.currentRoute.value.path !== '/500') {
+    router.replace('/500').catch(() => {})
+  }
+}
+
 app.mount('#app')

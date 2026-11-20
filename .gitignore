@@ -34,6 +34,8 @@ uploads/
 
 # ---- 本地口令（真实密码只存在本机）----
 admintem-backend/config/application-local.yml
+/.env
+/.env.local
 
 # ---- 设计预览与一次性截图（交付截图在 admintem-docs/images） ----
 admintem-docs/design-preview/

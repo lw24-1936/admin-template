@@ -31,4 +31,9 @@ public class RoleSaveRequest {
     @Pattern(regexp = "^[a-z][a-z0-9_]{1,31}$", message = "角色标识须为小写字母开头的字母数字下划线，2~32位")
     @Schema(description = "角色唯一标识", example = "operator")
     private String roleKey;
+
+    /** 数据范围（行级数据权限） */
+    @Pattern(regexp = "ALL|DEPT|DEPT_AND_CHILD|SELF", message = "数据范围只能是 ALL/DEPT/DEPT_AND_CHILD/SELF")
+    @Schema(description = "数据范围", example = "ALL", allowableValues = {"ALL", "DEPT", "DEPT_AND_CHILD", "SELF"})
+    private String dataScope = "ALL";
 }
