@@ -1,0 +1,63 @@
+# admintem Prometheus 告警规则
+#
+# 使用方式：在 prometheus.yml 中引用本文件：
+#   rule_files:
+#     - /etc/prometheus/admintem-alerts.yml
+#
+# 指标前提：后端暴露 /actuator/prometheus，Prometheus 以带管理员令牌的抓取配置采集。
+# 指标只带 result/layer 标签，不包含账号、IP、令牌，告警文案也请不要拼接这些值。
+
+groups:
+  - name: admintem-security
+    rules:
+      - alert: AdmintemUnauthorizedSpike
+        expr: sum(rate(admintem_security_requests_total{result="unauthorized"}[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+          service: admintem
+        annotations:
+          summary: "401 未认证请求突增"
+          description: "过去 10 分钟 401 速率持续超过 1/s，可能存在令牌过期风暴、客户端时钟错误或探测扫描。"
+
+      - alert: AdmintemForbiddenSpike
+        expr: sum(rate(admintem_security_requests_total{result="forbidden"}[5m])) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          service: admintem
+        annotations:
+          summary: "403 越权请求突增"
+          description: "过去 5 分钟 403 速率持续超过 0.2/s，请结合审计表 ACCESS_DENIED 与 traceId 排查。"
+
+      - alert: AdmintemLoginFailureSpike
+        expr: sum(rate(admintem_login_total{result="failure"}[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          service: admintem
+        annotations:
+          summary: "登录失败突增"
+          description: "过去 5 分钟登录失败速率持续超过 0.5/s，可能正在被暴力破解；检查账号/IP 风控与来源。"
+
+  - name: admintem-availability
+    rules:
+      - alert: AdmintemBackendDown
+        expr: up{job="admintem-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: admintem
+        annotations:
+          summary: "admintem 后端不可达"
+          description: "Prometheus 连续 2 分钟无法抓取 admintem-backend，请检查进程、端口与网络。"
+
+      - alert: AdmintemServerErrorSpike
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: admintem
+        annotations:
+          summary: "后端 5xx 突增"
+          description: "过去 5 分钟 5xx 速率持续超过 0.1/s，请用 traceId 对照 admintem-backend-json.log 与审计表排查。"
