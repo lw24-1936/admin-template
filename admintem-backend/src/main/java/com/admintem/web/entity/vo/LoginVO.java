@@ -12,6 +12,12 @@ public class LoginVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /** 是否需要 MFA 二次验证；为 true 时 token/refreshToken/user 为空 */
+    private Boolean mfaRequired;
+
+    /** MFA 挑战票据（仅 mfaRequired=true 时返回，5 分钟有效） */
+    private String mfaToken;
+
     /** 访问令牌（前端请求头：admintem_token: LAUNCH &lt;token&gt;） */
     private String token;
 

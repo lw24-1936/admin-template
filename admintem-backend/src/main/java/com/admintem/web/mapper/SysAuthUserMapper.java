@@ -88,6 +88,17 @@ public interface SysAuthUserMapper {
     int updateSelective(SysAuthUser user);
 
     /**
+     * 显式更新 MFA 字段（secret 可为 null，用于关闭时清空）。
+     *
+     * @param id         用户ID
+     * @param mfaSecret  Base32 secret
+     * @param mfaEnabled 0/1
+     * @return 影响行数
+     */
+    int updateMfa(@Param("id") Long id, @Param("mfaSecret") String mfaSecret,
+                  @Param("mfaEnabled") Integer mfaEnabled);
+
+    /**
      * 逻辑删除用户（is_deleted=1）。
      *
      * @param id         用户ID

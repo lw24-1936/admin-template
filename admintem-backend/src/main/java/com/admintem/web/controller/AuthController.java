@@ -5,7 +5,12 @@ import com.admintem.web.aspect.AuditTargetType;
 import com.admintem.web.common.Result;
 import com.admintem.web.entity.dto.CaptchaVerifyRequest;
 import com.admintem.web.entity.dto.LoginRequest;
+import com.admintem.web.entity.dto.MfaCodeRequest;
+import com.admintem.web.entity.dto.MfaDisableRequest;
+import com.admintem.web.entity.dto.MfaVerifyRequest;
 import com.admintem.web.entity.vo.CaptchaTicketVO;
+import com.admintem.web.entity.vo.MfaSetupVO;
+import com.admintem.web.entity.vo.MfaStatusVO;
 import com.admintem.web.entity.vo.CaptchaVO;
 import com.admintem.web.security.CaptchaService;
 import com.admintem.web.entity.dto.RegisterRequest;
@@ -15,6 +20,7 @@ import com.admintem.web.entity.dto.UpdateProfileRequest;
 import com.admintem.web.security.LoginUser;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.AuthService;
+import com.admintem.web.service.MfaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,6 +45,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final CaptchaService captchaService;
+    private final MfaService mfaService;
 
     /**
      * 用户登录（免登录）。
@@ -156,4 +163,41 @@ public class AuthController {
         LoginUser current = SecurityUtils.currentUser();
         String url = authService.uploadAvatar(current.getUserId(), file);
         return Result.ok(url);
-    }}
+    }
+    /** MFA 状态（需登录）。 */
+    @PostMapping("/mfa/status")
+    @Operation(summary = "查询 MFA 状态")
+    public Result<MfaStatusVO> mfaStatus() {
+        return Result.ok(new MfaStatusVO(mfaService.isEnabled(SecurityUtils.currentUserId())));
+    }
+
+    /** 初始化 MFA 绑定：返回 secret 与 otpauth URI（需登录）。 */
+    @PostMapping("/mfa/setup")
+    @Operation(summary = "初始化 MFA 绑定")
+    public Result<MfaSetupVO> mfaSetup() {
+        return Result.ok(mfaService.setup(SecurityUtils.currentUserId()));
+    }
+
+    /** 校验验证码并开启 MFA（需登录）。 */
+    @PostMapping("/mfa/enable")
+    @Operation(summary = "开启 MFA")
+    public Result<Void> mfaEnable(@Valid @RequestBody MfaCodeRequest request) {
+        mfaService.enable(SecurityUtils.currentUserId(), request.getCode());
+        return Result.ok();
+    }
+
+    /** 关闭 MFA：需要当前密码 + 验证码（需登录）。 */
+    @PostMapping("/mfa/disable")
+    @Operation(summary = "关闭 MFA")
+    public Result<Void> mfaDisable(@Valid @RequestBody MfaDisableRequest request) {
+        mfaService.disable(SecurityUtils.currentUserId(), request.getPassword(), request.getCode());
+        return Result.ok();
+    }
+
+    /** MFA 二次验证（免登录，使用登录返回的短时票据）。 */
+    @PostMapping("/mfa/verify")
+    @Operation(summary = "MFA 二次验证")
+    public Result<com.admintem.web.entity.vo.LoginVO> mfaVerify(@Valid @RequestBody MfaVerifyRequest request) {
+        return Result.ok(authService.verifyMfa(request));
+    }
+}

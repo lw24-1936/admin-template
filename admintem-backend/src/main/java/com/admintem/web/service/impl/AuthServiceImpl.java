@@ -23,6 +23,8 @@ import com.admintem.web.security.JwtTokenService;
 import com.admintem.web.security.LoginRiskGuard;
 import com.admintem.web.security.PasswordPolicy;
 import com.admintem.web.security.LoginUser;
+import com.admintem.web.security.MfaChallengeService;
+import com.admintem.web.security.TotpService;
 import com.admintem.web.security.RbacCacheService;
 import com.admintem.web.security.RefreshTokenService;
 import com.admintem.web.security.SecurityMetrics;
@@ -68,6 +70,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
     private final RefreshTokenService refreshTokenService;
+    private final MfaChallengeService mfaChallengeService;
+    private final TotpService totpService;
     private final RbacCacheService rbacCacheService;
     private final UserRbacService userRbacService;
     private final PasswordEncoder passwordEncoder;
@@ -133,8 +137,18 @@ public class AuthServiceImpl implements AuthService {
         //     BCrypt 的代价因子写死在散列里，提高配置值只影响新密码；老用户下次登录即被升级。
         upgradePasswordHashIfNeeded(username, password);
 
-        // 4. 组装会话快照并缓存（快照含角色与权限集合，供后续请求直接使用）
+        // 4. 组装会话快照；若账号开启 MFA，先返回短时挑战票据，不签发正式令牌
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        SysAuthUser mfaUser = userMapper.selectByUserName(loginUser.getUserName());
+        if (mfaUser != null && Integer.valueOf(1).equals(mfaUser.getMfaEnabled())) {
+            String mfaToken = mfaChallengeService.create(
+                    loginUser.getUserName(), request.getDeviceId(), remember);
+            LoginVO challenge = new LoginVO();
+            challenge.setMfaRequired(true);
+            challenge.setMfaToken(mfaToken);
+            log.info("用户密码校验通过，等待 MFA: userName={}", loginUser.getUserName());
+            return challenge;
+        }
         rbacCacheService.save(loginUser);
 
         // 5. 签发令牌（写入 Redis 白名单）
@@ -143,10 +157,50 @@ public class AuthServiceImpl implements AuthService {
         // 6. 组装登录响应
         LoginVO vo = new LoginVO();
         vo.setToken(token);
-        vo.setRefreshToken(refreshTokenService.issue(loginUser.getUserName(), remember));
+        vo.setRefreshToken(refreshTokenService.issue(loginUser.getUserName(), remember, request.getDeviceId()));
         // 复用刚认证得到的快照，避免会话构建阶段重复查询角色与权限
         vo.setUser(buildUserSession(loginUser.getUserId(), loginUser));
         log.info("用户登录成功: userName={}, userId={}", loginUser.getUserName(), loginUser.getUserId());
+        return vo;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LoginVO verifyMfa(com.admintem.web.entity.dto.MfaVerifyRequest request) {
+        MfaChallengeService.Challenge challenge = mfaChallengeService.read(request.getMfaToken());
+        if (challenge == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        if (challenge.attempts() >= mfaChallengeService.maxAttempts()) {
+            mfaChallengeService.delete(request.getMfaToken());
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        SysAuthUser user = userMapper.selectByUserName(challenge.userName());
+        if (user == null || !Integer.valueOf(0).equals(user.getStatus())
+                || !Integer.valueOf(1).equals(user.getMfaEnabled())
+                || user.getMfaSecret() == null) {
+            mfaChallengeService.delete(request.getMfaToken());
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        if (!totpService.verify(user.getMfaSecret(), request.getCode())) {
+            mfaChallengeService.recordFailure(request.getMfaToken());
+            throw new BusinessException(ResultCode.PARAM_ERROR, "验证码错误或已过期");
+        }
+        mfaChallengeService.delete(request.getMfaToken());
+        LoginUser loginUser = userRbacService.loadLoginUserSnapshot(user.getId(), user.getUserName());
+        if (loginUser == null || !loginUser.isEnabled()) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED);
+        }
+        rbacCacheService.save(loginUser);
+        String token = jwtTokenService.createToken(loginUser.getUserId(), loginUser.getUserName(),
+                challenge.remember(), challenge.deviceId());
+        LoginVO vo = new LoginVO();
+        vo.setToken(token);
+        vo.setRefreshToken(refreshTokenService.issue(loginUser.getUserName(), challenge.remember(), challenge.deviceId()));
+        vo.setUser(buildUserSession(loginUser.getUserId(), loginUser));
+        log.info("MFA 校验成功: userName={}, userId={}", loginUser.getUserName(), loginUser.getUserId());
         return vo;
     }
 

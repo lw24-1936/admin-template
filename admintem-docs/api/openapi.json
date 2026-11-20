@@ -1486,6 +1486,141 @@
         }
       }
     },
+    "/auth/mfa/verify": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "MFA 二次验证",
+        "operationId": "mfaVerify",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaVerifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultLoginVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/mfa/status": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "查询 MFA 状态",
+        "operationId": "mfaStatus",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultMfaStatusVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/mfa/setup": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "初始化 MFA 绑定",
+        "operationId": "mfaSetup",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultMfaSetupVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/mfa/enable": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "开启 MFA",
+        "operationId": "mfaEnable",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaCodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/mfa/disable": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "关闭 MFA",
+        "operationId": "mfaDisable",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaDisableRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/logout": {
       "post": {
         "tags": [
@@ -3700,6 +3835,268 @@
             "description": "业务数据"
           }
         }
+      },
+      "MfaVerifyRequest": {
+        "type": "object",
+        "description": "MFA 验证码校验",
+        "properties": {
+          "mfaToken": {
+            "type": "string",
+            "description": "密码登录返回的 MFA 挑战票据",
+            "minLength": 1
+          },
+          "code": {
+            "type": "string",
+            "description": "6 位 TOTP 验证码",
+            "example": "123456",
+            "minLength": 1,
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "code",
+          "mfaToken"
+        ]
+      },
+      "LoginVO": {
+        "type": "object",
+        "properties": {
+          "mfaRequired": {
+            "type": "boolean"
+          },
+          "mfaToken": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserSessionVO"
+          }
+        }
+      },
+      "MenuVO": {
+        "type": "object",
+        "properties": {
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuVO"
+            }
+          },
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "orderNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "menuUrl": {
+            "type": "string"
+          },
+          "component": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "show": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "permissionKey": {
+            "type": "string"
+          }
+        }
+      },
+      "ResultLoginVO": {
+        "type": "object",
+        "description": "统一响应结构",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "业务状态码，200=成功"
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/LoginVO",
+            "description": "业务数据"
+          }
+        }
+      },
+      "UserSessionVO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "introduce": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RoleVO"
+            }
+          },
+          "menus": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MenuVO"
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "MfaStatusVO": {
+        "type": "object",
+        "description": "MFA 状态",
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "description": "是否已开启 MFA"
+          }
+        }
+      },
+      "ResultMfaStatusVO": {
+        "type": "object",
+        "description": "统一响应结构",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "业务状态码，200=成功"
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MfaStatusVO",
+            "description": "业务数据"
+          }
+        }
+      },
+      "MfaSetupVO": {
+        "type": "object",
+        "description": "MFA 开启引导",
+        "properties": {
+          "secret": {
+            "type": "string",
+            "description": "Base32 secret；只返回一次，请立即录入认证器"
+          },
+          "otpauthUri": {
+            "type": "string",
+            "description": "otpauth:// URI，可渲染二维码"
+          }
+        }
+      },
+      "ResultMfaSetupVO": {
+        "type": "object",
+        "description": "统一响应结构",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "业务状态码，200=成功"
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MfaSetupVO",
+            "description": "业务数据"
+          }
+        }
+      },
+      "MfaCodeRequest": {
+        "type": "object",
+        "description": "MFA 验证码",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "6 位 TOTP 验证码",
+            "example": "123456",
+            "minLength": 1,
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "MfaDisableRequest": {
+        "type": "object",
+        "description": "关闭 MFA",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "当前账号密码",
+            "maxLength": 72,
+            "minLength": 0
+          },
+          "code": {
+            "type": "string",
+            "description": "6 位 TOTP 验证码",
+            "example": "123456",
+            "minLength": 1,
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "code",
+          "password"
+        ]
       },
       "LoginRequest": {
         "type": "object",

@@ -21,6 +21,9 @@ public interface AuthService {
      */
     LoginVO login(LoginRequest request);
 
+    /** 校验 MFA 挑战并签发正式令牌。 */
+    LoginVO verifyMfa(com.admintem.web.entity.dto.MfaVerifyRequest request);
+
     /**
      * 使用刷新令牌换取新的访问令牌（旋转刷新令牌）。
      *

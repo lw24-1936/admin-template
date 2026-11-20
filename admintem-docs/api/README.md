@@ -4,7 +4,7 @@
 
 | 文件 | 说明 |
 | ---- | ---- |
-| `openapi.json` | 由后端 `/v3/api-docs` 导出的完整契约（当前 53 个 path） |
+| `openapi.json` | 由后端 `/v3/api-docs` 导出的完整契约（当前 58 个 path） |
 | `schema.d.ts` | 由 `openapi-typescript` 从 `openapi.json` 生成的 `paths`/`components` 类型 |
 
 ## 重新生成

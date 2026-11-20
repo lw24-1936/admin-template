@@ -69,6 +69,15 @@ public class SysAuthUser implements Serializable {
     @Schema(description = "扩展字段")
     private String extJson;
 
+    /** TOTP Base32 secret（不返回给普通查询） */
+    @JsonIgnore
+    @Schema(description = "TOTP secret", hidden = true)
+    private String mfaSecret;
+
+    /** MFA 是否开启：0 关闭 / 1 开启 */
+    @Schema(description = "MFA 是否开启：0 关闭 / 1 开启")
+    private Integer mfaEnabled;
+
     /** 创建人 */
     @Schema(description = "创建人")
     private String createdBy;

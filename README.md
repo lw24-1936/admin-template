@@ -46,7 +46,7 @@
 
 | 模块 | 能力 |
 | ---- | ---- |
-| 认证 | 登录（7 天免登录）、refreshToken 轮换、注册（可关闭）、退出、修改密码、个人资料、头像上传 |
+| 认证 | 登录（7 天免登录）、refreshToken 轮换、多设备会话、TOTP MFA、注册（可关闭）、退出、修改密码、个人资料、头像上传 |
 | 用户管理 | 分页查询、新增/编辑/删除、批量启用/禁用/删除、重置密码、分配角色、所属部门、头像、CSV 导入/导出 |
 | 角色管理 | 分页查询、新增/编辑/删除、权限树授权、行级数据范围（全部/本部门/本部门及子部门/本人） |
 | 权限管理 | 菜单/按钮两级树表、增删改、父子成环保护 |
@@ -59,10 +59,10 @@
 | 代码生成器 | `scripts/generate-crud.mjs` 按 spec 生成 DTO/Mapper/Service/Controller/页面/迁移骨架；默认先输出到 tmp，生成物需人工复核 |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、CSV 导出、明细含 `traceId` 与变更前后 JSON |
 | 在线会话 | 查看在线设备、剩余有效期、角色、令牌摘要；按设备或按账号强制下线，同账号多端互不覆盖（传 deviceId 时） |
-| 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
+| 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、TOTP 两步验证、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、Prometheus 安全指标、JSON 结构化日志、告警规则样例 |
 
-**当前基线**：后端 166 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
+**当前基线**：后端 168 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
 123 项设计层断言、前端 10 + 6 项单测、生成器 2 项；权限 37 条、受控接口 43 个，CI 全绿。
 
 ## 界面预览
@@ -184,7 +184,7 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 ```
 
 > 没有 `SET @admintem_confirm_reset = 1` 时脚本会 `SIGNAL` 中止，不会删除任何数据。
-> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.15）。
+> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.16）。
 > 全量 init 负责基础表/种子，**不预置后续迁移新增的列**（如 `data_scope`）；首次初始化后
 > 启动后端（或执行 Flyway migrate）补齐，才能得到完整结构。
 
@@ -265,7 +265,7 @@ npm run dev          # http://localhost:5177
 ## 质量门禁
 
 ```bash
-# 后端单测（159 项）
+# 后端单测（168 项）
 cd admintem-backend && mvn test
 
 # 接口回归（78 项；需后端已启动）
@@ -291,7 +291,7 @@ cd admintem-uniapp && pnpm lint && pnpm build:h5 && pnpm build:mp-weixin
 
 CI 分两层：
 
-- [`ci.yml`](.github/workflows/ci.yml)：每次 push / PR，跑后端单测、两端构建与单测、5 个文档/设计检查器、uni-app 三端构建。
+- [`ci.yml`](.github/workflows/ci.yml)：每次 push / PR，跑后端单测、两端构建与单测、6 个文档/设计检查器 + 生成器测试、uni-app 三端构建。
 - [`e2e-nightly.yml`](.github/workflows/e2e-nightly.yml)：每天 UTC 18:00（北京时间次日 02:00）拉起 MySQL/Redis，跑 78 项接口回归和两端真实浏览器 E2E；也可在 Actions 页面手动触发。
 
 ## 部署
@@ -331,7 +331,7 @@ admin-template/
 │   ├── config/                  本地口令示例（真实文件已 gitignore）
 │   ├── src/main/java/...        9 个控制器、service、mapper、security、aspect
 │   ├── src/main/resources/      application*.yml、mapper XML
-│   ├── src/test/java/           166 个单元测试
+│   ├── src/test/java/           168 个单元测试
 │   └── Dockerfile               多阶段构建、非 root、HEALTHCHECK
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）
@@ -339,7 +339,7 @@ admin-template/
 ├── admintem-site/               官网模版（可选）
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
-│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.15
+│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.16
 │   ├── images/                  21 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
@@ -351,7 +351,7 @@ admin-template/
 | ---- | ---- |
 | [01-需求与范围](admintem-docs/01-需求与范围.md) | 目标、边界、角色 |
 | [02-系统设计文档](admintem-docs/02-系统设计文档.md) | 架构、鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.15 变更与回滚 |
+| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.16 变更与回滚 |
 | [AGENTS.md](AGENTS.md) | 给 AI/自动化代理的项目约定、命令、权限/迁移/测试/文档同步规则 |
 | [OpenAPI 契约](admintem-docs/api/README.md) | `openapi.json` 与生成式 TypeScript 类型，三端接口对齐 |
 | [04-部署与操作手册](admintem-docs/04-部署与操作手册.md) | 环境、配置、启动、故障处理 |

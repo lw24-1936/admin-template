@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -90,7 +90,7 @@ docker-compose.yml      本地一键编排
 7. **认证**：请求头 `admintem_token: LAUNCH <accessToken>`；登录返回 access + refresh；
    `/auth/refresh` 为公开端点；客户端登录应带 `deviceId`，后端按 `{userName}:{deviceId}` 分设备保存访问令牌；
    不传 `deviceId` 保持旧版单账号单令牌语义。退出只踢当前设备，改密/禁用/全部下线才清全部设备；
-   强制下线可按设备操作，refreshToken 也绑定设备。
+   强制下线可按设备操作，refreshToken 也绑定设备。 MFA 开启后密码登录返回 `mfaToken`，必须调 `/auth/mfa/verify` 才签发正式令牌；TOTP secret 不得出现在日志/普通查询。
 8. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
 9. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
    生产禁止默认密钥/示例密码/root 数据库账号。
@@ -99,7 +99,7 @@ docker-compose.yml      本地一键编排
 
 ## 5. 数据库迁移约定
 
-- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.15`。
+- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.16`。
 - **已发布迁移不可改**：CI 会先执行 `db/init/00_admintem_full_init.sql`，再跑 Flyway。
   新增列只写在迁移中，不要提前加进 init 的 CREATE TABLE（否则 V1.0.11 这类非幂等 ALTER 会重复执行）。
   新增表/权限的迁移应使用 `IF NOT EXISTS` / `ON DUPLICATE KEY UPDATE`，保证 init+Flyway 双路径可重复。
@@ -124,7 +124,7 @@ docker-compose.yml      本地一键编排
 
 ## 7. 测试与验收
 
-- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 166 项）。
+- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 168 项）。
 - 代码生成器：`node scripts/generate-crud.mjs --spec scripts/generate-crud.spec.example.json --out tmp/generated`；
   默认只写 `--out`，不覆盖源码，生成后按《17-代码生成器使用说明》人工复核权限/菜单/迁移版本。
 - 桌面 lint/build：`npm --prefix admintem-vue run lint`、`npm --prefix admintem-vue run build`。

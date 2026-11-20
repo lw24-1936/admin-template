@@ -60,6 +60,7 @@
             <el-dropdown-menu>
               <el-dropdown-item @click="openProfile">{{ t('header.profile') }}</el-dropdown-item>
               <el-dropdown-item @click="openPwd">{{ t('header.password') }}</el-dropdown-item>
+                <el-dropdown-item @click="mfaVisible = true">{{ t('header.mfa') }}</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">{{ t('header.logout') }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -153,6 +154,7 @@
       </template>
     </el-dialog>
   </el-container>
+  <MfaDialog v-model="mfaVisible" />
 </template>
 
 <script setup>
@@ -172,6 +174,7 @@ import { updateProfile, updatePassword, uploadAvatar } from '@/api/auth'
 import { resolveAssetUrl } from '@/utils/media'
 import MenuItem from './MenuItem.vue'
 import LocaleSwitch from '@/components/LocaleSwitch.vue'
+import MfaDialog from '@/components/MfaDialog.vue'
 import { useI18n } from '@/i18n'
 import { filterVisibleMenus } from '@/utils/menu'
 
@@ -285,6 +288,7 @@ const displayName = computed(() => store.displayName || store.user?.userName || 
 
 /* ------------------------- 下拉与弹窗控制 ------------------------- */
 const profileVisible = ref(false)
+const mfaVisible = ref(false)
 const pwdVisible = ref(false)
 const saving = ref(false)
 

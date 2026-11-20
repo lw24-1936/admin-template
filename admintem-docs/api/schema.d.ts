@@ -786,6 +786,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/mfa/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** MFA 二次验证 */
+        post: operations["mfaVerify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/mfa/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 查询 MFA 状态 */
+        post: operations["mfaStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/mfa/setup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 初始化 MFA 绑定 */
+        post: operations["mfaSetup"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/mfa/enable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 开启 MFA */
+        post: operations["mfaEnable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/mfa/disable": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 关闭 MFA */
+        post: operations["mfaDisable"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/logout": {
         parameters: {
             query?: never;
@@ -2156,6 +2241,124 @@ export interface components {
             /** @description 业务数据 */
             data?: unknown;
         };
+        /** @description MFA 验证码校验 */
+        MfaVerifyRequest: {
+            /** @description 密码登录返回的 MFA 挑战票据 */
+            mfaToken: string;
+            /**
+             * @description 6 位 TOTP 验证码
+             * @example 123456
+             */
+            code: string;
+        };
+        LoginVO: {
+            mfaRequired?: boolean;
+            mfaToken?: string;
+            token?: string;
+            refreshToken?: string;
+            user?: components["schemas"]["UserSessionVO"];
+        };
+        MenuVO: {
+            children?: components["schemas"]["MenuVO"][];
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            /** Format: int32 */
+            type?: number;
+            /** Format: int64 */
+            parentId?: number;
+            /** Format: int32 */
+            orderNum?: number;
+            menuUrl?: string;
+            component?: string;
+            icon?: string;
+            /** Format: int32 */
+            show?: number;
+            permissionKey?: string;
+        };
+        /** @description 统一响应结构 */
+        ResultLoginVO: {
+            /**
+             * Format: int32
+             * @description 业务状态码，200=成功
+             */
+            code?: number;
+            /** @description 提示信息 */
+            message?: string;
+            /** @description 业务数据 */
+            data?: components["schemas"]["LoginVO"];
+        };
+        UserSessionVO: {
+            /** Format: int64 */
+            userId?: number;
+            userName?: string;
+            nickName?: string;
+            avatar?: string;
+            email?: string;
+            phone?: string;
+            /** Format: int32 */
+            sex?: number;
+            introduce?: string;
+            /** Format: int32 */
+            status?: number;
+            roles?: components["schemas"]["RoleVO"][];
+            menus?: components["schemas"]["MenuVO"][];
+            permissions?: string[];
+        };
+        /** @description MFA 状态 */
+        MfaStatusVO: {
+            /** @description 是否已开启 MFA */
+            enabled?: boolean;
+        };
+        /** @description 统一响应结构 */
+        ResultMfaStatusVO: {
+            /**
+             * Format: int32
+             * @description 业务状态码，200=成功
+             */
+            code?: number;
+            /** @description 提示信息 */
+            message?: string;
+            /** @description 业务数据 */
+            data?: components["schemas"]["MfaStatusVO"];
+        };
+        /** @description MFA 开启引导 */
+        MfaSetupVO: {
+            /** @description Base32 secret；只返回一次，请立即录入认证器 */
+            secret?: string;
+            /** @description otpauth:// URI，可渲染二维码 */
+            otpauthUri?: string;
+        };
+        /** @description 统一响应结构 */
+        ResultMfaSetupVO: {
+            /**
+             * Format: int32
+             * @description 业务状态码，200=成功
+             */
+            code?: number;
+            /** @description 提示信息 */
+            message?: string;
+            /** @description 业务数据 */
+            data?: components["schemas"]["MfaSetupVO"];
+        };
+        /** @description MFA 验证码 */
+        MfaCodeRequest: {
+            /**
+             * @description 6 位 TOTP 验证码
+             * @example 123456
+             */
+            code: string;
+        };
+        /** @description 关闭 MFA */
+        MfaDisableRequest: {
+            /** @description 当前账号密码 */
+            password: string;
+            /**
+             * @description 6 位 TOTP 验证码
+             * @example 123456
+             */
+            code: string;
+        };
         LoginRequest: {
             /**
              * @description 登录账号
@@ -3352,6 +3555,118 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ResultObject"];
+                };
+            };
+        };
+    };
+    mfaVerify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MfaVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultLoginVO"];
+                };
+            };
+        };
+    };
+    mfaStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultMfaStatusVO"];
+                };
+            };
+        };
+    };
+    mfaSetup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultMfaSetupVO"];
+                };
+            };
+        };
+    };
+    mfaEnable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MfaCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
+                };
+            };
+        };
+    };
+    mfaDisable: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MfaDisableRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
                 };
             };
         };

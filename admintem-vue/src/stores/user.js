@@ -41,15 +41,30 @@ export const useUserStore = defineStore('user', {
      * 登录：请求令牌并写入本地
      * @param {Object} form 登录表单
      */
-    async login(form) {
-      const res = await authApi.login(form)
-      const { token, refreshToken, user } = res.data
-      setToken(token)
-      setRefreshToken(refreshToken)
-      this.token = token
-      this.applySession(user)
-      this.loaded = true
-    },
+      async login(form) {
+        const res = await authApi.login(form)
+        const data = res.data || {}
+        if (data.mfaRequired) {
+          return data
+        }
+        this.applyLoginResult(data)
+        return data
+      },
+
+      /** MFA 校验通过后写入正式令牌与会话 */
+      async completeMfaLogin(data) {
+        this.applyLoginResult(data)
+        return data
+      },
+
+      applyLoginResult(data) {
+        const { token, refreshToken, user } = data
+        setToken(token)
+        setRefreshToken(refreshToken)
+        this.token = token
+        this.applySession(user)
+        this.loaded = true
+      },
 
     /**
      * 拉取当前用户完整会话（刷新页面后恢复登录态时调用）

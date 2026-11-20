@@ -40,7 +40,7 @@ test('generates backend, frontend, migration and manifest', () => {
     assert.match(page, /@page-change="onPageChange"/)
 
     const sql = fs.readFileSync(
-      path.join(out, 'admintem-docs/db/changelog/V1.0.16__add_sys_notice.sql'),
+      path.join(out, 'admintem-docs/db/changelog/V1.0.17__add_sys_notice.sql'),
       'utf8',
     )
     assert.match(sql, /CREATE TABLE `sys_notice`/)

@@ -18,7 +18,7 @@
     <!-- 公共查询列 -->
     <sql id="Base_Column_List">
         id, user_name, nick_name, email, phone, password, sex, avatar, dept_id,
-        status, introduce, ext_json, created_by, created_time, update_by, update_time
+        status, introduce, ext_json, mfa_secret, mfa_enabled, created_by, created_time, update_by, update_time
     </sql>
 
     <!-- 按部门分组统计用户数（部门树展示"这个部门有几个人"） -->
@@ -41,6 +41,7 @@
     <select id="selectByUserNames" resultType="com.admintem.web.entity.SysAuthUser">
         SELECT
             id, user_name, nick_name, email, phone, password, sex, avatar, dept_id, status, introduce, ext_json,
+            mfa_secret, mfa_enabled,
             created_by, created_time, update_by, update_time, is_deleted
         FROM sys_auth_user
         WHERE is_deleted = 0
@@ -140,9 +141,18 @@
             <if test="deptId != null">dept_id = #{deptId},</if>
             <if test="status != null">status = #{status},</if>
             <if test="introduce != null">introduce = #{introduce},</if>
+            <if test="mfaSecret != null">mfa_secret = #{mfaSecret},</if>
+            <if test="mfaEnabled != null">mfa_enabled = #{mfaEnabled},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </set>
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 显式更新 MFA（secret 允许置空） -->
+    <update id="updateMfa">
+        UPDATE sys_auth_user
+        SET mfa_secret = #{mfaSecret}, mfa_enabled = #{mfaEnabled}
         WHERE id = #{id} AND is_deleted = 0
     </update>
 

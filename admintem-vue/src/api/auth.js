@@ -58,3 +58,28 @@ export function uploadAvatar(file) {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
+
+/** MFA 二次验证（免登录，使用登录返回的 mfaToken） */
+export function verifyMfa(data) {
+  return request({ url: '/auth/mfa/verify', method: 'post', data })
+}
+
+/** 当前账号 MFA 状态 */
+export function getMfaStatus() {
+  return request({ url: '/auth/mfa/status', method: 'post' })
+}
+
+/** 初始化 MFA 绑定，返回 secret 与 otpauth URI */
+export function setupMfa() {
+  return request({ url: '/auth/mfa/setup', method: 'post' })
+}
+
+/** 校验验证码并开启 MFA */
+export function enableMfa(data) {
+  return request({ url: '/auth/mfa/enable', method: 'post', data })
+}
+
+/** 关闭 MFA（密码 + 验证码） */
+export function disableMfa(data) {
+  return request({ url: '/auth/mfa/disable', method: 'post', data })
+}

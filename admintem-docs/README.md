@@ -9,7 +9,7 @@
 | ---- | ---- | ---- |
 | [01-需求与范围](./01-需求与范围.md) | 产品 / 开发 | 目标、边界、角色与验收口径 |
 | [02-系统设计文档](./02-系统设计文档.md) | 开发 / 架构 | 鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](./03-数据库设计与变更说明.md) | 开发 / DBA | 表结构、V1.0.1~V1.0.15 变更与回滚 |
+| [03-数据库设计与变更说明](./03-数据库设计与变更说明.md) | 开发 / DBA | 表结构、V1.0.1~V1.0.16 变更与回滚 |
 | [04-部署与操作手册](./04-部署与操作手册.md) | 运维 / 开发 | 环境、配置、启动、故障处理 |
 | [05-接口与权限标识对照表](./05-接口与权限标识对照表.md) | 开发 / 测试 | 接口与 `permission_key` 矩阵 |
 | [06-测试报告](./06-测试报告.md) | 测试 / 评审 | 各轮实测数据与验收结论 |
@@ -52,7 +52,7 @@
 
 ```text
 db/init/00_admintem_full_init.sql   全量初始化（建库后执行，内含显式确认闸门）
-db/changelog/V1.0.1 ~ V1.0.15       Flyway 增量迁移（只新增，不修改历史）
+db/changelog/V1.0.1 ~ V1.0.16       Flyway 增量迁移（只新增，不修改历史）
 ```
 
 初始化脚本会 DROP 并重建 `sys_auth_*`、`sys_dept`、`sys_auth_audit_log`。
@@ -62,7 +62,7 @@ db/changelog/V1.0.1 ~ V1.0.15       Flyway 增量迁移（只新增，不修改�
 
 | 层级 | 命令 | 当前结果 |
 | ---- | ---- | ---- |
-| 后端单测 | `cd admintem-backend && mvn test` | **166 / 166** |
+| 后端单测 | `cd admintem-backend && mvn test` | **168 / 168** |
 | 接口回归 | `pwsh -NoProfile -File admintem-docs/tests/api-regression-test.ps1` | **78 / 78** |
 | 桌面 E2E | `node admintem-docs/tests/e2e-admin-login.cjs` | **21 / 21** |
 | 移动 E2E | `node admintem-docs/tests/e2e-mobile-login.cjs` | **44 / 44** |

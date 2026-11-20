@@ -33,10 +33,11 @@
         <div class="login-sheet">
           <header class="login-sheet-head">
             <h2>登录</h2>
-            <p>使用您的账号继续访问</p>
+            <p>{{ t('login.subtitle') }}</p>
           </header>
 
           <el-form
+              v-if="!mfaRequired"
             ref="formRef"
             :model="form"
             :rules="rules"
@@ -76,7 +77,20 @@
             </el-button>
           </el-form>
 
-          <p class="login-foot">
+            <div v-if="mfaRequired" class="login-mfa">
+              <h3>{{ t('login.mfaTitle') }}</h3>
+              <p>{{ t('login.mfaHint') }}</p>
+              <el-input v-model="mfaCode" maxlength="6" size="large"
+                :placeholder="t('login.mfaCode')" @keyup.enter="handleVerifyMfa" />
+              <el-button class="login-submit" :loading="mfaLoading" @click="handleVerifyMfa">
+                {{ t('login.mfaSubmit') }}
+              </el-button>
+              <button class="login-link" type="button" @click="cancelMfa">
+                {{ t('login.mfaCancel') }}
+              </button>
+            </div>
+
+            <p v-if="!mfaRequired" class="login-foot">
             还没有账号？
             <button class="login-link" type="button" @click="router.push('/register')">
               创建账号
@@ -102,6 +116,7 @@ import { useUserStore } from '@/stores/user'
 import CodeCaptcha from '@/components/CodeCaptcha.vue'
 import LocaleSwitch from '@/components/LocaleSwitch.vue'
 import { useI18n } from '@/i18n'
+import { verifyMfa } from '@/api/auth'
 
 const { t } = useI18n()
 
@@ -111,6 +126,10 @@ const store = useUserStore()
 
 const formRef = ref()
 const loading = ref(false)
+const mfaRequired = ref(false)
+const mfaToken = ref('')
+const mfaCode = ref('')
+const mfaLoading = ref(false)
 const captchaRef = ref(null)
 const captchaTicket = ref('')
 
@@ -210,6 +229,32 @@ async function handleLogin() {
     loading.value = false
   }
 }
+
+  async function handleVerifyMfa() {
+    if (!/^\d{6}$/.test(mfaCode.value)) {
+      ElMessage.warning('请输入 6 位验证码')
+      return
+    }
+    if (mfaLoading.value) return
+    mfaLoading.value = true
+    try {
+      const res = await verifyMfa({ mfaToken: mfaToken.value, code: mfaCode.value })
+      await store.completeMfaLogin(res.data)
+      ElMessage.success('登录成功')
+      const redirect = route.query.redirect
+      router.replace(redirect && typeof redirect === 'string' ? redirect : '/')
+    } catch {
+      // 错误提示由 request 拦截器统一处理
+    } finally {
+      mfaLoading.value = false
+    }
+  }
+
+  function cancelMfa() {
+    mfaRequired.value = false
+    mfaToken.value = ''
+    mfaCode.value = ''
+  }
 </script>
 
 <style scoped>
@@ -510,5 +555,26 @@ async function handleLogin() {
   top: 20px;
   right: 24px;
   z-index: 10;
+}
+</style>
+
+<style scoped>
+.login-mfa {
+  margin-top: 12px;
+}
+.login-mfa h3 {
+  margin: 0 0 8px;
+}
+.login-mfa p {
+  margin: 0 0 12px;
+  color: var(--lc-ink-muted);
+  font-size: 13px;
+}
+.login-mfa .login-submit {
+  width: 100%;
+  margin-top: 14px;
+}
+.login-mfa .login-link {
+  margin-top: 10px;
 }
 </style>
