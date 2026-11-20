@@ -214,7 +214,12 @@ await page.waitForSelector('input', { timeout: 60000 })
 
   /* ---------- I. 令牌失效处理（放在错误检查之后，401 属预期响应） ---------- */
   console.log('I. 令牌失效与重定向回环检查')
-  await page.evaluate(() => localStorage.setItem('admintem_token', 'expired.invalid.token'))
+  await page.evaluate(() => {
+    // 模拟“会话彻底失效”：只改 access token 会触发 refreshToken 自动续期，
+    // 这属于新增的预期能力，因此这里同时清掉刷新令牌，覆盖真正的失效路径。
+    localStorage.setItem('admintem_token', 'expired.invalid.token')
+    localStorage.removeItem('admintem_refresh_token')
+  })
   // 必须整页重载：只有重新加载才会在守卫中校验令牌（hash 变更不会重新初始化应用）
   await page.goto(APP + '/#/home')
   await page.reload({ waitUntil: 'networkidle' })
