@@ -1,6 +1,7 @@
 package com.admintem.web.filter;
 
 import com.admintem.web.config.AdmintemProperties;
+import io.opentelemetry.api.trace.Span;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,9 +36,10 @@ public class RequestTraceFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // 1. 生成 traceId（截取 24 位十六进制，长度足够避免碰撞且便于阅读）；
-        //    当前不读取上游 traceId，如需网关透传请在此处先读 X-Request-Id 再兜底生成
-        String traceId = UUID.randomUUID().toString().replace("-", "").substring(0, 24);
+          String traceId = currentTraceId();
+          if (traceId == null || traceId.isBlank()) {
+              traceId = UUID.randomUUID().toString().replace("-", "").substring(0, 24);
+          }
         MDC.put(MDC_TRACE_ID, traceId);
         response.setHeader(properties.getLog().getTraceHeader(), traceId);
 
@@ -52,5 +54,19 @@ public class RequestTraceFilter extends OncePerRequestFilter {
             // 清理 MDC，避免线程池复用串号
             MDC.remove(MDC_TRACE_ID);
         }
+    }
+
+    /** 当前 OTel traceId（取前 24 位，保持既有日志长度）；无有效 span 返回 null。 */
+    private String currentTraceId() {
+        try {
+            Span span = Span.current();
+            if (span != null && span.getSpanContext().isValid()) {
+                String id = span.getSpanContext().getTraceId();
+                return id == null || id.isBlank() ? null : id.substring(0, Math.min(24, id.length()));
+            }
+        } catch (RuntimeException ignored) {
+            // tracing 未启用/上下文不可用时回退本地生成
+        }
+        return null;
     }
 }

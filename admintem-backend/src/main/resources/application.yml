@@ -272,6 +272,14 @@ management:
         # metrics/prometheus 供内部监控拉取；安全白名单只放行 health，
         # 监控端需通过内网代理或管理员令牌访问，不要直接暴露公网。
         include: health,info,metrics,prometheus
+  # OpenTelemetry：默认关闭；开启后需配置 Collector（OTLP HTTP）
+  tracing:
+    enabled: ${ADMINTEM_TRACING_ENABLED:false}
+    sampling:
+      probability: ${ADMINTEM_TRACING_SAMPLE:0.1}
+  otlp:
+    tracing:
+      endpoint: ${ADMINTEM_OTLP_ENDPOINT:http://localhost:4318/v1/traces}
   endpoint:
     health:
       # 不返回组件细节，避免泄露内部中间件拓扑
