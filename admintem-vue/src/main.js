@@ -16,6 +16,7 @@ import { createPinia } from 'pinia'
 
 // ---- Element Plus 组件（模板中仍写 <el-button> 等标签）----
 import {
+    ElAlert,
   ElAside,
   ElAvatar,
   ElBreadcrumb,
@@ -61,6 +62,7 @@ import {
 } from 'element-plus'
 
 // ---- Element Plus 样式（按组件引入；各组件样式自带 base 变量）----
+  import 'element-plus/es/components/alert/style/css'
 import 'element-plus/es/components/aside/style/css'
 import 'element-plus/es/components/avatar/style/css'
 import 'element-plus/es/components/breadcrumb/style/css'
@@ -142,7 +144,7 @@ const app = createApp(App)
 // 维护提示：新增组件时在此补一行 + 在样式区补一行；组件不再使用时两处一起删除
 //（E5 已按此规则移除 el-alert 与 el-result：改用自有的说明行与 StatusPage 组件）
 const elementComponents = [
-  ElAside, ElAvatar, ElBreadcrumb, ElBreadcrumbItem, ElButton, ElCard, ElCheckbox,
+  ElAlert, ElAside, ElAvatar, ElBreadcrumb, ElBreadcrumbItem, ElButton, ElCard, ElCheckbox,
   ElCol, ElConfigProvider, ElContainer,
   // 审计页新增：日期范围筛选、明细抽屉与描述列表（样式见上方 style 导入）
   ElDatePicker, ElDescriptions, ElDescriptionsItem, ElDrawer,
