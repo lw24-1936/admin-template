@@ -1,10 +1,10 @@
-# OpenAPI 契约与类型
+﻿# OpenAPI 契约与类型
 
 本目录保存后端 OpenAPI 的**可提交产物**，用于三端接口对齐与 TS 类型生成。
 
 | 文件 | 说明 |
 | ---- | ---- |
-| `openapi.json` | 由后端 `/v3/api-docs` 导出的完整契约（当前 60 个 path） |
+| `openapi.json` | 由后端 `/v3/api-docs` 导出的完整契约（当前 61 个 path） |
 | `schema.d.ts` | 由 `openapi-typescript` 从 `openapi.json` 生成的 `paths`/`components` 类型 |
 
 ## 重新生成

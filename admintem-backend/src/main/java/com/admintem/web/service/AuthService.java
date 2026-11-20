@@ -24,6 +24,9 @@ public interface AuthService {
     /** 校验 MFA 挑战并签发正式令牌。 */
     LoginVO verifyMfa(com.admintem.web.entity.dto.MfaVerifyRequest request);
 
+   /** 构建用户会话（SSO 等服务复用）。 */
+   UserSessionVO buildSession(Long userId, com.admintem.web.security.LoginUser loginUser);
+
     /**
      * 使用刷新令牌换取新的访问令牌（旋转刷新令牌）。
      *

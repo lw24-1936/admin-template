@@ -57,6 +57,11 @@ export const useUserStore = defineStore('user', {
         return data
       },
 
+      async completeSsoLogin(data) {
+        this.applyLoginResult(data)
+        return data
+      },
+
       applyLoginResult(data) {
         const { token, refreshToken, user } = data
         setToken(token)

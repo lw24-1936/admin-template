@@ -162,6 +162,7 @@ public class SecurityConfig {
         urls.add("/auth/refresh");
         urls.add("/auth/mfa/verify");
         urls.add("/auth/password/forgot");
+        urls.add("/auth/sso/login");
         urls.add("/auth/password/reset");
         // 头像等上传文件的静态访问：只读图片，公开可访问（不要在此目录放敏感文件）
         urls.add(properties.getUpload().getUrlPrefix() + "/**");

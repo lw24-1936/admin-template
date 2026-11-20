@@ -62,7 +62,7 @@ db/changelog/V1.0.1 ~ V1.0.16       Flyway 增量迁移（只新增，不修改�
 
 | 层级 | 命令 | 当前结果 |
 | ---- | ---- | ---- |
-| 后端单测 | `cd admintem-backend && mvn test` | **168 / 168** |
+| 后端单测 | `cd admintem-backend && mvn test` | **170 / 170** |
 | 接口回归 | `pwsh -NoProfile -File admintem-docs/tests/api-regression-test.ps1` | **78 / 78** |
 | 桌面 E2E | `node admintem-docs/tests/e2e-admin-login.cjs` | **21 / 21** |
 | 移动 E2E | `node admintem-docs/tests/e2e-mobile-login.cjs` | **44 / 44** |

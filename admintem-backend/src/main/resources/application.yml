@@ -121,6 +121,12 @@ admintem:
     # 密码找回验证码发送：log=写服务端日志（仅本地开发）/ smtp=走 spring.mail.*
     password-reset:
       mode: ${ADMINTEM_PASSWORD_RESET_MODE:log}
+    sso:
+      enabled: ${ADMINTEM_SSO_ENABLED:false}
+      secret: ${ADMINTEM_SSO_SECRET:}
+      issuer: ${ADMINTEM_SSO_ISSUER:admintem-sso}
+      audience: ${ADMINTEM_SSO_AUDIENCE:admintem}
+      clock-skew-seconds: 60
     captcha:
       enabled: true
       debug: false

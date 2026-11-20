@@ -102,6 +102,9 @@ public class AdmintemProperties {
         /** 密码策略（B4） */
         private Password password = new Password();
 
+        /** 外部网关 SSO 断言配置 */
+        private Sso sso = new Sso();
+
         /**
          * 密码策略。
          */
@@ -117,6 +120,21 @@ public class AdmintemProperties {
         private int maxAttempts = 3;
         private String keyPrefix = "admintem:auth:captcha:";
         private String ticketKeyPrefix = "admintem:auth:captcha:ticket:";
+    }
+
+    /** 外部网关 SSO 断言（HMAC JWT）配置。 */
+    @Data
+    public static class Sso {
+        /** 是否启用；默认关闭 */
+        private boolean enabled = false;
+        /** 与网关共享的 HMAC 密钥，至少 32 字节 */
+        private String secret = "";
+        /** 期望 iss */
+        private String issuer = "admintem-sso";
+        /** 期望 aud */
+        private String audience = "admintem";
+        /** 允许的时钟偏差（秒） */
+        private long clockSkewSeconds = 60;
     }
 
     @Data

@@ -46,7 +46,7 @@
 
 | 模块 | 能力 |
 | ---- | ---- |
-| 认证 | 登录（7 天免登录）、refreshToken 轮换、多设备会话、TOTP MFA、密码找回、注册（可关闭）、退出、修改密码、个人资料、头像上传 |
+| 认证 | 登录（7 天免登录）、refreshToken 轮换、多设备会话、TOTP MFA、密码找回、SSO 断言登录、注册（可关闭）、退出、修改密码、个人资料、头像上传 |
 | 用户管理 | 分页查询、新增/编辑/删除、批量启用/禁用/删除、重置密码、分配角色、所属部门、头像、CSV 导入/导出 |
 | 角色管理 | 分页查询、新增/编辑/删除、权限树授权、行级数据范围（全部/本部门/本部门及子部门/本人） |
 | 权限管理 | 菜单/按钮两级树表、增删改、父子成环保护 |
@@ -62,7 +62,7 @@
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、TOTP 两步验证、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、Prometheus 安全指标、JSON 结构化日志、告警规则样例 |
 
-**当前基线**：后端 168 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
+**当前基线**：后端 170 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
 123 项设计层断言、前端 10 + 6 项单测、生成器 2 项；权限 37 条、受控接口 43 个，CI 全绿。
 
 ## 界面预览
@@ -265,7 +265,7 @@ npm run dev          # http://localhost:5177
 ## 质量门禁
 
 ```bash
-# 后端单测（168 项）
+# 后端单测（170 项）
 cd admintem-backend && mvn test
 
 # 接口回归（78 项；需后端已启动）
@@ -331,7 +331,7 @@ admin-template/
 │   ├── config/                  本地口令示例（真实文件已 gitignore）
 │   ├── src/main/java/...        9 个控制器、service、mapper、security、aspect
 │   ├── src/main/resources/      application*.yml、mapper XML
-│   ├── src/test/java/           168 个单元测试
+│   ├── src/test/java/           170 个单元测试
 │   └── Dockerfile               多阶段构建、非 root、HEALTHCHECK
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）

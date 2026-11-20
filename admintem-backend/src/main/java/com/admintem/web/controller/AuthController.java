@@ -10,6 +10,7 @@ import com.admintem.web.entity.dto.MfaDisableRequest;
 import com.admintem.web.entity.dto.MfaVerifyRequest;
 import com.admintem.web.entity.dto.PasswordForgotRequest;
 import com.admintem.web.entity.dto.PasswordResetRequest;
+import com.admintem.web.entity.dto.SsoLoginRequest;
 import com.admintem.web.entity.vo.CaptchaTicketVO;
 import com.admintem.web.entity.vo.MfaSetupVO;
 import com.admintem.web.entity.vo.MfaStatusVO;
@@ -24,6 +25,7 @@ import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.AuthService;
 import com.admintem.web.service.MfaService;
 import com.admintem.web.service.PasswordResetService;
+import com.admintem.web.service.SsoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,6 +52,7 @@ public class AuthController {
     private final CaptchaService captchaService;
     private final MfaService mfaService;
     private final PasswordResetService passwordResetService;
+    private final SsoService ssoService;
 
     /**
      * 用户登录（免登录）。
@@ -168,6 +171,14 @@ public class AuthController {
         String url = authService.uploadAvatar(current.getUserId(), file);
         return Result.ok(url);
     }
+    /** 外部网关 SSO 断言登录（免登录）。 */
+    @PostMapping("/sso/login")
+    @AuditLog(action = "SSO_LOGIN", name = "SSO 登录", target = AuditTargetType.AUTH)
+    @Operation(summary = "SSO 断言登录")
+    public Result<com.admintem.web.entity.vo.LoginVO> ssoLogin(@Valid @RequestBody SsoLoginRequest request) {
+        return Result.ok(ssoService.login(request));
+    }
+
     /** 请求密码重置验证码（免登录，统一语义防枚举）。 */
     @PostMapping("/password/forgot")
     @Operation(summary = "请求密码重置验证码")

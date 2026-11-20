@@ -752,6 +752,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/sso/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** SSO 断言登录 */
+        post: operations["ssoLogin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/register": {
         parameters: {
             query?: never;
@@ -2225,6 +2242,69 @@ export interface components {
              */
             newPassword: string;
         };
+        /** @description SSO 断言登录 */
+        SsoLoginRequest: {
+            /** @description 网关签发的 HMAC JWT 断言 */
+            assertion: string;
+            /** @description 设备ID（可选） */
+            deviceId?: string;
+            /** @description 是否记住我 */
+            rememberMe?: boolean;
+        };
+        LoginVO: {
+            mfaRequired?: boolean;
+            mfaToken?: string;
+            token?: string;
+            refreshToken?: string;
+            user?: components["schemas"]["UserSessionVO"];
+        };
+        MenuVO: {
+            children?: components["schemas"]["MenuVO"][];
+            /** Format: int64 */
+            id?: number;
+            name?: string;
+            /** Format: int32 */
+            type?: number;
+            /** Format: int64 */
+            parentId?: number;
+            /** Format: int32 */
+            orderNum?: number;
+            menuUrl?: string;
+            component?: string;
+            icon?: string;
+            /** Format: int32 */
+            show?: number;
+            permissionKey?: string;
+        };
+        /** @description 统一响应结构 */
+        ResultLoginVO: {
+            /**
+             * Format: int32
+             * @description 业务状态码，200=成功
+             */
+            code?: number;
+            /** @description 提示信息 */
+            message?: string;
+            /** @description 业务数据 */
+            data?: components["schemas"]["LoginVO"];
+        };
+        UserSessionVO: {
+            /** Format: int64 */
+            userId?: number;
+            userName?: string;
+            nickName?: string;
+            avatar?: string;
+            email?: string;
+            phone?: string;
+            /** Format: int32 */
+            sex?: number;
+            introduce?: string;
+            /** Format: int32 */
+            status?: number;
+            roles?: components["schemas"]["RoleVO"][];
+            menus?: components["schemas"]["MenuVO"][];
+            permissions?: string[];
+        };
         RegisterRequest: {
             /**
              * @description 登录账号（字母/数字/下划线，4~32 位）
@@ -2304,60 +2384,6 @@ export interface components {
              * @example 123456
              */
             code: string;
-        };
-        LoginVO: {
-            mfaRequired?: boolean;
-            mfaToken?: string;
-            token?: string;
-            refreshToken?: string;
-            user?: components["schemas"]["UserSessionVO"];
-        };
-        MenuVO: {
-            children?: components["schemas"]["MenuVO"][];
-            /** Format: int64 */
-            id?: number;
-            name?: string;
-            /** Format: int32 */
-            type?: number;
-            /** Format: int64 */
-            parentId?: number;
-            /** Format: int32 */
-            orderNum?: number;
-            menuUrl?: string;
-            component?: string;
-            icon?: string;
-            /** Format: int32 */
-            show?: number;
-            permissionKey?: string;
-        };
-        /** @description 统一响应结构 */
-        ResultLoginVO: {
-            /**
-             * Format: int32
-             * @description 业务状态码，200=成功
-             */
-            code?: number;
-            /** @description 提示信息 */
-            message?: string;
-            /** @description 业务数据 */
-            data?: components["schemas"]["LoginVO"];
-        };
-        UserSessionVO: {
-            /** Format: int64 */
-            userId?: number;
-            userName?: string;
-            nickName?: string;
-            avatar?: string;
-            email?: string;
-            phone?: string;
-            /** Format: int32 */
-            sex?: number;
-            introduce?: string;
-            /** Format: int32 */
-            status?: number;
-            roles?: components["schemas"]["RoleVO"][];
-            menus?: components["schemas"]["MenuVO"][];
-            permissions?: string[];
         };
         /** @description MFA 状态 */
         MfaStatusVO: {
@@ -3561,6 +3587,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ResultVoid"];
+                };
+            };
+        };
+    };
+    ssoLogin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SsoLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultLoginVO"];
                 };
             };
         };

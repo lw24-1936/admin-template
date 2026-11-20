@@ -93,3 +93,8 @@ export function requestPasswordReset(data) {
 export function resetPassword(data) {
   return request({ url: '/auth/password/reset', method: 'post', data })
 }
+
+/** 外部网关 SSO 断言登录（公开） */
+export function ssoLogin(data) {
+  return request({ url: '/auth/sso/login', method: 'post', data: { ...data, deviceId: getDeviceId() } })
+}

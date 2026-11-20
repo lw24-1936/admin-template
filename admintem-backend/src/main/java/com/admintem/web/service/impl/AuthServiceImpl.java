@@ -314,6 +314,11 @@ public class AuthServiceImpl implements AuthService {
      * @param principal 已认证的登录快照（可为 null，此时退回按用户ID查询）
      * @return 会话视图
      */
+    @Override
+    public UserSessionVO buildSession(Long userId, LoginUser principal) {
+        return buildUserSession(userId, principal);
+    }
+
     private UserSessionVO buildUserSession(Long userId, LoginUser principal) {
         // 1. 用户基础信息
         SysAuthUser user = userMapper.selectById(userId);
