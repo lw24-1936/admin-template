@@ -37,6 +37,13 @@
         <el-button v-perm="'sysAuthUser:addSysAuthUser'" type="primary" plain @click="openAdd">
           新增用户
         </el-button>
+        <el-button v-perm="'userInfo:userInfo'" :loading="exporting" @click="handleExport">
+          导出 CSV
+        </el-button>
+        <el-button v-perm="'sysAuthUser:addSysAuthUser'" :loading="importing" @click="pickImport">
+          导入 CSV
+        </el-button>
+        <input ref="importInput" type="file" accept=".csv,text/csv" class="hidden-file" @change="handleImportFile" />
       </template>
     </TableToolbar>
 
@@ -249,6 +256,9 @@ import PaginationBar from '@/components/PaginationBar.vue'
 import { useQuerySync } from '@/composables/useQuerySync'
 
 const loading = ref(false)
+const exporting = ref(false)
+const importing = ref(false)
+const importInput = ref()
 const list = ref([])
 const total = ref(0)
 
@@ -283,6 +293,49 @@ async function loadData() {
     console.error('[userInfo] 加载用户列表失败：', e)
   } finally {
     loading.value = false
+  }
+}
+
+async function handleExport() {
+  if (exporting.value) return
+  exporting.value = true
+  try {
+    const blob = await userApi.exportUsers({ ...query })
+    if (!(blob instanceof Blob)) throw new Error('导出响应不是文件')
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'users.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  } catch (e) {
+    console.error('[userInfo] 导出用户失败：', e)
+  } finally {
+    exporting.value = false
+  }
+}
+
+function pickImport() {
+  importInput.value?.click()
+}
+
+async function handleImportFile(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file || importing.value) return
+  importing.value = true
+  try {
+    const res = await userApi.importUsers(file)
+    const data = res.data || {}
+    ElMessage.success(`导入完成：成功 ${data.success || 0}，失败 ${data.failed || 0}`)
+    if (data.errors && data.errors.length) {
+      ElMessage.warning(data.errors.slice(0, 3).join('；'))
+    }
+    await loadData()
+  } catch (e) {
+    console.error('[userInfo] 导入用户失败：', e)
+  } finally {
+    importing.value = false
   }
 }
 
@@ -556,3 +609,9 @@ onMounted(() => {
   loadRoles()
 })
 </script>
+
+<style scoped>
+.hidden-file {
+  display: none;
+}
+</style>

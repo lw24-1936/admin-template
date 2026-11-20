@@ -13,18 +13,29 @@ import com.admintem.web.entity.dto.validation.ValidationGroups;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.SysAuthUserService;
 import com.admintem.web.service.DataScopeService;
+import com.admintem.web.entity.vo.UserImportResultVO;
 import com.admintem.web.entity.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * 用户管理控制器（sys_auth_user）。
@@ -66,6 +77,54 @@ public class SysAuthUserController {
         // 行级数据权限由服务端注入，忽略客户端伪造的 dataScope 字段
         dataScopeService.apply(query);
         return Result.ok(sysAuthUserService.pageQuery(query));
+    }
+
+    @PostMapping("/export")
+    @AuditLog(action = "USER_EXPORT", name = "导出用户", target = AuditTargetType.USER)
+    @PreAuthorize("@rbac.hasPerm('userInfo:userInfo')")
+    @Operation(summary = "导出用户 CSV")
+    public void export(@Valid @RequestBody UserPageQuery query, HttpServletResponse response) throws IOException {
+        dataScopeService.apply(query);
+        List<UserVO> users = sysAuthUserService.listForExport(query);
+        response.setContentType("text/csv;charset=UTF-8");
+        response.setHeader("Content-Disposition", "attachment;filename=users.csv");
+        PrintWriter writer = new PrintWriter(
+                new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8));
+        writer.write('\uFEFF');
+        writer.println("id,userName,nickName,email,phone,deptId,status,password,createdTime");
+        for (UserVO user : users) {
+            writer.println(String.join(",",
+                    csv(user.getId()),
+                    csv(user.getUserName()),
+                    csv(user.getNickName()),
+                    csv(user.getEmail()),
+                    csv(user.getPhone()),
+                    csv(user.getDeptId()),
+                    csv(user.getStatus()),
+                    csv(""),
+                    csv(user.getCreatedTime())));
+        }
+        writer.flush();
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @AuditLog(action = "USER_IMPORT", name = "导入用户", target = AuditTargetType.USER)
+    @PreAuthorize("@rbac.hasPerm('sysAuthUser:addSysAuthUser')")
+    @Operation(summary = "导入用户 CSV")
+    public Result<UserImportResultVO> importCsv(@RequestParam("file") MultipartFile file) {
+        return Result.ok(sysAuthUserService.importCsv(file, SecurityUtils.currentUserName()));
+    }
+
+    private String csv(Object value) {
+        if (value == null) {
+            return "";
+        }
+        String text = String.valueOf(value);
+        // 防止 CSV 公式注入（Excel/Numbers 打开时不执行）
+        if (!text.isEmpty() && "=+-@".indexOf(text.charAt(0)) >= 0) {
+            text = "'" + text;
+        }
+        return "\"" + text.replace("\"", "\"\"") + "\"";
     }
 
     /**

@@ -13,6 +13,7 @@ import com.admintem.web.entity.dto.ResetPasswordRequest;
 import com.admintem.web.entity.dto.UserPageQuery;
 import com.admintem.web.entity.dto.UserSaveRequest;
 import com.admintem.web.entity.vo.PageResult;
+import com.admintem.web.entity.vo.UserImportResultVO;
 import com.admintem.web.entity.vo.UserRoleVO;
 import com.admintem.web.entity.vo.UserVO;
 import com.admintem.web.exception.BusinessException;
@@ -35,7 +36,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -117,6 +121,119 @@ public class SysAuthUserServiceImpl implements SysAuthUserService {
             return vo;
         }).collect(Collectors.toList());
         return new PageResult<>(list, page.getTotal(), page.getCurrent(), page.getSize());
+    }
+
+    @Override
+    public List<UserVO> listForExport(UserPageQuery query) {
+        IPage<SysAuthUser> page = userMapper.selectUserPage(new Page<>(1, 5000), query, null);
+        return page.getRecords().stream().map(this::toVO).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserImportResultVO importCsv(MultipartFile file, String operator) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "请选择 CSV 文件");
+        }
+        if (file.getSize() > 2 * 1024 * 1024) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "CSV 文件不能超过 2MB");
+        }
+        String text;
+        try {
+            text = new String(file.getBytes(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new BusinessException(ResultCode.INTERNAL_ERROR, "读取 CSV 失败");
+        }
+        if (text.startsWith("\uFEFF")) {
+            text = text.substring(1);
+        }
+        String[] lines = text.split("\\r?\\n");
+        if (lines.length < 2) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "CSV 缺少数据行");
+        }
+        Map<String, Integer> header = headerIndex(lines[0]);
+        if (!header.containsKey("username") || !header.containsKey("password")) {
+            throw new BusinessException(ResultCode.PARAM_ERROR, "CSV 表头必须包含 userName 与 password");
+        }
+        UserImportResultVO result = new UserImportResultVO();
+        for (int i = 1; i < lines.length; i++) {
+            if (!StringUtils.hasText(lines[i])) {
+                continue;
+            }
+            result.setTotal(result.getTotal() + 1);
+            List<String> row = parseCsvLine(lines[i]);
+            try {
+                UserSaveRequest request = new UserSaveRequest();
+                request.setUserName(value(row, header, "username"));
+                request.setPassword(value(row, header, "password"));
+                request.setNickName(value(row, header, "nickname"));
+                request.setEmail(value(row, header, "email"));
+                request.setPhone(value(row, header, "phone"));
+                request.setDeptId(longValue(value(row, header, "deptid")));
+                request.setStatus(intValue(value(row, header, "status"), 0));
+                if (!StringUtils.hasText(request.getPassword())) {
+                    throw new BusinessException(ResultCode.PARAM_ERROR, "密码不能为空");
+                }
+                createUser(request, operator);
+                result.setSuccess(result.getSuccess() + 1);
+            } catch (Exception e) {
+                result.setFailed(result.getFailed() + 1);
+                if (result.getErrors().size() < 20) {
+                    result.getErrors().add("第 " + (i + 1) + " 行: " + e.getMessage());
+                }
+            }
+        }
+        return result;
+    }
+
+    private Map<String, Integer> headerIndex(String line) {
+        Map<String, Integer> map = new HashMap<>();
+        List<String> cells = parseCsvLine(line);
+        for (int i = 0; i < cells.size(); i++) {
+            map.put(cells.get(i).trim().toLowerCase(), i);
+        }
+        return map;
+    }
+
+    private String value(List<String> row, Map<String, Integer> header, String key) {
+        Integer index = header.get(key);
+        if (index == null || index >= row.size()) {
+            return null;
+        }
+        String value = row.get(index).trim();
+        return value.isEmpty() ? null : value;
+    }
+
+    private Long longValue(String value) {
+        return StringUtils.hasText(value) ? Long.valueOf(value) : null;
+    }
+
+    private Integer intValue(String value, int defaultValue) {
+        return StringUtils.hasText(value) ? Integer.valueOf(value) : defaultValue;
+    }
+
+    /** 解析带引号的单行 CSV（支持逗号与转义双引号；不跨行）。 */
+    private List<String> parseCsvLine(String line) {
+        List<String> cells = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean quoted = false;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                if (quoted && i + 1 < line.length() && line.charAt(i + 1) == '"') {
+                    current.append('"');
+                    i++;
+                } else {
+                    quoted = !quoted;
+                }
+            } else if (c == ',' && !quoted) {
+                cells.add(current.toString());
+                current.setLength(0);
+            } else {
+                current.append(c);
+            }
+        }
+        cells.add(current.toString());
+        return cells;
     }
 
     /**

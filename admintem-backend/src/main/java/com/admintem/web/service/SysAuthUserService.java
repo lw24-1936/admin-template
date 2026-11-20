@@ -1,10 +1,15 @@
 package com.admintem.web.service;
 
-import com.admintem.web.entity.vo.PageResult;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
 import com.admintem.web.entity.dto.AssignRoleRequest;
 import com.admintem.web.entity.dto.ResetPasswordRequest;
 import com.admintem.web.entity.dto.UserPageQuery;
 import com.admintem.web.entity.dto.UserSaveRequest;
+import com.admintem.web.entity.vo.PageResult;
+import com.admintem.web.entity.vo.UserImportResultVO;
 import com.admintem.web.entity.vo.UserRoleVO;
 import com.admintem.web.entity.vo.UserVO;
 
@@ -20,6 +25,12 @@ public interface SysAuthUserService {
      * @return 分页结果
      */
     PageResult<UserVO> pageQuery(UserPageQuery query);
+
+    /** 导出用：按同一查询条件返回最多 5000 行（调用方负责 CSV 编码与响应头）。 */
+    List<UserVO> listForExport(UserPageQuery query);
+
+    /** 导入 CSV 用户（逐行处理，返回成功/失败摘要）。 */
+    UserImportResultVO importCsv(MultipartFile file, String operator);
 
     /**
      * 新增用户（可同时分配角色）。

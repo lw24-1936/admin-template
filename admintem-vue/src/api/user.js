@@ -37,3 +37,20 @@ export function assignUserRoles(data) {
 export function getUserRoles(userId) {
   return request({ url: '/sysAuthUserRole/getUserRoleByUserId', method: 'post', data: { userId } })
 }
+
+/** 导出用户 CSV（返回 Blob） */
+export function exportUsers(data) {
+  return request({
+    url: '/sysAuthUser/export',
+    method: 'post',
+    data,
+    responseType: 'blob',
+  })
+}
+
+/** 导入用户 CSV */
+export function importUsers(file) {
+  const form = new FormData()
+  form.append('file', file)
+  return request({ url: '/sysAuthUser/import', method: 'post', data: form })
+}
