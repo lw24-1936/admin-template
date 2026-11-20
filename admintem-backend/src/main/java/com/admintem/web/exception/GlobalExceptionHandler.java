@@ -4,8 +4,10 @@ import com.admintem.web.common.Result;
 import com.admintem.web.common.ResultCode;
 import com.admintem.web.service.AuditLogService;
 import jakarta.servlet.http.HttpServletRequest;
+import com.admintem.web.security.SecurityMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,10 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     private final AuditLogService auditLogService;
+
+    /** 可选注入：standalone MockMvc 单测不启动 Spring 时保持为 null。 */
+    @Autowired(required = false)
+    private SecurityMetrics securityMetrics;
 
     /**
      * 业务异常：返回 HTTP 200，业务状态码由异常携带。
@@ -143,6 +149,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Result<Void>> handleAccessDenied(AccessDeniedException e, HttpServletRequest request) {
         log.warn("访问被拒绝: {}", e.getMessage());
+        if (securityMetrics != null) {
+            securityMetrics.accessDenied("method");
+        }
         auditLogService.recordAccessDenied(request, e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(Result.fail(ResultCode.FORBIDDEN));

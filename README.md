@@ -1,4 +1,4 @@
-<h1 align="center">admintem</h1>
+﻿<h1 align="center">admintem</h1>
 
 <p align="center">
   <strong>菜单 + 按钮级权限的一体化后台管理模板</strong><br />
@@ -60,7 +60,7 @@
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、结构化审计 |
 
-**当前基线**：后端 162 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
+**当前基线**：后端 163 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
 123 项设计层断言、前端 10 + 6 项单测；权限 37 条、受控接口 43 个，CI 全绿。
 
 ## 界面预览
@@ -327,7 +327,7 @@ admin-template/
 │   ├── config/                  本地口令示例（真实文件已 gitignore）
 │   ├── src/main/java/...        9 个控制器、service、mapper、security、aspect
 │   ├── src/main/resources/      application*.yml、mapper XML
-│   ├── src/test/java/           162 个单元测试
+│   ├── src/test/java/           163 个单元测试
 │   └── Dockerfile               多阶段构建、非 root、HEALTHCHECK
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）

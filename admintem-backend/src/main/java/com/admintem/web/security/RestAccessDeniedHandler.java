@@ -37,6 +37,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     private final AuditLogService auditLogService;
 
+    private final SecurityMetrics securityMetrics;
+
     /**
      * 输出 403 JSON，并记录一次越权访问日志（含账号，便于安全审计）。
      */
@@ -47,6 +49,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
         String userName = authentication != null && authentication.getPrincipal() instanceof LoginUser user
                 ? user.getUserName() : "anonymous";
         log.warn("越权访问被拒绝: {} {}, user={}", request.getMethod(), request.getRequestURI(), userName);
+          securityMetrics.accessDenied("filter");
         // 审计留痕（审计自身失败不会影响响应，见 AuditLogService 约定）
         auditLogService.recordAccessDenied(request, accessDeniedException.getMessage());
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

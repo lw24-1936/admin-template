@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private final SecurityMetrics securityMetrics;
 
     /**
      * 输出 401 JSON。
@@ -39,6 +40,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException {
         log.warn("认证失败，拒绝访问: {} {}, reason={}",
                 request.getMethod(), request.getRequestURI(), authException.getMessage());
+          securityMetrics.unauthorized();
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());

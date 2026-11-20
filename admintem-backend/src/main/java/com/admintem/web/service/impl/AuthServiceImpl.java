@@ -25,6 +25,7 @@ import com.admintem.web.security.PasswordPolicy;
 import com.admintem.web.security.LoginUser;
 import com.admintem.web.security.RbacCacheService;
 import com.admintem.web.security.RefreshTokenService;
+import com.admintem.web.security.SecurityMetrics;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.AuthService;
 import com.admintem.web.service.FileStorageService;
@@ -33,6 +34,7 @@ import com.admintem.web.util.tree.TreeUtils;
 import com.admintem.web.util.web.ClientIpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -77,6 +79,10 @@ public class AuthServiceImpl implements AuthService {
     /** 文件存储（头像）；本地目录实现，换对象存储只替换实现类 */
     private final FileStorageService fileStorageService;
 
+    /** 可选注入：单测/轻量场景未启动指标时不阻断 */
+    @Autowired(required = false)
+    private SecurityMetrics securityMetrics;
+
     private final SysAuthUserMapper userMapper;
     private final SysAuthRoleMapper roleMapper;
     private final SysAuthPermissionMapper permissionMapper;
@@ -104,19 +110,23 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
             log.warn("用户登录失败: userName={}, 原因=账号已被禁用", username);
+              recordLogin("failure");
             throw new BusinessException(ResultCode.ACCOUNT_DISABLED);
         } catch (LockedException e) {
             log.warn("用户登录失败: userName={}, 原因=账号已锁定", username);
+              recordLogin("failure");
             throw new BusinessException(ResultCode.ACCOUNT_LOCKED);
         } catch (AuthenticationException e) {
             // 用户名不存在 / 密码错误统一提示，避免泄露账号是否存在
             // 日志只记录账号、来源 IP 与失败原因，绝不记录密码明文
             log.warn("用户登录失败: userName={}, ip={}, 原因=用户名或密码错误", username, clientIp);
+              recordLogin("failure");
             loginRiskGuard.onLoginFailure(username, clientIp);
             throw new BusinessException(ResultCode.USERNAME_OR_PASSWORD_ERROR);
         }
 
         // 3. 认证成功：清理失败计数
+          recordLogin("success");
         loginRiskGuard.onLoginSuccess(username, clientIp);
 
         // 3.1 密码散列按需升级（此时明文在手，是唯一能透明升级的时机）
@@ -392,6 +402,12 @@ public class AuthServiceImpl implements AuthService {
      * @param username 登录账号
      * @param rawPassword 本次提交的明文（此刻已验证正确）
      */
+    private void recordLogin(String result) {
+        if (securityMetrics != null) {
+            securityMetrics.login(result);
+        }
+    }
+
     private void upgradePasswordHashIfNeeded(String username, String rawPassword) {
         try {
             SysAuthUser current = userMapper.selectByUserName(username);

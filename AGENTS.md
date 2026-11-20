@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -118,7 +118,7 @@ docker-compose.yml      本地一键编排
 
 ## 7. 测试与验收
 
-- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 162 项）。
+- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 163 项）。
 - 桌面 lint/build：`npm --prefix admintem-vue run lint`、`npm --prefix admintem-vue run build`。
 - 移动 build：`npm --prefix admintem-mobile run build`。
 - 文档六件套（配图/tokens/权限标识/05 一致性/矩阵/OpenAPI）与角色矩阵：见第 2 节命令；接口/权限变化后必须先跑生成器再 `--check`。
