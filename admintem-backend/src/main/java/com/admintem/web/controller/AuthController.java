@@ -8,6 +8,8 @@ import com.admintem.web.entity.dto.LoginRequest;
 import com.admintem.web.entity.dto.MfaCodeRequest;
 import com.admintem.web.entity.dto.MfaDisableRequest;
 import com.admintem.web.entity.dto.MfaVerifyRequest;
+import com.admintem.web.entity.dto.PasswordForgotRequest;
+import com.admintem.web.entity.dto.PasswordResetRequest;
 import com.admintem.web.entity.vo.CaptchaTicketVO;
 import com.admintem.web.entity.vo.MfaSetupVO;
 import com.admintem.web.entity.vo.MfaStatusVO;
@@ -21,6 +23,7 @@ import com.admintem.web.security.LoginUser;
 import com.admintem.web.security.SecurityUtils;
 import com.admintem.web.service.AuthService;
 import com.admintem.web.service.MfaService;
+import com.admintem.web.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -46,6 +49,7 @@ public class AuthController {
     private final AuthService authService;
     private final CaptchaService captchaService;
     private final MfaService mfaService;
+    private final PasswordResetService passwordResetService;
 
     /**
      * 用户登录（免登录）。
@@ -164,6 +168,23 @@ public class AuthController {
         String url = authService.uploadAvatar(current.getUserId(), file);
         return Result.ok(url);
     }
+    /** 请求密码重置验证码（免登录，统一语义防枚举）。 */
+    @PostMapping("/password/forgot")
+    @Operation(summary = "请求密码重置验证码")
+    public Result<Void> forgotPassword(@Valid @RequestBody PasswordForgotRequest request) {
+        passwordResetService.requestCode(request.getUserName());
+        return Result.ok("如果账号存在，验证码已发送", null);
+    }
+
+    /** 验证码重置密码（免登录）；成功后吊销该账号全部会话。 */
+    @PostMapping("/password/reset")
+    @AuditLog(action = "PASSWORD_RESET", name = "密码找回", target = AuditTargetType.AUTH)
+    @Operation(summary = "重置密码")
+    public Result<Void> resetPassword(@Valid @RequestBody PasswordResetRequest request) {
+        passwordResetService.reset(request.getUserName(), request.getCode(), request.getNewPassword());
+        return Result.ok("密码已重置，请重新登录", null);
+    }
+
     /** MFA 状态（需登录）。 */
     @PostMapping("/mfa/status")
     @Operation(summary = "查询 MFA 状态")

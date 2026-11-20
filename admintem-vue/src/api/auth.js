@@ -83,3 +83,13 @@ export function enableMfa(data) {
 export function disableMfa(data) {
   return request({ url: '/auth/mfa/disable', method: 'post', data })
 }
+
+/** 请求密码重置验证码（公开） */
+export function requestPasswordReset(data) {
+  return request({ url: '/auth/password/forgot', method: 'post', data })
+}
+
+/** 验证码重置密码（公开） */
+export function resetPassword(data) {
+  return request({ url: '/auth/password/reset', method: 'post', data })
+}

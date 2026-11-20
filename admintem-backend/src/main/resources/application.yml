@@ -118,6 +118,9 @@ admintem:
     register-enabled: false    # 默认关闭；dev/test profile 显式开启，避免误用配置上公网
     # 注册用户默认分配的角色 key（对应 sys_auth_role.role_key，需在数据库中预先存在）
     default-role-key: "common"
+    # 密码找回验证码发送：log=写服务端日志（仅本地开发）/ smtp=走 spring.mail.*
+    password-reset:
+      mode: ${ADMINTEM_PASSWORD_RESET_MODE:log}
     captcha:
       enabled: true
       debug: false

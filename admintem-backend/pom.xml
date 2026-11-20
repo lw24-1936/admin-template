@@ -101,6 +101,12 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
+        <!-- 密码找回邮件（默认 log 模式不启用；smtp 模式需要） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- 结构化 JSON 日志（logstash encoder）：写独立 json 文件，供 Loki/ELK 采集 -->
         <dependency>
             <groupId>net.logstash.logback</groupId>

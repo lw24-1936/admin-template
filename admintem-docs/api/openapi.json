@@ -1486,6 +1486,68 @@
         }
       }
     },
+    "/auth/password/reset": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "重置密码",
+        "operationId": "resetPassword_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/password/forgot": {
+      "post": {
+        "tags": [
+          "01-认证接口"
+        ],
+        "summary": "请求密码重置验证码",
+        "operationId": "forgotPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordForgotRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/mfa/verify": {
       "post": {
         "tags": [
@@ -3835,6 +3897,52 @@
             "description": "业务数据"
           }
         }
+      },
+      "PasswordResetRequest": {
+        "type": "object",
+        "description": "重置密码",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "description": "登录账号",
+            "example": "test",
+            "maxLength": 32,
+            "minLength": 0
+          },
+          "code": {
+            "type": "string",
+            "description": "6 位重置验证码",
+            "minLength": 1,
+            "pattern": "^\\d{6}$"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "新密码",
+            "maxLength": 72,
+            "minLength": 6
+          }
+        },
+        "required": [
+          "code",
+          "newPassword",
+          "userName"
+        ]
+      },
+      "PasswordForgotRequest": {
+        "type": "object",
+        "description": "请求密码重置验证码",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "description": "登录账号",
+            "example": "test",
+            "maxLength": 32,
+            "minLength": 0
+          }
+        },
+        "required": [
+          "userName"
+        ]
       },
       "MfaVerifyRequest": {
         "type": "object",

@@ -161,6 +161,8 @@ public class SecurityConfig {
         urls.add("/auth/captcha/**");
         urls.add("/auth/refresh");
         urls.add("/auth/mfa/verify");
+        urls.add("/auth/password/forgot");
+        urls.add("/auth/password/reset");
         // 头像等上传文件的静态访问：只读图片，公开可访问（不要在此目录放敏感文件）
         urls.add(properties.getUpload().getUrlPrefix() + "/**");
         // 探活：只放行 health（含 liveness/readiness），其余 actuator 端点仍需登录，

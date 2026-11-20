@@ -91,14 +91,17 @@
             </div>
 
             <p v-if="!mfaRequired" class="login-foot">
-            还没有账号？
+              <button class="login-link" type="button" @click="forgotVisible = true">{{ t('login.forgot') }}</button>
+              <span class="login-sep">·</span>
+              {{ t('login.noAccount') }}
             <button class="login-link" type="button" @click="router.push('/register')">
-              创建账号
+                {{ t('login.createAccount') }}
             </button>
           </p>
         </div>
       </section>
     </div>
+      <ForgotPasswordDialog v-model="forgotVisible" />
   </main>
 </template>
 
@@ -117,6 +120,7 @@ import CodeCaptcha from '@/components/CodeCaptcha.vue'
 import LocaleSwitch from '@/components/LocaleSwitch.vue'
 import { useI18n } from '@/i18n'
 import { verifyMfa } from '@/api/auth'
+import ForgotPasswordDialog from '@/components/ForgotPasswordDialog.vue'
 
 const { t } = useI18n()
 
@@ -130,6 +134,7 @@ const mfaRequired = ref(false)
 const mfaToken = ref('')
 const mfaCode = ref('')
 const mfaLoading = ref(false)
+const forgotVisible = ref(false)
 const captchaRef = ref(null)
 const captchaTicket = ref('')
 
@@ -576,5 +581,12 @@ async function handleLogin() {
 }
 .login-mfa .login-link {
   margin-top: 10px;
+}
+</style>
+
+<style scoped>
+.login-sep {
+  margin: 0 6px;
+  color: var(--lc-ink-soft);
 }
 </style>

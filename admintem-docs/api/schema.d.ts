@@ -786,6 +786,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 重置密码 */
+        post: operations["resetPassword_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/password/forgot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 请求密码重置验证码 */
+        post: operations["forgotPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/mfa/verify": {
         parameters: {
             query?: never;
@@ -2241,6 +2275,26 @@ export interface components {
             /** @description 业务数据 */
             data?: unknown;
         };
+        /** @description 重置密码 */
+        PasswordResetRequest: {
+            /**
+             * @description 登录账号
+             * @example test
+             */
+            userName: string;
+            /** @description 6 位重置验证码 */
+            code: string;
+            /** @description 新密码 */
+            newPassword: string;
+        };
+        /** @description 请求密码重置验证码 */
+        PasswordForgotRequest: {
+            /**
+             * @description 登录账号
+             * @example test
+             */
+            userName: string;
+        };
         /** @description MFA 验证码校验 */
         MfaVerifyRequest: {
             /** @description 密码登录返回的 MFA 挑战票据 */
@@ -3555,6 +3609,54 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ResultObject"];
+                };
+            };
+        };
+    };
+    resetPassword_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
+                };
+            };
+        };
+    };
+    forgotPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordForgotRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ResultVoid"];
                 };
             };
         };

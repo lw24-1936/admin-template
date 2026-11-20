@@ -90,7 +90,7 @@ docker-compose.yml      本地一键编排
 7. **认证**：请求头 `admintem_token: LAUNCH <accessToken>`；登录返回 access + refresh；
    `/auth/refresh` 为公开端点；客户端登录应带 `deviceId`，后端按 `{userName}:{deviceId}` 分设备保存访问令牌；
    不传 `deviceId` 保持旧版单账号单令牌语义。退出只踢当前设备，改密/禁用/全部下线才清全部设备；
-   强制下线可按设备操作，refreshToken 也绑定设备。 MFA 开启后密码登录返回 `mfaToken`，必须调 `/auth/mfa/verify` 才签发正式令牌；TOTP secret 不得出现在日志/普通查询。
+   强制下线可按设备操作，refreshToken 也绑定设备。 MFA 开启后密码登录返回 `mfaToken`，必须调 `/auth/mfa/verify` 才签发正式令牌；TOTP secret 不得出现在日志/普通查询。 密码找回默认 log 模式只允许本地开发，生产必须切 `admintem.auth.password-reset.mode=smtp`；验证码不得写入接口响应。
 8. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
 9. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
    生产禁止默认密钥/示例密码/root 数据库账号。
