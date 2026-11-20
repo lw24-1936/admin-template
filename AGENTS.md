@@ -120,7 +120,7 @@ docker-compose.yml      本地一键编排
 - 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 162 项）。
 - 桌面 lint/build：`npm --prefix admintem-vue run lint`、`npm --prefix admintem-vue run build`。
 - 移动 build：`npm --prefix admintem-mobile run build`。
-- 文档五件套与角色矩阵：见第 2 节命令；接口/权限变化后必须先跑生成器再 `--check`。
+- 文档六件套（配图/tokens/权限标识/05 一致性/矩阵/OpenAPI）与角色矩阵：见第 2 节命令；接口/权限变化后必须先跑生成器再 `--check`。
 - 完整回归：`.github/workflows/e2e-nightly.yml`（MySQL/Redis + 78 接口 + 21 桌面 E2E + 44 移动 E2E）。
 - **修改测试基线时以实际输出为准**，不要手写估值；历史数据保留时在文档中标注“历史快照”。
 
