@@ -48,12 +48,14 @@ public class AuthController {
      */
     /** 生成图形验证码（免登录）。 */
     @PostMapping("/captcha")
+    @Operation(summary = "生成图形验证码")
     public Result<CaptchaVO> captcha() {
         return Result.ok(captchaService.create());
     }
 
     /** 校验拼图位置，通过返回一次性票据（免登录）。 */
     @PostMapping("/captcha/verify")
+    @Operation(summary = "校验图形验证码")
     public Result<CaptchaTicketVO> verifyCaptcha(@Valid @RequestBody CaptchaVerifyRequest request) {
         return Result.ok(new CaptchaTicketVO(captchaService.verify(request.getToken(), request.getCode())));
     }

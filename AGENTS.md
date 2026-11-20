@@ -1,4 +1,4 @@
-﻿# AGENTS.md
+# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -37,6 +37,10 @@ node admintem-docs/tests/check-tokens.cjs
 node admintem-docs/tests/check-perm-keys.cjs
 node admintem-docs/tests/check-permission-doc-consistency.cjs
 node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check
+
+# 后端启动后导出 OpenAPI + 生成 TS 类型
+node scripts/export-openapi.mjs
+npx --yes openapi-typescript@7 admintem-docs/api/openapi.json -o admintem-docs/api/schema.d.ts
 ```
 
 本地手动启动：
