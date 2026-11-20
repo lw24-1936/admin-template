@@ -1,4 +1,4 @@
-﻿<h1 align="center">admintem</h1>
+<h1 align="center">admintem</h1>
 
 <p align="center">
   <strong>菜单 + 按钮级权限的一体化后台管理模板</strong><br />
@@ -180,6 +180,8 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 
 > 没有 `SET @admintem_confirm_reset = 1` 时脚本会 `SIGNAL` 中止，不会删除任何数据。
 > 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.14）。
+> 全量 init 负责基础表/种子，**不预置后续迁移新增的列**（如 `data_scope`）；首次初始化后
+> 启动后端（或执行 Flyway migrate）补齐，才能得到完整结构。
 
 ### 3. 配置本地口令
 
@@ -331,7 +333,7 @@ admin-template/
 ├── admintem-uniapp/             uni-app（H5 / 微信小程序 / App 资源包）
 ├── admintem-site/               官网模版（可选）
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
-│   ├── db/init/                 全量初始化脚本（唯一出处）
+│   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
 │   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.14
 │   ├── images/                  21 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
