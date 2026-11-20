@@ -15,8 +15,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       lucide-vue-next:
-        specifier: ^0.468.0
-        version: 0.468.0(vue@3.5.44)
+        specifier: ^1.0.0
+        version: 1.0.0(vue@3.5.44)
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.6.1
@@ -590,8 +590,9 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  lucide-vue-next@0.468.0:
-    resolution: {integrity: sha512-quV/6T8YB1XK0VOEnebg3Byd8Rsan5/m95cvjnuHV4vcS3qEnLAybkrSh0hk3ppavx+V7R1PjNW+mGDvcBdz4A==}
+  lucide-vue-next@1.0.0:
+    resolution: {integrity: sha512-V6SPvx1IHTj/UY+FrIYWV5faISsPSb8BnWSFDxAtezWKvWc9ZZ40PDrdu1/Qb5vg4lHWr1hs1BAMGVGm6V1Xdg==}
+    deprecated: Package deprecated. Please use @lucide/vue instead.
     peerDependencies:
       vue: '>=3.0.1'
 
@@ -1228,7 +1229,7 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  lucide-vue-next@0.468.0(vue@3.5.44):
+  lucide-vue-next@1.0.0(vue@3.5.44):
     dependencies:
       vue: 3.5.44
 
