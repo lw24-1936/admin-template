@@ -120,7 +120,7 @@ docker-compose.yml      本地一键编排
 - API 统一走 `src/utils/request.js`；收到 401 时会尝试 refreshToken 并重放一次，登录/刷新请求本身不重试。
 - 主题：使用 `--lc-*` token；深色主题通过 `data-theme="dark"` + `html.dark`，不要写死浅色背景。
 - i18n：桌面端文案优先用 `@/i18n` 的 `t('key')`，菜单名用 `translateMenuName`；当前只覆盖外壳/登录/错误页，业务页新增文案要登记 key。
-- 移动端/uni-app 保持与桌面端相同的认证头、返回体和权限标识；移动端已有 `/users` 用户列表（查询 + 启停），其余完整管理操作仍以桌面端为主。
+- 移动端/uni-app 保持与桌面端相同的认证头、返回体和权限标识；移动端已有 `/users` 用户列表（查询 + 启停），其余完整管理操作仍以桌面端为主。 uni-app 已对齐 401→refreshToken 轮换与并发刷新去重。
 
 ## 7. 测试与验收
 

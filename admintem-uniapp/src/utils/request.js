@@ -10,10 +10,42 @@
  * 后直接取 `res.data`，与移动端的 `res.data` 用法一致。
  */
 import { API_BASE_URL, TOKEN_HEADER, TOKEN_PREFIX } from '@/config'
-import { getToken, clearSession } from '@/utils/storage'
+import { getToken, getRefreshToken, setToken, setRefreshToken, clearSession } from '@/utils/storage'
 
 /** 防抖：多个请求同时 401 时只跳一次登录页 */
 let redirecting = false
+/** 并发 401 共用一次刷新请求 */
+let refreshPromise = null
+
+/** 用 refreshToken 换新 access；成功后写回本地存储。 */
+function refreshAccessToken() {
+  if (refreshPromise) return refreshPromise
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) return Promise.reject(new Error('no-refresh-token'))
+  refreshPromise = new Promise((resolve, reject) => {
+    uni.request({
+      url: API_BASE_URL + '/auth/refresh',
+      method: 'POST',
+      data: { refreshToken },
+      header: { 'Content-Type': 'application/json' },
+      success: (res) => {
+        const body = (res && res.data) || {}
+        const data = body.data || {}
+        if (res.statusCode === 200 && body.code === 200 && data.token) {
+          setToken(data.token)
+          if (data.refreshToken) setRefreshToken(data.refreshToken)
+          resolve()
+          return
+        }
+        reject(new Error('refresh-failed'))
+      },
+      fail: () => reject(new Error('refresh-network-error')),
+    })
+  }).finally(() => {
+    refreshPromise = null
+  })
+  return refreshPromise
+}
 
 function toast(title) {
   if (!title) return
@@ -43,7 +75,7 @@ function toLogin() {
  * @param {object} [options.header] 额外请求头
  * @param {boolean} [options.silent] 为 true 时失败不弹提示（页面自行处理）
  */
-export function request({ url, method = 'GET', data, header = {}, silent = false, timeout = 30000 }) {
+export function request({ url, method = 'GET', data, header = {}, silent = false, timeout = 30000, _retried = false }) {
   return new Promise((resolve, reject) => {
     const token = getToken()
     uni.request({
@@ -60,12 +92,23 @@ export function request({ url, method = 'GET', data, header = {}, silent = false
         const { statusCode, data: body, header: resHeader } = res || {}
         const traceId = (resHeader && (resHeader['x-trace-id'] || resHeader['X-Trace-Id'])) || ''
 
-        if (statusCode === 401) {
-          toLogin()
-          if (!silent) toast('登录已过期，请重新登录')
-          reject(new Error('unauthorized' + (traceId ? ' traceId=' + traceId : '')))
-          return
-        }
+          if (statusCode === 401) {
+            if (!_retried && getRefreshToken()) {
+              refreshAccessToken()
+                .then(() => request({ url, method, data, header, silent, timeout, _retried: true }))
+                .then(resolve)
+                .catch(() => {
+                  toLogin()
+                  if (!silent) toast('登录已过期，请重新登录')
+                  reject(new Error('unauthorized' + (traceId ? ' traceId=' + traceId : '')))
+                })
+              return
+            }
+            toLogin()
+            if (!silent) toast('登录已过期，请重新登录')
+            reject(new Error('unauthorized' + (traceId ? ' traceId=' + traceId : '')))
+            return
+          }
 
         // 后端统一返回体；兼容 204 之类无 body 的成功响应
         if (statusCode >= 200 && statusCode < 300) {

@@ -6,7 +6,7 @@
  * 权限判断与桌面端同源：后端下发 permissions（菜单 + 按钮的 permission_key）。
  */
 import { reactive, computed } from 'vue'
-import { getCachedUser, setCachedUser, clearSession, setToken } from '@/utils/storage'
+import { getCachedUser, setCachedUser, clearSession, setToken, setRefreshToken } from '@/utils/storage'
 import { login as loginApi, logout as logoutApi, getUserInfo } from '@/api/auth'
 
 const state = reactive({
@@ -67,6 +67,7 @@ export async function login(payload) {
   const res = await loginApi(payload)
   const data = (res && res.data) || {}
   setToken(data.token)
+    setRefreshToken(data.refreshToken)
   setUser(data.user)
   return data
 }

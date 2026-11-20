@@ -31,6 +31,7 @@ export const TOKEN_PREFIX = 'LAUNCH '
 /** 本地缓存键（与桌面端/移动端同名，便于排查） */
 export const STORAGE_KEYS = {
   token: 'admintem_token',
+    refreshToken: 'admintem_refresh_token',
   user: 'admintem_user',
   remember: 'admintem_remember_username',
 }

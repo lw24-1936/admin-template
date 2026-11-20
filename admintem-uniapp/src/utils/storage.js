@@ -14,6 +14,22 @@ export function getToken() {
   }
 }
 
+export function getRefreshToken() {
+  try {
+    return uni.getStorageSync(STORAGE_KEYS.refreshToken) || ''
+  } catch (e) {
+    return ''
+  }
+}
+
+export function setRefreshToken(token) {
+  try {
+    uni.setStorageSync(STORAGE_KEYS.refreshToken, token || '')
+  } catch (e) {
+    // 存储失败不阻断登录
+  }
+}
+
 export function setToken(token) {
   try {
     uni.setStorageSync(STORAGE_KEYS.token, token || '')
