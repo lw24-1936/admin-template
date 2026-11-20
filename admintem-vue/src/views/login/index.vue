@@ -2,6 +2,7 @@
   <!-- 登录页：纸面极简（与注册页同套语言）
        左侧为编辑式品牌排版，右侧为白卡片表单；无渐变、无光斑 -->
   <main class="login-page">
+    <div class="login-locale"><LocaleSwitch /></div>
       <!-- 指针跟随的柔光（纯装饰层；触摸设备与 reduced-motion 下不启用） -->
       <div class="login-aurora" aria-hidden="true" />
     <div class="login-grid">
@@ -43,7 +44,7 @@
             size="large"
             @keyup.enter="handleLogin"
           >
-            <el-form-item label="账号" prop="username">
+            <el-form-item :label="t('login.username')" prop="username">
               <el-input
                 v-model="form.username"
                 placeholder="admin"
@@ -52,11 +53,11 @@
                 autocomplete="username"
               />
             </el-form-item>
-            <el-form-item label="密码" prop="password">
+            <el-form-item :label="t('login.password')" prop="password">
               <el-input
                 v-model="form.password"
                 type="password"
-                placeholder="请输入密码"
+                :placeholder="t('login.passwordPlaceholder')"
                 autocomplete="current-password"
                 show-password
               />
@@ -67,7 +68,7 @@
             </el-form-item>
 
             <div class="login-meta">
-              <el-checkbox v-model="form.rememberMe">记住我（7 天内免登录）</el-checkbox>
+              <el-checkbox v-model="form.rememberMe">{{ t('login.remember') }}</el-checkbox>
             </div>
 
             <el-button class="login-submit" :loading="loading" @click="handleLogin">
@@ -99,6 +100,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import CodeCaptcha from '@/components/CodeCaptcha.vue'
+import LocaleSwitch from '@/components/LocaleSwitch.vue'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const route = useRoute()
 const router = useRouter()
@@ -496,5 +501,14 @@ async function handleLogin() {
     padding: 30px 22px 26px;
     border-radius: var(--lc-radius-card);
   }
+}
+</style>
+
+<style scoped>
+.login-locale {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
 }
 </style>

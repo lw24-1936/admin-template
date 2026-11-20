@@ -33,17 +33,18 @@
               v-if="item.leaf && item.path && item.path !== route.path"
               class="crumb-link"
               @click="router.push(item.path)"
-            >{{ item.name }}</span>
-            <template v-else>{{ item.name }}</template>
+            >{{ translateMenuName(item.name) }}</span>
+            <template v-else>{{ translateMenuName(item.name) }}</template>
           </el-breadcrumb-item>
         </el-breadcrumb>
         <div class="header-actions">
+            <LocaleSwitch />
           <el-button
             class="theme-toggle"
             text
             circle
-            :aria-label="theme === 'dark' ? '切换到浅色主题' : '切换到深色主题'"
-            :title="theme === 'dark' ? '切换到浅色主题' : '切换到深色主题'"
+            :aria-label="theme === 'dark' ? t('theme.toLight') : t('theme.toDark')"
+            :title="theme === 'dark' ? t('theme.toLight') : t('theme.toDark')"
             @click="toggleTheme"
           >
             <el-icon><Sunny v-if="theme === 'dark'" /><Moon v-else /></el-icon>
@@ -57,9 +58,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="openProfile">个人资料</el-dropdown-item>
-              <el-dropdown-item @click="openPwd">修改密码</el-dropdown-item>
-              <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item @click="openProfile">{{ t('header.profile') }}</el-dropdown-item>
+              <el-dropdown-item @click="openPwd">{{ t('header.password') }}</el-dropdown-item>
+              <el-dropdown-item divided @click="handleLogout">{{ t('header.logout') }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -170,9 +171,12 @@ import { useUserStore } from '@/stores/user'
 import { updateProfile, updatePassword, uploadAvatar } from '@/api/auth'
 import { resolveAssetUrl } from '@/utils/media'
 import MenuItem from './MenuItem.vue'
+import LocaleSwitch from '@/components/LocaleSwitch.vue'
+import { useI18n } from '@/i18n'
 import { filterVisibleMenus } from '@/utils/menu'
 
 const route = useRoute()
+const { t, translateMenuName } = useI18n()
 
 /** SPA 路由切换后把焦点移回主内容，避免键盘/读屏用户停留在旧菜单 */
 watch(

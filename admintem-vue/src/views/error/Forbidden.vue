@@ -3,10 +3,10 @@
   <StatusPage
     code="403"
     kicker="ACCESS DENIED"
-    title="没有访问权限"
-    desc="当前账号缺少该页面所需的权限标识。请联系管理员在「角色管理 → 分配权限」中为你的角色勾选对应菜单或按钮，授权后重新登录或刷新即可生效。"
+    :title="t('error.403.title', '没有访问权限')"
+    :desc="t('error.403.desc', '当前账号缺少该页面所需的权限标识。请联系管理员在「角色管理 → 分配权限」中为你的角色勾选对应菜单或按钮，授权后重新登录或刷新即可生效。')"
   >
-    <el-button type="primary" @click="router.replace('/')">返回首页</el-button>
+    <el-button type="primary" @click="router.replace('/')">{{ t('common.home') }}</el-button>
   </StatusPage>
 </template>
 
@@ -18,6 +18,9 @@
  */
 import { useRouter } from 'vue-router'
 import StatusPage from '@/components/StatusPage.vue'
+import { useI18n } from '@/i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 </script>

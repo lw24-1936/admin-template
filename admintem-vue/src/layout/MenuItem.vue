@@ -3,7 +3,7 @@
   <el-sub-menu v-if="isGroup" :index="String(node.id)">
     <template #title>
       <el-icon><component :is="iconComponent" /></el-icon>
-      <span>{{ node.name }}</span>
+      <span>{{ translateMenuName(node.name) }}</span>
     </template>
     <MenuItem
       v-for="child in visibleChildren"
@@ -16,7 +16,7 @@
   <el-sub-menu v-else-if="hasChildren && hasUrl" :index="node.menuUrl">
     <template #title>
       <el-icon><component :is="iconComponent" /></el-icon>
-      <span>{{ node.name }}</span>
+      <span>{{ translateMenuName(node.name) }}</span>
     </template>
     <MenuItem
       v-for="child in visibleChildren"
@@ -28,7 +28,7 @@
   <!-- 普通叶子 -->
   <el-menu-item v-else :index="node.menuUrl || String(node.id)">
     <el-icon><component :is="iconComponent" /></el-icon>
-    <template #title>{{ node.name }}</template>
+    <template #title>{{ translateMenuName(node.name) }}</template>
   </el-menu-item>
 </template>
 
@@ -40,6 +40,9 @@
  */
 import { computed } from 'vue'
 import { filterVisibleMenus } from '@/utils/menu'
+import { useI18n } from '@/i18n'
+
+const { translateMenuName } = useI18n()
 
 const props = defineProps({
   node: { type: Object, required: true },
