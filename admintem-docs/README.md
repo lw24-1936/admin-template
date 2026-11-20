@@ -1,4 +1,4 @@
-# admintem 文档中心
+﻿# admintem 文档中心
 
 > 本目录是 `admintem` 的设计、数据库、接口、部署与验收文档。
 > 根目录 [README](../README.md) 负责项目介绍与快速开始；这里负责可追溯的设计与运维细节。
@@ -61,7 +61,7 @@ db/changelog/V1.0.1 ~ V1.0.14       Flyway 增量迁移（只新增，不修改�
 
 | 层级 | 命令 | 当前结果 |
 | ---- | ---- | ---- |
-| 后端单测 | `cd admintem-backend && mvn test` | **163 / 163** |
+| 后端单测 | `cd admintem-backend && mvn test` | **165 / 165** |
 | 接口回归 | `pwsh -NoProfile -File admintem-docs/tests/api-regression-test.ps1` | **78 / 78** |
 | 桌面 E2E | `node admintem-docs/tests/e2e-admin-login.cjs` | **21 / 21** |
 | 移动 E2E | `node admintem-docs/tests/e2e-mobile-login.cjs` | **44 / 44** |

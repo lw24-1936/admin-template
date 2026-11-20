@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -82,14 +82,16 @@ docker-compose.yml      本地一键编排
    - 超级角色 `admin` 自动放行；不要绕过 `@PreAuthorize` 在 Controller 里手写角色判断。
 3. **审计**：关键写操作加 `@AuditLog(action=..., name=..., target=...)`；审计失败不能影响业务。
 4. **分页**：请求 DTO 继承 `PageQuery`，Controller 参数加 `@Valid`，否则 `pageNum/pageSize` 约束不生效。
-5. **数据权限**：需要行级过滤的查询复用 `DataScopeService` 的语义（ALL/DEPT/DEPT_AND_CHILD/SELF），
+5. **API 版本化**：`/api/v1/**` 由 `ApiVersionFilter` 剥离前缀后复用旧路由；新增接口无需重复注册 v1 路径，
+   但不要依赖 v1 做破坏性变更，正式废弃旧路径需单独评审。
+6. **数据权限**：需要行级过滤的查询复用 `DataScopeService` 的语义（ALL/DEPT/DEPT_AND_CHILD/SELF），
    条件必须由服务端注入；`UserPageQuery` 的 `dataScope*` 字段禁止客户端伪造。
-6. **认证**：请求头 `admintem_token: LAUNCH <accessToken>`；登录返回 access + refresh；
+7. **认证**：请求头 `admintem_token: LAUNCH <accessToken>`；登录返回 access + refresh；
    `/auth/refresh` 为公开端点；客户端登录应带 `deviceId`，后端按 `{userName}:{deviceId}` 分设备保存访问令牌；
    不传 `deviceId` 保持旧版单账号单令牌语义。退出只踢当前设备，改密/禁用/全部下线才清全部设备；
    强制下线可按设备操作，refreshToken 也绑定设备。
-7. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
-8. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
+8. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
+9. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
    生产禁止默认密钥/示例密码/root 数据库账号。
 9. **时间/日志**：Java 侧使用 `java.time`；日志包含 `traceId`；敏感字段必须脱敏，不要打印密码/Token。
 10. **构建**：改动后至少跑 `mvn test`；涉及 SQL 的改动必须验证迁移在“全量初始化 + Flyway”与“已有库升级”两条路径都可用。
@@ -120,7 +122,7 @@ docker-compose.yml      本地一键编排
 
 ## 7. 测试与验收
 
-- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 163 项）。
+- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 165 项）。
 - 桌面 lint/build：`npm --prefix admintem-vue run lint`、`npm --prefix admintem-vue run build`。
 - 移动 build：`npm --prefix admintem-mobile run build`。
 - 文档六件套（配图/tokens/权限标识/05 一致性/矩阵/OpenAPI）与角色矩阵：见第 2 节命令；接口/权限变化后必须先跑生成器再 `--check`。

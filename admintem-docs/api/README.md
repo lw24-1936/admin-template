@@ -37,6 +37,9 @@ const { data, error } = await api.POST('/sysConfig/paginQuery', {
 
 > 认证头仍沿用 `admintem_token: LAUNCH <accessToken>`；refreshToken 只用于 `/auth/refresh`。
 > `schema.d.ts` 是生成物，修改接口后必须重新导出并提交，不要手改。
+>
+> **版本化别名**：请求 `/api/v1/**` 与去掉 `/api/v1` 的旧路径等价，响应带 `X-API-Version: v1`；
+> 这是兼容层，不是多版本并行实现。
 
 ## 变更约定
 
