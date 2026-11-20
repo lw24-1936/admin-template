@@ -2,6 +2,7 @@ package com.admintem.web.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.admintem.web.aspect.AuditTargetType;
 import com.admintem.web.common.ResultCode;
 import com.admintem.web.entity.SysConfig;
 import com.admintem.web.entity.dto.ConfigPageQuery;
@@ -10,16 +11,20 @@ import com.admintem.web.entity.vo.ConfigVO;
 import com.admintem.web.entity.vo.PageResult;
 import com.admintem.web.exception.BusinessException;
 import com.admintem.web.mapper.SysAuthConfigMapper;
+import com.admintem.web.service.AuditLogService;
 import com.admintem.web.service.SysAuthConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,6 +33,8 @@ import java.util.stream.Collectors;
 public class SysAuthConfigServiceImpl implements SysAuthConfigService {
 
     private final SysAuthConfigMapper configMapper;
+    private final ObjectMapper objectMapper;
+    private final AuditLogService auditLogService;
 
     @Override
     public PageResult<ConfigVO> pageQuery(ConfigPageQuery query) {
@@ -75,6 +82,7 @@ public class SysAuthConfigServiceImpl implements SysAuthConfigService {
         if (configMapper.countByKey(request.getConfigKey(), request.getId()) > 0) {
             throw new BusinessException(ResultCode.PARAM_ERROR, "参数键已存在: " + request.getConfigKey());
         }
+        String before = snapshot(config);
         config.setConfigKey(request.getConfigKey());
         config.setConfigValue(request.getConfigValue());
         config.setConfigName(request.getConfigName());
@@ -87,6 +95,8 @@ public class SysAuthConfigServiceImpl implements SysAuthConfigService {
         } catch (DuplicateKeyException e) {
             throw new BusinessException(ResultCode.PARAM_ERROR, "参数键已存在: " + request.getConfigKey());
         }
+        auditLogService.recordDataChange("CONFIG_UPDATE", "更新系统参数", AuditTargetType.CONFIG,
+                String.valueOf(config.getId()), config.getConfigKey(), before, snapshot(config));
     }
 
     @Override
@@ -102,6 +112,22 @@ public class SysAuthConfigServiceImpl implements SysAuthConfigService {
     public String getValue(String key) {
         SysConfig config = configMapper.selectByKey(key);
         return config == null ? null : config.getConfigValue();
+    }
+
+    private String snapshot(SysConfig config) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("configKey", config.getConfigKey());
+        map.put("configName", config.getConfigName());
+        map.put("configGroup", config.getConfigGroup());
+        String key = config.getConfigKey() == null ? "" : config.getConfigKey().toLowerCase();
+        map.put("configValue", key.matches(".*(password|secret|token|private).*") ? "***" : config.getConfigValue());
+        map.put("remark", config.getRemark());
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            log.warn("配置变更快照序列化失败: id={}", config.getId(), e);
+            return null;
+        }
     }
 
     private ConfigVO toVO(SysConfig config) {

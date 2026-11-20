@@ -2,6 +2,7 @@ package com.admintem.web.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.admintem.web.aspect.AuditTargetType;
 import com.admintem.web.common.ResultCode;
 import com.admintem.web.entity.SysDict;
 import com.admintem.web.entity.dto.DictPageQuery;
@@ -10,21 +11,29 @@ import com.admintem.web.entity.vo.DictVO;
 import com.admintem.web.entity.vo.PageResult;
 import com.admintem.web.exception.BusinessException;
 import com.admintem.web.mapper.SysDictMapper;
+import com.admintem.web.service.AuditLogService;
 import com.admintem.web.service.SysDictService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysDictServiceImpl implements SysDictService {
 
     private final SysDictMapper dictMapper;
+    private final ObjectMapper objectMapper;
+    private final AuditLogService auditLogService;
 
     @Override
     public PageResult<DictVO> pageQuery(DictPageQuery query) {
@@ -68,6 +77,7 @@ public class SysDictServiceImpl implements SysDictService {
         if (dictMapper.countByTypeValue(request.getDictType(), request.getDictValue(), request.getId()) > 0) {
             throw new BusinessException(ResultCode.PARAM_ERROR, "同一字典类型下字典值已存在");
         }
+        String before = snapshot(dict);
         fill(dict, request);
         dict.setUpdateBy(operator);
         dict.setUpdateTime(LocalDateTime.now());
@@ -76,6 +86,9 @@ public class SysDictServiceImpl implements SysDictService {
         } catch (DuplicateKeyException e) {
             throw new BusinessException(ResultCode.PARAM_ERROR, "同一字典类型下字典值已存在");
         }
+        auditLogService.recordDataChange("DICT_UPDATE", "更新数据字典", AuditTargetType.DICT,
+                String.valueOf(dict.getId()), dict.getDictType() + ":" + dict.getDictValue(),
+                before, snapshot(dict));
     }
 
     @Override
@@ -85,6 +98,22 @@ public class SysDictServiceImpl implements SysDictService {
             throw new BusinessException(ResultCode.DATA_NOT_EXIST, "字典项不存在");
         }
         dictMapper.logicDelete(id, operator, LocalDateTime.now());
+    }
+
+    private String snapshot(SysDict dict) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("dictType", dict.getDictType());
+        map.put("dictLabel", dict.getDictLabel());
+        map.put("dictValue", dict.getDictValue());
+        map.put("sortNum", dict.getSortNum());
+        map.put("status", dict.getStatus());
+        map.put("remark", dict.getRemark());
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            log.warn("字典变更快照序列化失败: id={}", dict.getId(), e);
+            return null;
+        }
     }
 
     private void fill(SysDict dict, DictSaveRequest request) {

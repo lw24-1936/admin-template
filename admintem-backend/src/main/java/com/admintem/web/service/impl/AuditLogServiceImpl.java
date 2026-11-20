@@ -111,6 +111,16 @@ public class AuditLogServiceImpl implements AuditLogService {
         recordAsync(AuditLogFactory.accessDeniedRecord(request, reason));
     }
 
+
+    @Override
+    public void recordDataChange(String action, String actionName,
+                                 com.admintem.web.aspect.AuditTargetType targetType,
+                                 String targetId, String targetName,
+                                 String beforeJson, String afterJson) {
+        recordAsync(AuditLogFactory.dataChangeRecord(
+                action, actionName, targetType, targetId, targetName, beforeJson, afterJson));
+    }
+
     @Override
     public PageResult<AuditLogVO> pageQuery(AuditLogPageQuery query) {
         // 0. 分页参数兜底（HTTP 400 由 @Valid 负责；这里防的是服务内部调用传 null）
@@ -216,6 +226,8 @@ public class AuditLogServiceImpl implements AuditLogService {
                 ? "成功" : "失败");
         vo.setErrorCode(entity.getErrorCode());
         vo.setErrorMsg(entity.getErrorMsg());
+        vo.setBeforeData(entity.getBeforeData());
+        vo.setAfterData(entity.getAfterData());
         vo.setCostMs(entity.getCostMs());
         vo.setCreatedTime(entity.getCreatedTime() == null ? null : entity.getCreatedTime().format(TIME_FORMATTER));
         return vo;

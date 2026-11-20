@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
   SysAuthAuditLogMapper XML —— sys_auth_audit_log 操作审计日志
   约定同其它 Mapper：字段显式列举 + 下划线自动映射。
@@ -26,12 +26,12 @@
             trace_id, operator, operator_id, action, action_name,
             target_type, target_id, target_name,
             http_method, request_uri, client_ip,
-            result, error_code, error_msg, cost_ms, created_time
+            result, error_code, error_msg, before_data, after_data, cost_ms, created_time
         ) VALUES (
             #{traceId}, #{operator}, #{operatorId}, #{action}, #{actionName},
             #{targetType}, #{targetId}, #{targetName},
             #{httpMethod}, #{requestUri}, #{clientIp},
-            #{result}, #{errorCode}, #{errorMsg}, #{costMs}, #{createdTime}
+            #{result}, #{errorCode}, #{errorMsg}, #{beforeData}, #{afterData}, #{costMs}, #{createdTime}
         )
     </insert>
 
@@ -58,7 +58,7 @@
             id, trace_id, operator, operator_id, action, action_name,
             target_type, target_id, target_name,
             http_method, request_uri, client_ip,
-            result, error_code, error_msg, cost_ms, created_time
+            result, error_code, error_msg, before_data, after_data, cost_ms, created_time
         FROM sys_auth_audit_log
         <where>
             <if test="q.operator != null and q.operator != ''">

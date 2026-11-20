@@ -92,6 +92,35 @@ public final class AuditLogFactory {
         return entry;
     }
 
+
+    /**
+     * 构造"数据变更"审计记录（配置/字典等显式快照）。
+     *
+     * @param action     动作码
+     * @param actionName 动作名
+     * @param targetType 目标类型
+     * @param targetId   目标ID
+     * @param targetName 目标名称
+     * @param beforeJson 变更前快照（已脱敏）
+     * @param afterJson  变更后快照（已脱敏）
+     */
+    public static SysAuthAuditLog dataChangeRecord(String action, String actionName,
+                                                   AuditTargetType targetType, String targetId,
+                                                   String targetName, String beforeJson, String afterJson) {
+        SysAuthAuditLog entry = baseRecord(currentRequest(), new AuditOutcome(true, ResultCode.SUCCESS.getCode(), null), 0L);
+        AuditOperator operator = resolveOperator(new AuditTarget(targetId, targetName));
+        entry.setAction(action);
+        entry.setActionName(actionName);
+        entry.setTargetType(targetType.name());
+        entry.setTargetId(targetId);
+        entry.setTargetName(targetName);
+        entry.setOperator(operator.name());
+        entry.setOperatorId(operator.id());
+        entry.setBeforeData(beforeJson);
+        entry.setAfterData(afterJson);
+        return entry;
+    }
+
     /* ------------------------------ 内部实现 ------------------------------ */
 
     /** 构造公共字段（时间、traceId、请求信息、结果、耗时） */

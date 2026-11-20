@@ -82,6 +82,14 @@ public class SysAuthAuditLog implements Serializable {
     @Schema(description = "失败码")
     private Integer errorCode;
 
+    /** 变更前快照（JSON，已脱敏；仅配置/字典等显式变更记录） */
+    @Schema(description = "变更前快照（JSON，已脱敏）")
+    private String beforeData;
+
+    /** 变更后快照（JSON，已脱敏；仅配置/字典等显式变更记录） */
+    @Schema(description = "变更后快照（JSON，已脱敏）")
+    private String afterData;
+
     /** 失败原因（已截断，不记录口令/令牌等敏感数据） */
     @Schema(description = "失败原因")
     private String errorMsg;

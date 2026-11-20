@@ -135,6 +135,12 @@
         <el-descriptions-item v-if="current.errorMsg" label="失败原因">
           <span class="audit-error">{{ current.errorMsg }}</span>
         </el-descriptions-item>
+          <el-descriptions-item v-if="current.beforeData" label="变更前">
+            <pre class="audit-diff">{{ prettyJson(current.beforeData) }}</pre>
+          </el-descriptions-item>
+          <el-descriptions-item v-if="current.afterData" label="变更后">
+            <pre class="audit-diff">{{ prettyJson(current.afterData) }}</pre>
+          </el-descriptions-item>
         <el-descriptions-item label="请求">{{ current.httpMethod }} {{ current.requestUri }}</el-descriptions-item>
         <el-descriptions-item label="来源IP">{{ current.clientIp || '-' }}</el-descriptions-item>
         <el-descriptions-item label="耗时">{{ current.costMs != null ? current.costMs + ' ms' : '-' }}</el-descriptions-item>
@@ -267,6 +273,14 @@ function handleReset() {
 }
 
 /** 打开明细抽屉 */
+function prettyJson(text) {
+  try {
+    return JSON.stringify(JSON.parse(text), null, 2)
+  } catch {
+    return text
+  }
+}
+
 function openDetail(row) {
   current.value = row
   detailVisible.value = true
@@ -320,5 +334,16 @@ onMounted(() => {
 }
 .audit-muted {
   color: var(--lc-ink-faint);
+}
+</style>
+
+<style scoped>
+.audit-diff {
+  max-height: 240px;
+  overflow: auto;
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 </style>

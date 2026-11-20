@@ -23,6 +23,9 @@ public enum AuditTargetType {
     /** 系统参数配置对象 */
     CONFIG,
 
+    /** 数据字典对象 */
+    DICT,
+
     /** 文件对象 */
     FILE,
 

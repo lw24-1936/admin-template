@@ -3480,6 +3480,14 @@
           "createdTime": {
             "type": "string",
             "description": "发生时间 yyyy-MM-dd HH:mm:ss"
+          },
+          "beforeData": {
+            "type": "string",
+            "description": "变更前快照（JSON，已脱敏）"
+          },
+          "afterData": {
+            "type": "string",
+            "description": "变更后快照（JSON，已脱敏）"
           }
         }
       },

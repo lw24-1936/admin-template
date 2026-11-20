@@ -207,4 +207,23 @@ class AuditLogFactoryTest {
             // 仅用于承载注解
         }
     }
+
+    @Test
+    @DisplayName("数据变更：记录 before/after 快照与操作人")
+    void dataChangeRecord() {
+        loginAs(1L, "admin");
+
+        SysAuthAuditLog entry = AuditLogFactory.dataChangeRecord(
+                "CONFIG_UPDATE", "更新系统参数", AuditTargetType.CONFIG,
+                "7", "sys.test", "{\"k\":1}", "{\"k\":2}");
+
+        assertEquals("CONFIG_UPDATE", entry.getAction());
+        assertEquals(AuditTargetType.CONFIG.name(), entry.getTargetType());
+        assertEquals("7", entry.getTargetId());
+        assertEquals("sys.test", entry.getTargetName());
+        assertEquals("admin", entry.getOperator());
+        assertEquals("{\"k\":1}", entry.getBeforeData());
+        assertEquals("{\"k\":2}", entry.getAfterData());
+        assertEquals(SysAuthAuditLog.RESULT_SUCCESS, entry.getResult());
+    }
 }

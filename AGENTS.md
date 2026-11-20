@@ -1,4 +1,4 @@
-# AGENTS.md
+﻿# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -81,6 +81,7 @@ docker-compose.yml      本地一键编排
    - 接口用 `@PreAuthorize("@rbac.hasPerm('xxx')")`，并同步《05》与初始化种子；
    - 超级角色 `admin` 自动放行；不要绕过 `@PreAuthorize` 在 Controller 里手写角色判断。
 3. **审计**：关键写操作加 `@AuditLog(action=..., name=..., target=...)`；审计失败不能影响业务。
+   配置/字典等显式变更可用 `AuditLogService.recordDataChange` 写已脱敏 before/after JSON，禁止写入密码/令牌原文。
 4. **分页**：请求 DTO 继承 `PageQuery`，Controller 参数加 `@Valid`，否则 `pageNum/pageSize` 约束不生效。
 5. **API 版本化**：`/api/v1/**` 由 `ApiVersionFilter` 剥离前缀后复用旧路由；新增接口无需重复注册 v1 路径，
    但不要依赖 v1 做破坏性变更，正式废弃旧路径需单独评审。
@@ -98,7 +99,7 @@ docker-compose.yml      本地一键编排
 
 ## 5. 数据库迁移约定
 
-- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.14`。
+- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.15`。
 - **已发布迁移不可改**：CI 会先执行 `db/init/00_admintem_full_init.sql`，再跑 Flyway。
   新增列只写在迁移中，不要提前加进 init 的 CREATE TABLE（否则 V1.0.11 这类非幂等 ALTER 会重复执行）。
   新增表/权限的迁移应使用 `IF NOT EXISTS` / `ON DUPLICATE KEY UPDATE`，保证 init+Flyway 双路径可重复。
@@ -123,7 +124,7 @@ docker-compose.yml      本地一键编排
 
 ## 7. 测试与验收
 
-- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 165 项）。
+- 后端单测：`mvn -f admintem-backend/pom.xml test`（当前 166 项）。
 - 桌面 lint/build：`npm --prefix admintem-vue run lint`、`npm --prefix admintem-vue run build`。
 - 移动 build：`npm --prefix admintem-mobile run build`。
 - 文档六件套（配图/tokens/权限标识/05 一致性/矩阵/OpenAPI）与角色矩阵：见第 2 节命令；接口/权限变化后必须先跑生成器再 `--check`。

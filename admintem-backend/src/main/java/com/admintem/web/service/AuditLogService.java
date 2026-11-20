@@ -51,6 +51,13 @@ public interface AuditLogService {
      */
     void recordAccessDenied(HttpServletRequest request, String reason);
 
+
+    /**
+     * 记录一次显式数据变更（配置/字典等），before/after 必须是已脱敏 JSON。
+     */
+    void recordDataChange(String action, String actionName, com.admintem.web.aspect.AuditTargetType targetType,
+                          String targetId, String targetName, String beforeJson, String afterJson);
+
     /**
      * 分页查询审计记录（供审计查询页）。
      *

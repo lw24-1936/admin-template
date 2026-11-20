@@ -74,4 +74,10 @@ public class AuditLogVO implements Serializable {
 
     @Schema(description = "发生时间 yyyy-MM-dd HH:mm:ss")
     private String createdTime;
+
+    @Schema(description = "变更前快照（JSON，已脱敏）")
+    private String beforeData;
+
+    @Schema(description = "变更后快照（JSON，已脱敏）")
+    private String afterData;
 }

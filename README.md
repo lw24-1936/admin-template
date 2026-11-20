@@ -1,4 +1,4 @@
-<h1 align="center">admintem</h1>
+﻿<h1 align="center">admintem</h1>
 
 <p align="center">
   <strong>菜单 + 按钮级权限的一体化后台管理模板</strong><br />
@@ -56,12 +56,12 @@
 | 文件中心 | 通用附件上传、列表、逻辑删除；扩展名/大小白名单；本地与 MinIO 共用存储策略 |
 | 前端平台组件 | `ProTable`（表格+分页+可选多选）、`FormDialog`（统一弹层）、`TableToolbar`、统一 500/错误兜底 |
 | i18n 基础版 | 桌面端中/英切换，覆盖应用外壳、登录页、错误页与已知菜单名；业务页文案可逐步用 `t()` 抽取 |
-| 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、明细含 `traceId` |
+| 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、CSV 导出、明细含 `traceId` 与变更前后 JSON |
 | 在线会话 | 查看在线设备、剩余有效期、角色、令牌摘要；按设备或按账号强制下线，同账号多端互不覆盖（传 deviceId 时） |
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、Prometheus 安全指标、JSON 结构化日志、告警规则样例 |
 
-**当前基线**：后端 165 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
+**当前基线**：后端 166 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
 123 项设计层断言、前端 10 + 6 项单测；权限 37 条、受控接口 43 个，CI 全绿。
 
 ## 界面预览
@@ -183,7 +183,7 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 ```
 
 > 没有 `SET @admintem_confirm_reset = 1` 时脚本会 `SIGNAL` 中止，不会删除任何数据。
-> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.14）。
+> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.15）。
 > 全量 init 负责基础表/种子，**不预置后续迁移新增的列**（如 `data_scope`）；首次初始化后
 > 启动后端（或执行 Flyway migrate）补齐，才能得到完整结构。
 
@@ -330,7 +330,7 @@ admin-template/
 │   ├── config/                  本地口令示例（真实文件已 gitignore）
 │   ├── src/main/java/...        9 个控制器、service、mapper、security、aspect
 │   ├── src/main/resources/      application*.yml、mapper XML
-│   ├── src/test/java/           165 个单元测试
+│   ├── src/test/java/           166 个单元测试
 │   └── Dockerfile               多阶段构建、非 root、HEALTHCHECK
 ├── admintem-vue/                桌面端（Element Plus）
 ├── admintem-mobile/             移动端（Vant 4）
@@ -338,7 +338,7 @@ admin-template/
 ├── admintem-site/               官网模版（可选）
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
-│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.14
+│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.15
 │   ├── images/                  21 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
@@ -350,7 +350,7 @@ admin-template/
 | ---- | ---- |
 | [01-需求与范围](admintem-docs/01-需求与范围.md) | 目标、边界、角色 |
 | [02-系统设计文档](admintem-docs/02-系统设计文档.md) | 架构、鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.14 变更与回滚 |
+| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.15 变更与回滚 |
 | [AGENTS.md](AGENTS.md) | 给 AI/自动化代理的项目约定、命令、权限/迁移/测试/文档同步规则 |
 | [OpenAPI 契约](admintem-docs/api/README.md) | `openapi.json` 与生成式 TypeScript 类型，三端接口对齐 |
 | [04-部署与操作手册](admintem-docs/04-部署与操作手册.md) | 环境、配置、启动、故障处理 |
@@ -383,7 +383,7 @@ admin-template/
 
 - ~~数据权限（本人 / 本部门 / 全部）~~（已落地：角色 `data_scope`）
 - 令牌续期（refresh token）与并发登录策略
-- 用户/审计导出 Excel、批量操作
+- 审计变更 diff 扩展到用户/角色/权限
 - 审计归档定时任务、趋势图表
 - 前端组件测试与 `@WebMvcTest` 切片测试
 

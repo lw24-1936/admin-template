@@ -2011,6 +2011,10 @@ export interface components {
             costMs?: number;
             /** @description 发生时间 yyyy-MM-dd HH:mm:ss */
             createdTime?: string;
+            /** @description 变更前快照（JSON，已脱敏） */
+            beforeData?: string;
+            /** @description 变更后快照（JSON，已脱敏） */
+            afterData?: string;
         };
         /** @description 分页返回结构 */
         PageResultAuditLogVO: {
