@@ -27,6 +27,16 @@ public interface FileStorageService {
     String storeAvatar(MultipartFile file);
 
     /**
+     * 保存文件中心的通用附件（扩展名/大小由业务层校验）。
+     *
+     * @param file        上传文件
+     * @param extension   已校验的小写扩展名（不含点）
+     * @param contentType 服务端判定的 MIME 类型
+     * @return 可访问 URL
+     */
+    String storeFile(MultipartFile file, String extension, String contentType);
+
+    /**
      * 按 URL 删除文件（更换头像后清理旧文件）。
      *
      * <p>只删除本服务管理的 URL；非本策略地址、空值都静默忽略，失败只记日志。</p>

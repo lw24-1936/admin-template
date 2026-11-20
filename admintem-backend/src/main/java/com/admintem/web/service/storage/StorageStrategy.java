@@ -21,6 +21,16 @@ public interface StorageStrategy {
     String storeAvatar(MultipartFile file);
 
     /**
+     * 保存文件中心的通用附件。
+     *
+     * @param file        上传文件
+     * @param extension   已校验的小写扩展名（不含点）
+     * @param contentType 服务端判定的 MIME 类型
+     * @return 可访问 URL
+     */
+    String storeFile(MultipartFile file, String extension, String contentType);
+
+    /**
      * 按 URL 删除文件；不是本策略管理的 URL 时静默忽略。
      * 用于更换头像后清理旧文件，失败只记日志，不影响主流程。
      */

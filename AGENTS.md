@@ -90,9 +90,10 @@ docker-compose.yml      本地一键编排
 
 ## 5. 数据库迁移约定
 
-- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.13`。
-- **必须幂等**：CI 会先执行 `db/init/00_admintem_full_init.sql`，再跑 Flyway。
-  对新增列/表，先查 `information_schema` 或用 `IF NOT EXISTS`；参考 `V1.0.11` 的动态 ALTER。
+- 命名：`V1.0.N__description.sql`，递增，不修改已发布脚本；当前最新为 `V1.0.14`。
+- **已发布迁移不可改**：CI 会先执行 `db/init/00_admintem_full_init.sql`，再跑 Flyway。
+  新增列只写在迁移中，不要提前加进 init 的 CREATE TABLE（否则 V1.0.11 这类非幂等 ALTER 会重复执行）。
+  新增表/权限的迁移应使用 `IF NOT EXISTS` / `ON DUPLICATE KEY UPDATE`，保证 init+Flyway 双路径可重复。
 - 同步修改：
   - `admintem-docs/db/init/00_admintem_full_init.sql`（新库完整结构 + 种子）
   - `admintem-docs/03-数据库设计与变更说明.md`（变更说明）
@@ -145,7 +146,7 @@ docker-compose.yml      本地一键编排
 
 1. **Windows PowerShell 写文件编码**：修改含中文的 `vue`/`md` 文件时使用 UTF-8（无 BOM 优先），
    不要用默认编码覆盖，避免中文乱码。
-2. **Flyway 与全量 init 双路径**：新增列必须幂等；否则 nightly 在“init 后 Flyway”阶段失败。
+2. **Flyway 与全量 init 双路径**：已发布迁移不可修改；新增列只写在迁移中，不要提前加进 init 的 CREATE TABLE，否则 V1.0.11 这类 ALTER 会重复执行。新增表/权限才需要在 init 中同步，并确保 `IF NOT EXISTS`/`ON DUPLICATE KEY UPDATE`。
 3. **端口**：桌面端默认 5175（不是 5173）；E2E/截图/a11y 脚本都依赖该端口。
 4. **动态菜单**：新增页面只加 Vue 文件不够，还必须在权限种子中登记菜单（URL/component/权限 key）。
 5. **权限变化**：运行 `gen-role-endpoint-matrix.cjs`；不要手改第 9 节生成区。

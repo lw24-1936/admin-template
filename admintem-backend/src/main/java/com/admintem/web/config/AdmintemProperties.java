@@ -305,6 +305,12 @@ public class AdmintemProperties {
 
         /** 允许的扩展名（同时会做文件头校验，防止改扩展名上传可执行文件） */
         private String allowedExtensions = "png,jpg,jpeg,webp,gif";
+
+        /** 文件中心允许的扩展名（通用附件；不包含可执行脚本） */
+        private String fileAllowedExtensions = "jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip";
+
+        /** 文件中心单文件大小上限（MB） */
+        private int fileMaxSizeMb = 10;
     }
 
     /** 文件存储配置：用 type 在本地与 MinIO 之间切换 */

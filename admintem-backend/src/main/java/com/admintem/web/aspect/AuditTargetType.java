@@ -23,6 +23,9 @@ public enum AuditTargetType {
     /** 系统参数配置对象 */
     CONFIG,
 
+    /** 文件对象 */
+    FILE,
+
     /** 访问控制（越权被拒绝，无具体业务对象） */
     ACCESS
 }

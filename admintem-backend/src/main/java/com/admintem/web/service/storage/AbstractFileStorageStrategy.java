@@ -33,6 +33,13 @@ public abstract class AbstractFileStorageStrategy implements StorageStrategy {
         return doStore(key, file, contentType);
     }
 
+    @Override
+    public String storeFile(MultipartFile file, String extension, String contentType) {
+        String key = "files/" + LocalDate.now().format(MONTH) + "/"
+                + UUID.randomUUID().toString().replace("-", "") + "." + extension;
+        return doStore(key, file, contentType);
+    }
+
     // 同上：deleteByUrl 也不能是 final。
     @Override
     public void deleteByUrl(String url) {

@@ -103,7 +103,6 @@ CREATE TABLE `sys_auth_role` (
     `id`           bigint      NOT NULL AUTO_INCREMENT COMMENT '角色ID',
     `role_name`    varchar(32) DEFAULT NULL COMMENT '角色名称',
     `role_key`     varchar(64) DEFAULT NULL COMMENT '角色唯一标识(admin=超级)',
-    `data_scope`   varchar(20) NOT NULL DEFAULT 'ALL' COMMENT '数据范围：ALL/DEPT/DEPT_AND_CHILD/SELF',
     `created_by`   varchar(32) DEFAULT NULL COMMENT '创建人',
     `created_time` datetime    DEFAULT NULL COMMENT '创建时间',
     `update_by`    varchar(32) DEFAULT NULL COMMENT '更新人',
@@ -276,6 +275,27 @@ CREATE TABLE `sys_dict` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
   COMMENT = '数据字典' ROW_FORMAT = DYNAMIC;
 
+
+-- 9) 文件中心表（V1.0.14 新增；结构变更请同步 db/changelog/V1.0.14__add_sys_file.sql）
+DROP TABLE IF EXISTS `sys_file`;
+CREATE TABLE `sys_file` (
+    `id`            bigint       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `original_name` varchar(255) NOT NULL COMMENT '原始文件名',
+    `url`           varchar(500) NOT NULL COMMENT '可访问 URL',
+    `file_size`     bigint       NOT NULL DEFAULT 0 COMMENT '字节数',
+    `content_type`  varchar(128) DEFAULT NULL COMMENT 'MIME 类型',
+    `storage_type`  varchar(16)  NOT NULL DEFAULT 'local' COMMENT '存储策略 local/minio',
+    `remark`        varchar(255) DEFAULT NULL COMMENT '备注',
+    `created_by`    varchar(32)  DEFAULT NULL COMMENT '上传人',
+    `created_time`  datetime     DEFAULT NULL COMMENT '上传时间',
+    `update_by`     varchar(32)  DEFAULT NULL COMMENT '更新人',
+    `update_time`   datetime     DEFAULT NULL COMMENT '更新时间',
+    `is_deleted`    int          NOT NULL DEFAULT 0 COMMENT '是否删除 0否 1是',
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `idx_file_created_time` (`created_time`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_general_ci
+  COMMENT = '文件中心' ROW_FORMAT = DYNAMIC;
+
 -- ============================================================================
 -- 二、基础数据种子（与线上基线一致）
 -- ============================================================================
@@ -320,7 +340,10 @@ VALUES
 (31,'字典管理',2,8,0,'/sysDict','sysDict/index',NULL,0,0,'el-icon-document','sysDict:sysDict','admin',NOW(),0),
 (32,'新增字典',31,1,1,'','','/sysDict/add',0,NULL,'','sysDict:add','admin',NOW(),0),
 (33,'编辑字典',31,2,1,'','','/sysDict/edit',0,NULL,'','sysDict:edit','admin',NOW(),0),
-(34,'删除字典',31,3,1,'','','/sysDict/deleteById',0,NULL,'','sysDict:delete','admin',NOW(),0);
+(34,'删除字典',31,3,1,'','','/sysDict/deleteById',0,NULL,'','sysDict:delete','admin',NOW(),0),
+(35,'文件中心',2,9,0,'/sysFile','sysFile/index',NULL,0,0,'el-icon-document','sysFile:sysFile','admin',NOW(),0),
+(36,'上传文件',35,1,1,'','','/sysFile/upload',0,NULL,'','sysFile:upload','admin',NOW(),0),
+(37,'删除文件',35,2,1,'','','/sysFile/deleteById',0,NULL,'','sysFile:delete','admin',NOW(),0);
 
 -- 2) 角色：管理员(admin，超级角色) / 测试角色1(cehsi1) / 普通用户(common，注册默认)
 INSERT INTO `sys_auth_role` (`id`,`role_name`,`role_key`,`created_by`,`created_time`,`is_deleted`) VALUES
@@ -329,7 +352,7 @@ INSERT INTO `sys_auth_role` (`id`,`role_name`,`role_key`,`created_by`,`created_t
 (3,'普通用户','common','admin',NOW(),0);
 
 -- 3) 角色-权限授权
---    管理员：全部 1..34（虽为超级角色自动放行，仍建关联便于授权页回显）
+--    管理员：全部 1..37（虽为超级角色自动放行，仍建关联便于授权页回显）
 INSERT INTO `sys_auth_role_permission` (`role_id`,`permission_id`,`created_by`,`created_time`,`is_deleted`) VALUES
 (1,1,'admin',NOW(),0),(1,2,'admin',NOW(),0),(1,3,'admin',NOW(),0),(1,4,'admin',NOW(),0),(1,5,'admin',NOW(),0),
 (1,6,'admin',NOW(),0),(1,7,'admin',NOW(),0),(1,8,'admin',NOW(),0),(1,9,'admin',NOW(),0),(1,10,'admin',NOW(),0),
@@ -340,6 +363,7 @@ INSERT INTO `sys_auth_role_permission` (`role_id`,`permission_id`,`created_by`,`
     (1,23,'admin',NOW(),0),(1,24,'admin',NOW(),0),(1,25,'admin',NOW(),0),(1,26,'admin',NOW(),0),
     (1,27,'admin',NOW(),0),(1,28,'admin',NOW(),0),(1,29,'admin',NOW(),0),(1,30,'admin',NOW(),0),
     (1,31,'admin',NOW(),0),(1,32,'admin',NOW(),0),(1,33,'admin',NOW(),0),(1,34,'admin',NOW(),0),
+    (1,35,'admin',NOW(),0),(1,36,'admin',NOW(),0),(1,37,'admin',NOW(),0),
 --    测试角色1：工作台 + 系统管理 + 用户管理/角色管理菜单 + 用户查询按钮（演示按钮级权限）
 (2,1,'admin',NOW(),0),(2,2,'admin',NOW(),0),(2,3,'admin',NOW(),0),(2,4,'admin',NOW(),0),(2,6,'admin',NOW(),0),
 --    普通用户：仅工作台
@@ -379,6 +403,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- 核对：
 --   SELECT COUNT(*) FROM sys_auth_user;                     -- 期望 2
 --   SELECT COUNT(*) FROM sys_auth_role;                     -- 期望 3
---   SELECT COUNT(*) FROM sys_auth_permission;               -- 期望 34
+--   SELECT COUNT(*) FROM sys_auth_permission;               -- 期望 37
 --   SELECT COUNT(*) FROM sys_auth_role_permission;          -- 期望 24(role1=18,role2=5,role3=1)
 --   SELECT COUNT(*) FROM sys_auth_user_role WHERE is_deleted=0; -- 期望 3

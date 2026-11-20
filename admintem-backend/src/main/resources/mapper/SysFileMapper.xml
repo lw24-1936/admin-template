@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.admintem.web.mapper.SysFileMapper">
+
+    <sql id="Base_Column_List">
+        id, original_name, url, file_size, content_type, storage_type, remark,
+        created_by, created_time, update_by, update_time
+    </sql>
+
+    <select id="selectFilePage" resultType="com.admintem.web.entity.SysFile">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_file
+        <where>
+            is_deleted = 0
+            <if test="q.originalName != null and q.originalName != ''">
+                AND original_name LIKE CONCAT('%', #{q.originalName}, '%')
+            </if>
+        </where>
+        ORDER BY created_time DESC, id DESC
+    </select>
+
+    <select id="selectById" resultType="com.admintem.web.entity.SysFile">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_file
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.admintem.web.entity.SysFile">
+        INSERT INTO sys_file
+        (original_name, url, file_size, content_type, storage_type, remark,
+         created_by, created_time, update_by, update_time, is_deleted)
+        VALUES
+        (#{originalName}, #{url}, #{fileSize}, #{contentType}, #{storageType}, #{remark},
+         #{createdBy}, #{createdTime}, #{updateBy}, #{updateTime}, 0)
+    </insert>
+
+    <update id="logicDelete">
+        UPDATE sys_file
+        SET is_deleted = 1, update_by = #{updateBy}, update_time = #{now}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+</mapper>

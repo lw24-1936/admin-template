@@ -24,6 +24,11 @@ class FileStorageFactoryTest {
             }
 
             @Override
+            public String storeFile(MultipartFile file, String extension, String contentType) {
+                return type + "://file";
+            }
+
+            @Override
             public void deleteByUrl(String url) {
                 // no-op
             }

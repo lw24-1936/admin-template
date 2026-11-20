@@ -1,4 +1,4 @@
-<h1 align="center">admintem</h1>
+﻿<h1 align="center">admintem</h1>
 
 <p align="center">
   <strong>菜单 + 按钮级权限的一体化后台管理模板</strong><br />
@@ -53,13 +53,14 @@
 | 部门管理 | 树形部门、负责人/电话、人数统计、删除保护（有子部门或用户时拒绝） |
 | 系统参数 | 键值配置 CRUD、分组、键唯一、逻辑删除、操作审计；可作为开关/上传限制等统一配置中心 |
 | 数据字典 | 字典类型/文案/值/排序/状态，同类型值唯一；提供按类型读取启用项的接口 |
+| 文件中心 | 通用附件上传、列表、逻辑删除；扩展名/大小白名单；本地与 MinIO 共用存储策略 |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、明细含 `traceId` |
 | 在线会话 | 查看在线账号、剩余有效期、角色、令牌摘要；强制下线、全部下线 |
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、结构化审计 |
 
 **当前基线**：后端 162 项单测、78 项接口回归、桌面 21 项 E2E、移动 44 项 E2E、
-123 项设计层断言、前端 10 + 6 项单测；权限 34 条、受控接口 35 个，CI 全绿。
+123 项设计层断言、前端 10 + 6 项单测；权限 37 条、受控接口 38 个，CI 全绿。
 
 ## 界面预览
 
@@ -178,7 +179,7 @@ mysql> source admintem-docs/db/init/00_admintem_full_init.sql
 ```
 
 > 没有 `SET @admintem_confirm_reset = 1` 时脚本会 `SIGNAL` 中止，不会删除任何数据。
-> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.13）。
+> 后续增量迁移由 Flyway 执行 `admintem-docs/db/changelog/V*.sql`（当前到 V1.0.14）。
 
 ### 3. 配置本地口令
 
@@ -331,7 +332,7 @@ admin-template/
 ├── admintem-site/               官网模版（可选）
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 全量初始化脚本（唯一出处）
-│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.13
+│   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.14
 │   ├── images/                  21 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
@@ -343,7 +344,7 @@ admin-template/
 | ---- | ---- |
 | [01-需求与范围](admintem-docs/01-需求与范围.md) | 目标、边界、角色 |
 | [02-系统设计文档](admintem-docs/02-系统设计文档.md) | 架构、鉴权链路、缓存、审计、上传、部门 |
-| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.13 变更与回滚 |
+| [03-数据库设计与变更说明](admintem-docs/03-数据库设计与变更说明.md) | 表结构 + V1.0.1~V1.0.14 变更与回滚 |
 | [AGENTS.md](AGENTS.md) | 给 AI/自动化代理的项目约定、命令、权限/迁移/测试/文档同步规则 |
 | [04-部署与操作手册](admintem-docs/04-部署与操作手册.md) | 环境、配置、启动、故障处理 |
 | [05-接口与权限标识对照表](admintem-docs/05-接口与权限标识对照表.md) | 接口与权限标识矩阵 |

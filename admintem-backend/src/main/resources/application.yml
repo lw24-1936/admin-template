@@ -58,8 +58,8 @@ spring:
   # Spring 的 multipart 限制是硬闸门，超过会直接 413，不会进入业务校验
   servlet:
     multipart:
-      max-file-size: 2MB
-      max-request-size: 3MB
+      max-file-size: 10MB
+      max-request-size: 12MB
 
   # Jackson 全局 JSON 序列化规则（统一时间格式，避免前后端解析歧义）
   jackson:
@@ -155,7 +155,7 @@ admintem:
     # Redis 中 IP 失败计数 / IP 限制 key 前缀
     ip-fail-count-key-prefix: "admintem:auth:fail:ip:"
     ip-lock-key-prefix: "admintem:auth:lock:ip:"
-  # ---- 文件上传（头像）----
+  # ---- 文件上传（头像 / 文件中心）----
   # 本项目第一个文件存储需求：本地目录，Docker 部署时把该目录挂成卷即可；
   # 多实例时指向共享存储（NFS/OSS 挂载点），接口层无需改动。
   upload:
@@ -163,6 +163,9 @@ admintem:
     max-size-mb: 2
     url-prefix: "/uploads/avatar"
     allowed-extensions: "png,jpg,jpeg,webp,gif"
+    # 文件中心：通用附件白名单与大小上限（不含可执行脚本）
+    file-allowed-extensions: "jpg,jpeg,png,gif,webp,pdf,doc,docx,xls,xlsx,ppt,pptx,txt,csv,zip"
+    file-max-size-mb: 10
 
   # ---- 文件存储：local（默认）| minio ----
   # 切换为 minio 前，在 config/application-local.yml（已 gitignore）配置密钥；

@@ -48,6 +48,11 @@ public class FileStorageFactory implements FileStorageService {
         return active.storeAvatar(file);
     }
 
+    @Override
+    public String storeFile(MultipartFile file, String extension, String contentType) {
+        return active.storeFile(file, extension, contentType);
+    }
+
     /**
      * 删除旧文件时遍历所有策略：每个策略只处理自己 URL 前缀/域名下的地址，
      * 这样从 local 切到 minio（或反向）后，历史头像也能被正确清理。
