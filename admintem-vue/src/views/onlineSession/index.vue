@@ -33,6 +33,11 @@
       <el-table-column prop="nickName" label="昵称" min-width="120">
         <template #default="{ row }">{{ row.nickName || '—' }}</template>
       </el-table-column>
+        <el-table-column label="设备" min-width="150">
+          <template #default="{ row }">
+            <code class="session-digest">{{ row.deviceId || '旧版单会话' }}</code>
+          </template>
+        </el-table-column>
       <el-table-column prop="roleNames" label="角色" min-width="150">
         <template #default="{ row }">{{ row.roleNames || '—' }}</template>
       </el-table-column>
@@ -177,7 +182,7 @@ async function handleKick(row) {
     return
   }
   try {
-    await sessionApi.kickSession(row.userName)
+    await sessionApi.kickSession(row.userName, row.deviceId)
     ElMessage.success(`已让「${row.userName}」下线`)
     loadData()
   } catch (e) {
@@ -205,7 +210,7 @@ async function handleKickAll() {
   try {
     // 逐个调用：后端按账号吊销，逐个调用便于失败时定位到具体账号
     for (const s of targets) {
-      await sessionApi.kickSession(s.userName)
+      await sessionApi.kickSession(s.userName, s.deviceId)
     }
     ElMessage.success(`已下线 ${targets.length} 个账号`)
     await loadData()

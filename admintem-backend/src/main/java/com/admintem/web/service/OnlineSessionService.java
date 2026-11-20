@@ -31,4 +31,9 @@ public interface OnlineSessionService {
      * @return true 表示确实存在在线会话并被清除；false 表示本来就无会话
      */
     boolean kick(String userName);
+
+    /**
+     * 按设备强制下线；deviceId 为空时等价于踢掉账号全部会话。
+     */
+    boolean kick(String userName, String deviceId);
 }

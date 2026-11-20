@@ -1,4 +1,4 @@
-﻿# AGENTS.md
+# AGENTS.md
 
 > 给在本仓库工作的 AI/自动化代理的项目级约定。**先读本文件，再读 `README.md` 与 `admintem-docs/` 对应文档。**
 > 代码、数据库、权限、页面、测试与文档必须同步修改；不要把“计划中”写成“已完成”。
@@ -12,7 +12,7 @@
 - 移动端：Vue 3 + Vite + Vant 4。
 - uni-app：Vue 3 + Vite 5（H5 / 小程序 / App）。
 - 官网模板：Vue 3 + Vite 5。
-- 核心能力：JWT + Redis 白名单、refreshToken 轮换、菜单/按钮/接口三层 RBAC、行级数据权限、
+- 核心能力：JWT + Redis 白名单、refreshToken 轮换、多设备会话（deviceId）、菜单/按钮/接口三层 RBAC、行级数据权限、
   审计、在线会话、部门、系统参数、数据字典、文件中心、用户 CSV 导入导出、动态路由、桌面端深色主题。
 - 当前已知缺口见 `admintem-docs/10-后续功能扩展规划.md`，不要重复实现已标记完成的能力。
 
@@ -85,7 +85,9 @@ docker-compose.yml      本地一键编排
 5. **数据权限**：需要行级过滤的查询复用 `DataScopeService` 的语义（ALL/DEPT/DEPT_AND_CHILD/SELF），
    条件必须由服务端注入；`UserPageQuery` 的 `dataScope*` 字段禁止客户端伪造。
 6. **认证**：请求头 `admintem_token: LAUNCH <accessToken>`；登录返回 access + refresh；
-   `/auth/refresh` 为公开端点；退出/改密/强制下线要撤销 refreshToken。
+   `/auth/refresh` 为公开端点；客户端登录应带 `deviceId`，后端按 `{userName}:{deviceId}` 分设备保存访问令牌；
+   不传 `deviceId` 保持旧版单账号单令牌语义。退出只踢当前设备，改密/禁用/全部下线才清全部设备；
+   强制下线可按设备操作，refreshToken 也绑定设备。
 7. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
 8. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
    生产禁止默认密钥/示例密码/root 数据库账号。

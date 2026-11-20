@@ -101,26 +101,40 @@ public class JwtTokenService {
      * @return JWT 字符串（不含 "LAUNCH " 前缀）
      */
     public String createToken(Long userId, String userName, boolean remember) {
+        return createToken(userId, userName, remember, null);
+    }
+
+    /**
+     * 签发令牌并将白名单写入 Redis（可选设备维度）。
+     *
+     * @param deviceId 设备 ID；为空时沿用旧版单账号单令牌 key
+     */
+    public String createToken(Long userId, String userName, boolean remember, String deviceId) {
         Date now = new Date();
         long ttlMillis = ttlMillis(remember);
         Date expireAt = new Date(now.getTime() + ttlMillis);
+        String normalizedDeviceId = normalizeDeviceId(deviceId);
 
-        // 组装 JWT：subject = 账号，附带 userId 与 remember 标记
-        String token = Jwts.builder()
+        // 组装 JWT：subject = 账号，附带 userId、remember 与可选设备 ID
+        io.jsonwebtoken.JwtBuilder builder = Jwts.builder()
                 .subject(userName)
                 .claim(SecurityConstants.CLAIM_USER_ID, userId)
-                .claim(SecurityConstants.CLAIM_REMEMBER, remember)
-                .issuedAt(now)
+                .claim(SecurityConstants.CLAIM_REMEMBER, remember);
+        if (normalizedDeviceId != null) {
+            builder.claim(SecurityConstants.CLAIM_DEVICE_ID, normalizedDeviceId);
+        }
+        String token = builder.issuedAt(now)
                 .expiration(expireAt)
                 .signWith(signingKey)
                 .compact();
 
         // 令牌白名单写入 Redis，TTL 与令牌自身有效期保持一致（单位：秒）
-        String redisKey = tokenRedisKey(userName);
+        String redisKey = tokenRedisKey(userName, normalizedDeviceId);
         long ttlSeconds = ttlMillis / 1000;
         RBucket<String> bucket = redissonClient.getBucket(redisKey);
         bucket.set(token, ttlSeconds, TimeUnit.SECONDS);
-        log.info("签发令牌成功: userId={}, userName={}, remember={}, ttlSeconds={}", userId, userName, remember, ttlSeconds);
+        log.info("签发令牌成功: userId={}, userName={}, remember={}, deviceId={}, ttlSeconds={}",
+                userId, userName, remember, normalizedDeviceId, ttlSeconds);
         return token;
     }
 
@@ -148,7 +162,22 @@ public class JwtTokenService {
      */
     public void revokeToken(String userName) {
         boolean deleted = redissonClient.getBucket(tokenRedisKey(userName)).delete();
-        log.info("注销令牌: userName={}, deleted={}", userName, deleted);
+        long expired = redissonClient.getKeys().deleteByPattern(
+                properties.getJwt().getRedisKeyPrefix() + userName + ":*");
+        log.info("注销令牌: userName={}, legacyDeleted={}, deviceDeleted={}", userName, deleted, expired);
+    }
+
+    /**
+     * 注销指定设备的令牌（用于按设备强制下线）。
+     */
+    public void revokeToken(String userName, String deviceId) {
+        String normalizedDeviceId = normalizeDeviceId(deviceId);
+        if (normalizedDeviceId == null) {
+            revokeToken(userName);
+            return;
+        }
+        boolean deleted = redissonClient.getBucket(tokenRedisKey(userName, normalizedDeviceId)).delete();
+        log.info("注销设备令牌: userName={}, deviceId={}, deleted={}", userName, normalizedDeviceId, deleted);
     }
 
     /* ------------------------------ 私有方法 ------------------------------ */
@@ -162,8 +191,23 @@ public class JwtTokenService {
     }
 
 
-    /** Redis 白名单 key */
+    /** Redis 白名单 key（旧版单账号单令牌） */
     private String tokenRedisKey(String userName) {
         return properties.getJwt().getRedisKeyPrefix() + userName;
+    }
+
+    /** Redis 白名单 key（设备维度） */
+    private String tokenRedisKey(String userName, String deviceId) {
+        return deviceId == null ? tokenRedisKey(userName)
+                : properties.getJwt().getRedisKeyPrefix() + userName + ":" + deviceId;
+    }
+
+    /** 只接受安全字符，避免 Redis key 注入/超长；非法值回落到旧版单会话。 */
+    private String normalizeDeviceId(String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            return null;
+        }
+        String value = deviceId.trim();
+        return value.matches("[A-Za-z0-9_-]{1,64}") ? value : null;
     }
 }

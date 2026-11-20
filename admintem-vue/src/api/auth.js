@@ -2,6 +2,7 @@
  * 认证相关接口
  */
 import request from '@/utils/request'
+import { getDeviceId } from '@/utils/auth'
 
 /** 生成图形验证码挑战 */
 export function getCaptcha() {
@@ -15,7 +16,7 @@ export function verifyCaptcha(data) {
 
 /** 登录 */
 export function login(data) {
-  return request({ url: '/auth/login', method: 'post', data })
+  return request({ url: '/auth/login', method: 'post', data: { ...data, deviceId: getDeviceId() } })
 }
 
 /** 注册 */

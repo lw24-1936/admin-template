@@ -1,4 +1,4 @@
-﻿<h1 align="center">admintem</h1>
+<h1 align="center">admintem</h1>
 
 <p align="center">
   <strong>菜单 + 按钮级权限的一体化后台管理模板</strong><br />
@@ -56,7 +56,7 @@
 | 文件中心 | 通用附件上传、列表、逻辑删除；扩展名/大小白名单；本地与 MinIO 共用存储策略 |
 | 前端平台组件 | `ProTable`（表格+分页+可选多选）、`FormDialog`（统一弹层）、`TableToolbar`、统一 500/错误兜底 |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、明细含 `traceId` |
-| 在线会话 | 查看在线账号、剩余有效期、角色、令牌摘要；强制下线、全部下线 |
+| 在线会话 | 查看在线设备、剩余有效期、角色、令牌摘要；按设备或按账号强制下线，同账号多端互不覆盖（传 deviceId 时） |
 | 安全 | JWT + Redis 白名单、登录失败锁定（账号/IP 双维度）、密码强度策略、生产密钥 fail-fast |
 | 可观测 | 请求 `traceId`、慢 SQL 日志、Actuator 健康检查、结构化审计 |
 

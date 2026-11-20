@@ -71,49 +71,47 @@ public class OnlineSessionServiceImpl implements OnlineSessionService {
             return Collections.emptyList();
         }
 
-        // 1. 一次 MGET 取回全部令牌值；TTL 没有批量 API，仍按 key 读（200 条上限内）
         Map<String, String> values = redissonClient.getBuckets().get(keys.toArray(new String[0]));
-        Map<String, String> tokenByUser = new HashMap<>();
-        Map<String, Long> ttlByUser = new HashMap<>();
+        Map<String, String> tokenByKey = new HashMap<>();
+        Map<String, Long> ttlByKey = new HashMap<>();
+        Set<String> userNames = new java.util.LinkedHashSet<>();
         for (String key : keys) {
-            String userName = key.substring(prefix.length());
             String token = values == null ? null : values.get(key);
             if (token == null) {
-                // 刚好过期/被删：跳过，避免把"已失效"显示成"在线"
                 continue;
             }
             long ttl = redissonClient.getBucket(key).remainTimeToLive();
             if (ttl <= 0) {
                 continue;
             }
-            tokenByUser.put(userName, token);
-            ttlByUser.put(userName, ttl / 1000);
+            tokenByKey.put(key, token);
+            ttlByKey.put(key, ttl / 1000);
+            userNames.add(userNameOf(key, prefix));
         }
-        if (tokenByUser.isEmpty()) {
+        if (tokenByKey.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // 2. 批量补用户信息（一次查询，避免逐个 selectByUserName 的 N+1）
-        List<SysAuthUser> users = userMapper.selectByUserNames(tokenByUser.keySet());
+        List<SysAuthUser> users = userMapper.selectByUserNames(new ArrayList<>(userNames));
         Map<String, SysAuthUser> userByName = users == null ? Collections.emptyMap()
                 : users.stream().collect(Collectors.toMap(SysAuthUser::getUserName, u -> u, (a, b) -> a));
-
-        // 3. 批量补角色名（一次查关联 + 一次查角色）
         Map<Long, String> roleNamesByUser = loadRoleNames(users);
 
-        // 4. 组装并按剩余有效期倒序
-        List<OnlineSessionVO> list = new ArrayList<>(tokenByUser.size());
-        for (Map.Entry<String, String> entry : tokenByUser.entrySet()) {
-            String userName = entry.getKey();
+        List<OnlineSessionVO> list = new ArrayList<>(tokenByKey.size());
+        for (Map.Entry<String, String> entry : tokenByKey.entrySet()) {
+            String key = entry.getKey();
             String token = entry.getValue();
+            String userName = userNameOf(key, prefix);
+            String deviceId = deviceIdOf(key, prefix, userName);
             SysAuthUser user = userByName.get(userName);
 
             OnlineSessionVO vo = new OnlineSessionVO();
             vo.setUserName(userName);
+            vo.setDeviceId(deviceId);
             vo.setNickName(user == null ? null : user.getNickName());
             vo.setStatus(user == null ? null : user.getStatus());
             vo.setRoleNames(user == null ? null : roleNamesByUser.get(user.getId()));
-            vo.setExpireSeconds(ttlByUser.get(userName));
+            vo.setExpireSeconds(ttlByKey.get(key));
             vo.setTokenDigest(digest(token));
             vo.setCurrent(currentToken != null && token.equals(currentToken));
             vo.setLocked(isLocked(userName));
@@ -126,18 +124,43 @@ public class OnlineSessionServiceImpl implements OnlineSessionService {
 
     @Override
     public boolean kick(String userName) {
-        // 复用退出登录的同一条路径：删除白名单 key；不额外清理权限快照，
-        // 因为快照只影响"已登录请求"的性能，令牌失效后它自然过期
-        boolean existed = isOnline(userName);
-        jwtTokenService.revokeToken(userName);
-        refreshTokenService.revokeAll(userName);
-        log.info("强制下线: userName={}, 原会话存在={}", userName, existed);
+        return kick(userName, null);
+    }
+
+    @Override
+    public boolean kick(String userName, String deviceId) {
+        boolean existed = deviceId == null || deviceId.isBlank() ? isOnline(userName) : isOnline(userName, deviceId);
+        jwtTokenService.revokeToken(userName, deviceId);
+        if (deviceId == null || deviceId.isBlank()) {
+            refreshTokenService.revokeAll(userName);
+        } else {
+            refreshTokenService.revoke(userName, deviceId);
+        }
+        log.info("强制下线: userName={}, deviceId={}, 原会话存在={}", userName, deviceId, existed);
         return existed;
+    }
+
+    private String userNameOf(String key, String prefix) {
+        String suffix = key.substring(prefix.length());
+        int idx = suffix.indexOf(':');
+        return idx < 0 ? suffix : suffix.substring(0, idx);
+    }
+
+    private String deviceIdOf(String key, String prefix, String userName) {
+        String suffix = key.substring(prefix.length());
+        int idx = suffix.indexOf(':');
+        return idx < 0 ? null : suffix.substring(idx + 1);
     }
 
     /** 账号是否有有效令牌（TTL > 0） */
     private boolean isOnline(String userName) {
         RBucket<String> bucket = redissonClient.getBucket(properties.getJwt().getRedisKeyPrefix() + userName);
+        return bucket.get() != null && bucket.remainTimeToLive() > 0;
+    }
+
+    private boolean isOnline(String userName, String deviceId) {
+        RBucket<String> bucket = redissonClient.getBucket(
+                properties.getJwt().getRedisKeyPrefix() + userName + ":" + deviceId);
         return bucket.get() != null && bucket.remainTimeToLive() > 0;
     }
 

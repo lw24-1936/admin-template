@@ -22,6 +22,6 @@ export function queryOnlineSessions() {
  * @param {string} userName 目标账号
  * @returns {Promise<object>} { code, message }
  */
-export function kickSession(userName) {
-  return request.post('/sysAuthSession/kick', { userName })
+export function kickSession(userName, deviceId) {
+  return request.post('/sysAuthSession/kick', { userName, deviceId })
 }

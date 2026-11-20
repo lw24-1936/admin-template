@@ -12,9 +12,22 @@
  */
 import request, { upload } from '@/utils/request'
 
+/** 设备 ID：首次登录生成并持久化，用于同一账号多端在线。 */
+function getDeviceId() {
+  const key = 'admintem_device_id'
+  let value = uni.getStorageSync(key)
+  if (!value) {
+    const random = Math.random().toString(36).slice(2) + Date.now().toString(36)
+    value = 'uni-' + random.slice(0, 40)
+    uni.setStorageSync(key, value)
+  }
+  return value
+}
+
+
 /** 登录 */
 export function login(data) {
-  return request({ url: '/auth/login', method: 'POST', data })
+  return request({ url: '/auth/login', method: 'POST', data: { ...data, deviceId: getDeviceId() } })
 }
 
 /** 注册（是否开放由后端 register-enabled 控制） */

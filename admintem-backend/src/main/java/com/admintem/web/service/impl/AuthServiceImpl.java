@@ -138,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
         rbacCacheService.save(loginUser);
 
         // 5. 签发令牌（写入 Redis 白名单）
-        String token = jwtTokenService.createToken(loginUser.getUserId(), loginUser.getUserName(), remember);
+        String token = jwtTokenService.createToken(loginUser.getUserId(), loginUser.getUserName(), remember, request.getDeviceId());
 
         // 6. 组装登录响应
         LoginVO vo = new LoginVO();
@@ -189,10 +189,12 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public LoginVO refresh(String refreshToken) {
-        String userName = refreshTokenService.consume(refreshToken);
-        if (userName == null) {
+        RefreshTokenService.RefreshSession refreshSession = refreshTokenService.consumeSession(refreshToken);
+        if (refreshSession == null) {
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
+        String userName = refreshSession.userName();
+        String deviceId = refreshSession.deviceId();
         SysAuthUser user = userMapper.selectByUserName(userName);
         if (user == null || !Integer.valueOf(0).equals(user.getStatus())) {
             refreshTokenService.revokeAll(userName);
@@ -203,7 +205,7 @@ public class AuthServiceImpl implements AuthService {
             refreshTokenService.revokeAll(userName);
             throw new BusinessException(ResultCode.UNAUTHORIZED);
         }
-        String token = jwtTokenService.createToken(user.getId(), userName, false);
+        String token = jwtTokenService.createToken(user.getId(), userName, false, deviceId);
         LoginVO vo = new LoginVO();
         vo.setToken(token);
         vo.setRefreshToken(refreshTokenService.issue(userName, false));
@@ -217,11 +219,21 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public void logout(Long userId, String userName) {
-        // 删除令牌白名单，使服务端令牌立即失效
-        jwtTokenService.revokeToken(userName);
-        refreshTokenService.revokeAll(userName);
+        logout(userId, userName, null);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void logout(Long userId, String userName, String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            jwtTokenService.revokeToken(userName);
+            refreshTokenService.revokeAll(userName);
+        } else {
+            jwtTokenService.revokeToken(userName, deviceId);
+            refreshTokenService.revoke(userName, deviceId);
+        }
         rbacCacheService.evictUser(userId);
-        log.info("用户退出登录: userId={}, userName={}", userId, userName);
+        log.info("用户退出登录: userId={}, userName={}, deviceId={}", userId, userName, deviceId);
     }
 
     /**

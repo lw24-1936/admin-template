@@ -23,4 +23,7 @@ public final class SecurityConstants {
 
     /** JWT 载荷中存放"记住我"标记的 claim 键名 */
     public static final String CLAIM_REMEMBER = "remember";
+
+    /** JWT 载荷中存放设备 ID 的 claim 键名（不传时为旧版单会话模式） */
+    public static final String CLAIM_DEVICE_ID = "deviceId";
 }

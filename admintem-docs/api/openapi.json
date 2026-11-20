@@ -2725,6 +2725,10 @@
             "type": "string",
             "description": "登录账号"
           },
+          "deviceId": {
+            "type": "string",
+            "description": "设备 ID（旧版单会话为 null）"
+          },
           "nickName": {
             "type": "string",
             "description": "昵称（查不到用户时为空）"
@@ -2792,6 +2796,12 @@
             "description": "要强制下线的账号",
             "example": "test",
             "maxLength": 32,
+            "minLength": 0
+          },
+          "deviceId": {
+            "type": "string",
+            "description": "设备ID（可选；不传则踢掉全部会话）",
+            "maxLength": 64,
             "minLength": 0
           }
         },
@@ -3706,6 +3716,12 @@
           "captchaTicket": {
             "type": "string",
             "description": "图形验证码票据"
+          },
+          "deviceId": {
+            "type": "string",
+            "description": "设备ID（可选；8~64 位字母/数字/下划线/中划线）",
+            "example": "web-7f3b9c2e",
+            "pattern": "^[A-Za-z0-9_-]{8,64}$"
           }
         },
         "required": [

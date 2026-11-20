@@ -17,4 +17,9 @@ public class KickSessionRequest {
     @Size(max = 32, message = "账号长度不能超过 32")
     @Schema(description = "要强制下线的账号", example = "test")
     private String userName;
+
+    /** 可选设备 ID；不传则踢掉该账号全部设备（兼容旧行为）。 */
+    @Size(max = 64, message = "设备ID长度不能超过 64")
+    @Schema(description = "设备ID（可选；不传则踢掉全部会话）")
+    private String deviceId;
 }

@@ -63,8 +63,9 @@ public class SysAuthSessionController {
     @PreAuthorize("@rbac.hasPerm('sysAuthSession:kick')")
     @Operation(summary = "强制下线")
     public Result<Void> kick(@Valid @RequestBody KickSessionRequest body) {
-        boolean existed = onlineSessionService.kick(body.getUserName());
-        log.info("强制下线完成: userName={}, 原会话存在={}", body.getUserName(), existed);
+        boolean existed = onlineSessionService.kick(body.getUserName(), body.getDeviceId());
+        log.info("强制下线完成: userName={}, deviceId={}, 原会话存在={}",
+                  body.getUserName(), body.getDeviceId(), existed);
         return Result.ok();
     }
 

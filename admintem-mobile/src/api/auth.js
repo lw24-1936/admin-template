@@ -2,10 +2,11 @@
  * 认证相关接口（与桌面端共用同一套后端接口）
  */
 import request from '@/utils/request'
+import { getDeviceId } from '@/utils/auth'
 
 /** 登录 */
 export function login(data) {
-  return request({ url: '/auth/login', method: 'post', data })
+  return request({ url: '/auth/login', method: 'post', data: { ...data, deviceId: getDeviceId() } })
 }
 
 /** 注册（是否开放由后端 register-enabled 控制） */

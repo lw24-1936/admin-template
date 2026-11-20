@@ -1521,6 +1521,8 @@ export interface components {
         OnlineSessionVO: {
             /** @description 登录账号 */
             userName?: string;
+            /** @description 设备 ID（旧版单会话为 null） */
+            deviceId?: string;
             /** @description 昵称（查不到用户时为空） */
             nickName?: string;
             /**
@@ -1563,6 +1565,8 @@ export interface components {
              * @example test
              */
             userName: string;
+            /** @description 设备ID（可选；不传则踢掉全部会话） */
+            deviceId?: string;
         };
         RoleIdRequest: {
             /**
@@ -2166,6 +2170,11 @@ export interface components {
             rememberMe?: boolean;
             /** @description 图形验证码票据 */
             captchaTicket?: string;
+            /**
+             * @description 设备ID（可选；8~64 位字母/数字/下划线/中划线）
+             * @example web-7f3b9c2e
+             */
+            deviceId?: string;
         };
         CaptchaVO: {
             token?: string;

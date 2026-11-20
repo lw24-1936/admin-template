@@ -96,7 +96,15 @@ public class RbacCacheService {
      * @return 读取结果，永不为 null
      */
     public SessionSnapshot readSession(String userName, Long userId) {
-        String tokenKey = properties.getJwt().getRedisKeyPrefix() + userName;
+        return readSession(userName, userId, null);
+    }
+
+    /**
+     * 设备维度的会话读取：token key 带设备后缀，用户快照仍按 userId 共享。
+     */
+    public SessionSnapshot readSession(String userName, Long userId, String deviceId) {
+        String tokenKey = properties.getJwt().getRedisKeyPrefix() + userName
+                + (deviceId == null || deviceId.isBlank() ? "" : ":" + deviceId);
         String permKey = cacheKey(userId);
         Map<String, String> values = redissonClient.getBuckets().get(tokenKey, permKey);
         String token = values == null ? null : values.get(tokenKey);

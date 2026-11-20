@@ -69,6 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String userName = claims.getSubject();
             Number userIdNum = claims.get(SecurityConstants.CLAIM_USER_ID, Number.class);
             Long userId = userIdNum == null ? null : userIdNum.longValue();
+              String deviceId = claims.get(SecurityConstants.CLAIM_DEVICE_ID, String.class);
+              request.setAttribute("admintem.deviceId", deviceId);
             if (!StringUtils.hasText(userName) || userId == null) {
                 log.debug("JWT 载荷缺少关键信息，跳过认证");
                 filterChain.doFilter(request, response);
@@ -76,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // 3. 一次 Redis 往返取回"白名单令牌 + 用户快照"（MGET，避免每请求 2 个 RTT）
-            RbacCacheService.SessionSnapshot session = rbacCacheService.readSession(userName, userId);
+            RbacCacheService.SessionSnapshot session = rbacCacheService.readSession(userName, userId, deviceId);
 
             // 3.1 白名单校验（与 Redis 中保存的令牌一致）：不一致说明已注销或异地登录
             if (session.token() == null || !session.token().equals(token)) {

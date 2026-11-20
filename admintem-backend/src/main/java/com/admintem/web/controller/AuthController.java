@@ -98,7 +98,7 @@ public class AuthController {
     @Operation(summary = "退出登录")
     public Result<Void> logout() {
         LoginUser user = SecurityUtils.currentUser();
-        authService.logout(user.getUserId(), user.getUserName());
+        authService.logout(user.getUserId(), user.getUserName(), SecurityUtils.currentDeviceId());
         return Result.ok("退出成功", null);
     }
 

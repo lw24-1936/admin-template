@@ -21,6 +21,9 @@ public class OnlineSessionVO implements Serializable {
     @Schema(description = "登录账号")
     private String userName;
 
+    @Schema(description = "设备 ID（旧版单会话为 null）")
+    private String deviceId;
+
     @Schema(description = "昵称（查不到用户时为空）")
     private String nickName;
 

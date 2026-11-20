@@ -45,6 +45,11 @@ public interface AuthService {
     void logout(Long userId, String userName);
 
     /**
+     * 退出当前设备；deviceId 为空时退回旧版“退出全部会话”。
+     */
+    void logout(Long userId, String userName, String deviceId);
+
+    /**
      * 构建用户会话视图（角色/菜单/权限），供登录与获取用户信息使用。
      *
      * @param userId 用户ID
