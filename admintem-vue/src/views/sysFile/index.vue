@@ -16,7 +16,14 @@
       </template>
     </TableToolbar>
 
-    <el-table v-loading="loading" :data="list" stripe border>
+    <ProTable
+      :data="list"
+      :loading="loading"
+      :total="total"
+      :page="query.pageNum"
+      :size="query.pageSize"
+      @page-change="onPageChange"
+    >
       <el-table-column prop="originalName" label="文件名" min-width="220" show-overflow-tooltip />
       <el-table-column prop="fileSize" label="大小" width="110">
         <template #default="{ row }">{{ formatSize(row.fileSize) }}</template>
@@ -31,9 +38,8 @@
           <el-button v-perm="'sysFile:delete'" link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
-    </el-table>
+      </ProTable>
 
-    <PaginationBar :total="total" :page="query.pageNum" :size="query.pageSize" @change="onPageChange" />
   </el-card>
 </template>
 
@@ -41,7 +47,7 @@
 import { reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteFile, pageFiles, uploadFile } from '@/api/file'
-import PaginationBar from '@/components/PaginationBar.vue'
+import ProTable from '@/components/ProTable.vue'
 import TableToolbar from '@/components/TableToolbar.vue'
 
 const loading = ref(false)

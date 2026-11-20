@@ -32,7 +32,7 @@
 
     <PaginationBar :total="total" :page="query.pageNum" :size="query.pageSize" @change="onPageChange" />
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="520px" append-to-body>
+    <FormDialog v-model="dialogVisible" :title="dialogTitle" :loading="saving" @confirm="saveForm">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
         <el-form-item label="参数键" prop="configKey">
           <el-input v-model="form.configKey" placeholder="如 system.upload.max-size" />
@@ -50,11 +50,7 @@
           <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="用途说明" />
         </el-form-item>
       </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" :loading="saving" @click="saveForm">保 存</el-button>
-      </template>
-    </el-dialog>
+    </FormDialog>
   </el-card>
 </template>
 
@@ -63,6 +59,7 @@ import { reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { addConfig, deleteConfig, editConfig, pageConfigs } from '@/api/config'
 import PaginationBar from '@/components/PaginationBar.vue'
+import FormDialog from '@/components/FormDialog.vue'
 import TableToolbar from '@/components/TableToolbar.vue'
 
 const loading = ref(false)

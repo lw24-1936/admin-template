@@ -109,6 +109,7 @@ docker-compose.yml      本地一键编排
 - 桌面端页面放在 `admintem-vue/src/views/<component>/index.vue`；后端菜单 `component` 使用
   `views` 相对路径（如 `sysConfig/index`），前端通过 `import.meta.glob` 动态注册，**不需要改路由表**。
 - 按钮权限统一 `v-perm="'permission:key'"`；无权限时 fail-closed，不要用 `v-if` 手写角色判断。
+- 列表/弹层优先复用 `ProTable.vue`（表格 + 分页 + 可选多选）与 `FormDialog.vue`（统一弹层与默认确认/取消），不要每页重复拼装。
 - Element Plus 采用按需注册：新增组件时同时补 `main.js` 组件数组与样式导入；菜单动态图标补
   `main.js` 图标注册与 `MenuItem.vue` 的 `ICON_MAP`。
 - API 统一走 `src/utils/request.js`；收到 401 时会尝试 refreshToken 并重放一次，登录/刷新请求本身不重试。
