@@ -557,6 +557,7 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
+  overflow-y: auto;
 }
 /* 工具条固定高度，表格吃掉剩余空间 */
 .layout-main--fill .table-toolbar {

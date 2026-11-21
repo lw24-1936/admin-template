@@ -31,10 +31,12 @@
       <el-table-column prop="contentType" label="类型" min-width="160" show-overflow-tooltip />
       <el-table-column prop="storageType" label="存储" width="80" />
       <el-table-column prop="createdBy" label="上传人" width="110" />
-      <el-table-column prop="createdTime" label="上传时间" width="170" />
+      <el-table-column label="上传时间" width="170">
+        <template #default="{ row }">{{ formatDateTime(row.createdTime) }}</template>
+      </el-table-column>
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row }">
-          <el-button link type="primary" tag="a" :href="row.url" target="_blank" rel="noopener">下载</el-button>
+          <el-button link type="primary" @click="handleDownload(row)">下载</el-button>
           <el-button v-perm="'sysFile:delete'" link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
@@ -47,6 +49,8 @@
 import { reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteFile, pageFiles, uploadFile } from '@/api/file'
+import { formatDateTime } from '@/utils/datetime'
+import { resolveAssetUrl } from '@/utils/media'
 import ProTable from '@/components/ProTable.vue'
 import TableToolbar from '@/components/TableToolbar.vue'
 
@@ -103,6 +107,32 @@ async function handleFileChange(event) {
     console.error('[sysFile] 上传失败：', e)
   } finally {
     uploading.value = false
+  }
+}
+
+async function handleDownload(row) {
+  const url = resolveAssetUrl(row.url)
+  if (!url) {
+    ElMessage.error('文件地址为空，无法下载')
+    return
+  }
+  try {
+    // 静态资源是公开的；用 fetch 取 blob 后触发 a[download]，
+    // 避免相对路径被当前前端端口（5175）当成页面地址而 404，也能强制下载而不是浏览器内打开。
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const blob = await response.blob()
+    const objectUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = objectUrl
+    link.download = row.originalName || 'download'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
+  } catch (e) {
+    console.warn('[sysFile] blob 下载失败，回退新窗口打开：', e)
+    window.open(url, '_blank', 'noopener')
   }
 }
 

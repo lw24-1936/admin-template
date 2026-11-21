@@ -6,6 +6,19 @@
     <link rel="alternate icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- 页面标题由路由守卫覆盖为 "<页面名> - admintem 权限管理系统"，这里是首屏兜底 -->
+    <script>
+      // 首屏在样式与 Vue 加载前先落主题，避免深色用户看到一帧浅色背景（白闪）。
+      (function () {
+        try {
+          var theme = localStorage.getItem('admintem_theme') === 'dark' ? 'dark' : 'light'
+          var root = document.documentElement
+          root.dataset.theme = theme
+          root.classList.toggle('dark', theme === 'dark')
+          root.style.colorScheme = theme === 'dark' ? 'dark' : 'light'
+          root.style.backgroundColor = theme === 'dark' ? '#0b1220' : '#f6f7fa'
+        } catch (e) {}
+      })()
+    </script>
     <title>admintem 权限管理系统</title>
   </head>
   <body>

@@ -260,15 +260,6 @@ async function shotVisibleDialog(page, name, note) {
   await page.locator('button.theme-toggle').click()
   await page.waitForTimeout(500)
 
-  // 3.2) 英文界面（应用外壳 / 菜单 / 工作台）
-  await page.locator('button.locale-switch').click()
-  await page.locator('.el-dropdown-menu__item:has-text("English")').click()
-  await page.waitForTimeout(700)
-  await shot(page, 'desktop-20-english-home', '工作台 · 英文界面（基础 i18n）')
-  await page.locator('button.locale-switch').click()
-  await page.locator('.el-dropdown-menu__item:has-text("简体中文")').click()
-  await page.waitForTimeout(600)
-
   // 4) 用户管理：列表 + 三个弹层
   await desktopGoto(page, '/userInfo')
   await shot(page, 'desktop-04-user-list', '用户管理（/userInfo）')

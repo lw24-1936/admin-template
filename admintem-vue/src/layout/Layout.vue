@@ -38,7 +38,6 @@
           </el-breadcrumb-item>
         </el-breadcrumb>
         <div class="header-actions">
-            <LocaleSwitch />
           <el-button
             class="theme-toggle"
             text
@@ -173,7 +172,6 @@ import { useUserStore } from '@/stores/user'
 import { updateProfile, updatePassword, uploadAvatar } from '@/api/auth'
 import { resolveAssetUrl } from '@/utils/media'
 import MenuItem from './MenuItem.vue'
-import LocaleSwitch from '@/components/LocaleSwitch.vue'
 import MfaDialog from '@/components/MfaDialog.vue'
 import { useI18n } from '@/i18n'
 import { filterVisibleMenus } from '@/utils/menu'
@@ -191,9 +189,12 @@ watch(
 )
 
 /** 系统管理页：外壳 6px + 表格内部滚动（其余页面保持默认滚动方式） */
-const FILL_PATHS = ['/userInfo', '/roleInfo', '/permissionInfo', '/auditLog', '/onlineSession', '/dept']
-function isFillPath(path) {
-  return FILL_PATHS.includes(path)
+/**
+ * 所有后台页面统一使用「用户管理」同款外壳：四边 6px、页面卡片撑满剩余高度。
+ * 不再按路径白名单切换，避免首页/配置页与系统管理页的上下左右间距不一致。
+ */
+function isFillPath() {
+  return true
 }
 const router = useRouter()
 const store = useUserStore()

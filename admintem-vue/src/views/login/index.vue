@@ -2,7 +2,6 @@
   <!-- 登录页：纸面极简（与注册页同套语言）
        左侧为编辑式品牌排版，右侧为白卡片表单；无渐变、无光斑 -->
   <main class="login-page">
-    <div class="login-locale"><LocaleSwitch /></div>
       <!-- 指针跟随的柔光（纯装饰层；触摸设备与 reduced-motion 下不启用） -->
       <div class="login-aurora" aria-hidden="true" />
     <div class="login-grid">
@@ -117,7 +116,6 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import CodeCaptcha from '@/components/CodeCaptcha.vue'
-import LocaleSwitch from '@/components/LocaleSwitch.vue'
 import { useI18n } from '@/i18n'
 import { verifyMfa } from '@/api/auth'
 import ForgotPasswordDialog from '@/components/ForgotPasswordDialog.vue'
@@ -555,12 +553,7 @@ async function handleLogin() {
 </style>
 
 <style scoped>
-.login-locale {
-  position: fixed;
-  top: 20px;
-  right: 24px;
-  z-index: 10;
-}
+
 </style>
 
 <style scoped>

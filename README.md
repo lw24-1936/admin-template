@@ -55,7 +55,7 @@
 | 数据字典 | 字典类型/文案/值/排序/状态，同类型值唯一；提供按类型读取启用项的接口 |
 | 文件中心 | 通用附件上传、列表、逻辑删除；扩展名/大小白名单；本地与 MinIO 共用存储策略 |
 | 前端平台组件 | `ProTable`（表格+分页+可选多选）、`FormDialog`（统一弹层）、`TableToolbar`、统一 500/错误兜底 |
-| i18n 基础版 | 桌面端中/英切换，覆盖应用外壳、登录页、错误页与已知菜单名；业务页文案可逐步用 `t()` 抽取 |
+| 界面语言 | 固定简体中文；文案集中在外壳/登录/错误页与菜单映射，不提供中英文切换 |
 | 代码生成器 | `scripts/generate-crud.mjs` 按 spec 生成 DTO/Mapper/Service/Controller/页面/迁移骨架；默认先输出到 tmp，生成物需人工复核 |
 | 操作审计 | 异步落库、按操作人/动作/目标/结果/时间查询、CSV 导出、明细含 `traceId` 与变更前后 JSON |
 | 在线会话 | 查看在线设备、剩余有效期、角色、令牌摘要；按设备或按账号强制下线，同账号多端互不覆盖（传 deviceId 时） |
@@ -79,7 +79,7 @@
 | :--: | :--: | :--: |
 | ![系统配置](admintem-docs/images/desktop-23-sys-config.png) | ![文件中心](admintem-docs/images/desktop-25-sys-file.png) | ![深色主题](admintem-docs/images/desktop-19-dark-home.png) |
 
-更多页面（权限树、部门、在线会话、数据变更审计、个人资料、英文界面、403/404、移动端登录/首页/改密/用户列表）见
+更多页面（权限树、部门、在线会话、数据变更审计、个人资料、403/404、移动端登录/首页/改密/用户列表）见
 [`admintem-docs/images/`](admintem-docs/images/)，每张截图都有对应页面说明。
 
 ## 技术栈
@@ -344,7 +344,7 @@ admin-template/
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
 │   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.16
-│   ├── images/                  32 张页面截图
+│   ├── images/                  31 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
 ```

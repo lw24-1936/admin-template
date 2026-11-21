@@ -2,7 +2,7 @@
   {
     "name": "desktop-01-login",
     "note": "登录页（/login）",
-    "size": 455774
+    "size": 454991
   },
   {
     "name": "desktop-18-forgot-password",
@@ -17,22 +17,17 @@
   {
     "name": "desktop-03-home",
     "note": "工作台（登录后默认进入）",
-    "size": 113343
+    "size": 101717
   },
   {
     "name": "desktop-19-dark-home",
     "note": "工作台 · 深色主题",
-    "size": 118209
-  },
-  {
-    "name": "desktop-20-english-home",
-    "note": "工作台 · 英文界面（基础 i18n）",
-    "size": 114005
+    "size": 101556
   },
   {
     "name": "desktop-04-user-list",
     "note": "用户管理（/userInfo）",
-    "size": 105212
+    "size": 104585
   },
   {
     "name": "desktop-05-user-add",
@@ -52,7 +47,7 @@
   {
     "name": "desktop-08-role-list",
     "note": "角色管理（/roleInfo）",
-    "size": 96032
+    "size": 94690
   },
   {
     "name": "desktop-09-role-assign-perm",
@@ -67,7 +62,7 @@
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 154265
+    "size": 153597
   },
   {
     "name": "desktop-12-permission-add",
@@ -77,47 +72,47 @@
   {
     "name": "desktop-21-online-session",
     "note": "在线会话（/onlineSession，多设备令牌）",
-    "size": 103940
+    "size": 90220
   },
   {
     "name": "desktop-22-dept",
     "note": "部门管理（/dept，树形组织）",
-    "size": 92792
+    "size": 92140
   },
   {
     "name": "desktop-23-sys-config",
     "note": "系统配置（/sysConfig，键值参数）",
-    "size": 110496
+    "size": 99953
   },
   {
     "name": "desktop-24-sys-dict",
     "note": "数据字典（/sysDict，字典项维护）",
-    "size": 105934
+    "size": 94736
   },
   {
     "name": "desktop-25-sys-file",
     "note": "文件中心（/sysFile，附件元数据）",
-    "size": 97067
+    "size": 84383
   },
   {
     "name": "desktop-26-profile",
     "note": "个人资料弹层（昵称/邮箱/手机/头像）",
-    "size": 27586
+    "size": 27519
   },
   {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 146013
+    "size": 144107
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 204340
+    "size": 204661
   },
   {
     "name": "desktop-27-audit-data-diff",
     "note": "操作审计 · 数据变更 before/after 对比",
-    "size": 173934
+    "size": 173228
   },
   {
     "name": "desktop-13-403",
@@ -132,7 +127,7 @@
   {
     "name": "desktop-15-user-list-test",
     "note": "用户管理 · 受限账号 test（写操作按钮不渲染）",
-    "size": 82319
+    "size": 81563
   },
   {
     "name": "mobile-01-login",
