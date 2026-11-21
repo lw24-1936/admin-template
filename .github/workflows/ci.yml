@@ -35,7 +35,7 @@ jobs:
           # 迁移脚本在 admintem-docs/db/changelog，pom 通过 ../admintem-docs 引用，
           # 因此必须完整检出整个仓库（本 workflow 就在仓库根，天然满足）
           fetch-depth: 1
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
