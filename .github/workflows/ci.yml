@@ -44,7 +44,7 @@ jobs:
         run: mvn -B -f admintem-backend/pom.xml verify
       - name: 上传测试报告
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: surefire-reports
           path: admintem-backend/target/surefire-reports/
