@@ -10,13 +10,14 @@
     "ps": "docker compose ps",
     "db:reset": "docker compose down -v && docker compose up -d --build",
     "test:backend": "mvn -f admintem-backend/pom.xml test",
-    "test:docs": "node admintem-docs/tests/check-doc-images.cjs && node admintem-docs/tests/check-tokens.cjs && node admintem-docs/tests/check-perm-keys.cjs && node admintem-docs/tests/check-permission-doc-consistency.cjs && node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check",
+    "test:docs": "node scripts/check-vue-order.mjs && node admintem-docs/tests/check-doc-images.cjs && node admintem-docs/tests/check-tokens.cjs && node admintem-docs/tests/check-perm-keys.cjs && node admintem-docs/tests/check-permission-doc-consistency.cjs && node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check",
     "test:desktop": "npm --prefix admintem-vue run lint && npm --prefix admintem-vue test && npm --prefix admintem-vue run build",
     "test:mobile": "npm --prefix admintem-mobile test && npm --prefix admintem-mobile run build",
     "api:export": "node scripts/export-openapi.mjs",
     "api:types": "npx --yes openapi-typescript@7 admintem-docs/api/openapi.json -o admintem-docs/api/schema.d.ts",
     "api:check": "node scripts/check-openapi.mjs",
     "generate:crud": "node scripts/generate-crud.mjs",
-    "test:generator": "node --test scripts/generate-crud.test.mjs"
+    "test:generator": "node --test scripts/generate-crud.test.mjs",
+      "test:sfc": "node scripts/check-vue-order.mjs"
   }
 }

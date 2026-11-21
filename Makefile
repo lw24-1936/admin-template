@@ -28,6 +28,7 @@ backend-test:
 	mvn -f admintem-backend/pom.xml test
 
 docs-test:
+	node scripts/check-vue-order.mjs
 	node admintem-docs/tests/check-doc-images.cjs
 	node admintem-docs/tests/check-tokens.cjs
 	node admintem-docs/tests/check-perm-keys.cjs

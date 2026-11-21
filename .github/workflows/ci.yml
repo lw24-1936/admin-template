@@ -83,13 +83,15 @@ jobs:
   # 文档与设计层静态检查（不需要服务）
   # ---------------------------------------------------------------------------
   docs:
-    name: 文档一致性（6 个检查器 + 生成器测试）
+    name: 文档一致性（7 个检查器 + 生成器测试）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Vue SFC 顺序（template → script → style）
+        run: node scripts/check-vue-order.mjs
       - name: 接口与权限标识对照（05 vs @PreAuthorize）
         run: node admintem-docs/tests/check-permission-doc-consistency.cjs
       - name: 角色可访问矩阵是否为最新

@@ -94,8 +94,9 @@ docker-compose.yml      本地一键编排
 8. **文件存储**：通过 `FileStorageService`/`StorageStrategy`，不要在业务层直接写本地路径或 MinIO SDK。
 9. **配置**：DB/Redis/MinIO 使用环境变量（见 `.env.example` 与 `config/application-local.yml.example`）；
    生产禁止默认密钥/示例密码/root 数据库账号。
-9. **时间/日志**：Java 侧使用 `java.time`；日志包含 `traceId`；敏感字段必须脱敏，不要打印密码/Token。 OTel tracing 默认关闭，开启需配置 Collector；本地日志 traceId 与 OTel traceId 会复用前 24 位。
-10. **构建**：改动后至少跑 `mvn test`；涉及 SQL 的改动必须验证迁移在“全量初始化 + Flyway”与“已有库升级”两条路径都可用。
+9. **Vue SFC 顺序**：所有 `.vue` 必须按 `<template>` → `<script>` → `<style>` 编写（允许多个 style 块）；提交前运行 `node scripts/check-vue-order.mjs`，CI 已纳入该检查。
+10. **时间/日志**：Java 侧使用 `java.time`；日志包含 `traceId`；敏感字段必须脱敏，不要打印密码/Token。 OTel tracing 默认关闭，开启需配置 Collector；本地日志 traceId 与 OTel traceId 会复用前 24 位。
+11. **构建**：改动后至少跑 `mvn test`；涉及 SQL 的改动必须验证迁移在“全量初始化 + Flyway”与“已有库升级”两条路径都可用。
 
 ## 5. 数据库迁移约定
 

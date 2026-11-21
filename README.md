@@ -79,7 +79,7 @@
 | :--: | :--: | :--: |
 | ![系统配置](admintem-docs/images/desktop-23-sys-config.png) | ![文件中心](admintem-docs/images/desktop-25-sys-file.png) | ![深色主题](admintem-docs/images/desktop-19-dark-home.png) |
 
-更多页面（权限树、部门、在线会话、数据变更审计、个人资料、403/404、移动端登录/首页/改密/用户列表）见
+更多页面（权限树、部门、在线会话、数据变更审计、个人资料、左侧导航折叠、403/404、移动端登录/首页/改密/用户列表）见
 [`admintem-docs/images/`](admintem-docs/images/)，每张截图都有对应页面说明。
 
 ## 技术栈
@@ -286,6 +286,7 @@ node admintem-docs/tests/check-perm-keys.cjs
 node admintem-docs/tests/check-permission-doc-consistency.cjs
 node admintem-docs/tests/check-doc-images.cjs
 node admintem-docs/tests/gen-role-endpoint-matrix.cjs --check
+node scripts/check-vue-order.mjs
 
 # 前端
 cd admintem-vue && npm run lint && npm test && npm run build
@@ -295,7 +296,7 @@ cd admintem-uniapp && pnpm lint && pnpm build:h5 && pnpm build:mp-weixin
 
 CI 分两层：
 
-- [`ci.yml`](.github/workflows/ci.yml)：每次 push / PR，跑后端单测、两端构建与单测、6 个文档/设计检查器 + 生成器测试、uni-app 三端构建。
+- [`ci.yml`](.github/workflows/ci.yml)：每次 push / PR，跑后端单测、两端构建与单测、7 个文档/设计检查器 + 生成器测试、uni-app 三端构建。
 - [`e2e-nightly.yml`](.github/workflows/e2e-nightly.yml)：每天 UTC 18:00（北京时间次日 02:00）拉起 MySQL/Redis，跑 78 项接口回归和两端真实浏览器 E2E；也可在 Actions 页面手动触发。
 
 ## 部署
@@ -344,7 +345,7 @@ admin-template/
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
 │   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.16
-│   ├── images/                  31 张页面截图
+│   ├── images/                  32 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
 ```

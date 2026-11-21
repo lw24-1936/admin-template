@@ -2,7 +2,7 @@
   <el-container class="layout-root">
     <a class="skip-link" href="#main-content">跳到主要内容</a>
     <!-- 左侧导航 -->
-    <el-aside width="220px" class="layout-aside">
+      <el-aside :width="sidebarCollapsed ? '64px' : '220px'" class="layout-aside" :class="{ 'layout-aside--collapsed': sidebarCollapsed }">
       <!-- 品牌区：编辑式双行锁定（标记 + 名称 + 副标题） -->
       <div class="brand">
         <!-- 品牌图标：与浏览器标签页 favicon 同一份 SVG，避免两套标识 -->
@@ -13,7 +13,7 @@
         </span>
       </div>
       <el-scrollbar>
-        <el-menu :default-active="activeMenu" router>
+          <el-menu :default-active="activeMenu" :collapse="sidebarCollapsed" :collapse-transition="false" router>
           <MenuItem
             v-for="menu in visibleMenus"
             :key="menu.id"
@@ -26,6 +26,18 @@
     <el-container class="layout-body">
       <!-- 顶部 -->
       <el-header class="layout-header">
+          <div class="header-leading">
+            <!-- 左侧导航折叠/展开；状态持久化到 localStorage -->
+            <el-button
+              class="sidebar-toggle"
+              text
+              circle
+              :aria-label="sidebarCollapsed ? '展开左侧导航' : '收起左侧导航'"
+              :title="sidebarCollapsed ? '展开左侧导航' : '收起左侧导航'"
+              @click="toggleSidebar"
+            >
+              <el-icon><Expand v-if="sidebarCollapsed" /><Fold v-else /></el-icon>
+            </el-button>
         <!-- 面包屑：展示完整父级 -> 子级名称 -->
         <el-breadcrumb class="page-breadcrumb" separator="/">
           <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index">
@@ -37,6 +49,7 @@
             <template v-else>{{ translateMenuName(item.name) }}</template>
           </el-breadcrumb-item>
         </el-breadcrumb>
+          </div>
         <div class="header-actions">
           <el-button
             class="theme-toggle"
@@ -166,7 +179,7 @@ import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { animate, stagger } from 'animejs'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { ArrowDown, Moon, Sunny } from '@element-plus/icons-vue'
+import { ArrowDown, Expand, Fold, Moon, Sunny } from '@element-plus/icons-vue'
 import { theme, toggleTheme } from '@/composables/useTheme'
 import { useUserStore } from '@/stores/user'
 import { updateProfile, updatePassword, uploadAvatar } from '@/api/auth'
@@ -198,6 +211,24 @@ function isFillPath() {
 }
 const router = useRouter()
 const store = useUserStore()
+
+/** 左侧导航折叠：浏览器本地记忆，刷新/换页保持 */
+const SIDEBAR_KEY = 'admintem_sidebar_collapsed'
+const sidebarCollapsed = ref((() => {
+  try {
+    return localStorage.getItem(SIDEBAR_KEY) === '1'
+  } catch {
+    return false
+  }
+})())
+function toggleSidebar() {
+  sidebarCollapsed.value = !sidebarCollapsed.value
+  try {
+    localStorage.setItem(SIDEBAR_KEY, sidebarCollapsed.value ? '1' : '0')
+  } catch {
+    // 隐私模式写入失败不影响当前折叠状态
+  }
+}
 
 /**
  * 外壳入场动效（anime.js v4）。
@@ -468,6 +499,7 @@ async function handleUploadAvatar(options) {
   background: var(--lc-paper-card);
   border-right: 1px solid var(--lc-line);
   overflow: hidden;
+  transition: width var(--lc-motion-fast) var(--lc-ease-out);
   /* 极淡的侧栏渐变，让白色侧栏与纸面内容区产生层次（不抢内容） */
   background-image: linear-gradient(180deg, var(--lc-paper-card) 0%, var(--lc-surface-soft) 100%);
 }
@@ -507,6 +539,22 @@ async function handleUploadAvatar(options) {
   font-size: var(--lc-fs-kicker);
   letter-spacing: 0.14em;
   color: var(--lc-ink-faint);
+}
+
+.layout-aside--collapsed .brand {
+  justify-content: center;
+  padding: 0;
+}
+.layout-aside--collapsed .brand__text {
+  display: none;
+}
+.layout-aside--collapsed :deep(.el-menu) {
+  padding: var(--lc-sp-2) 6px;
+}
+.layout-aside--collapsed :deep(.el-menu-item),
+.layout-aside--collapsed :deep(.el-sub-menu__title) {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
 }
 
 .layout-aside :deep(.el-menu) {
@@ -576,6 +624,20 @@ async function handleUploadAvatar(options) {
   backdrop-filter: blur(12px) saturate(1.1);
   border-bottom: 1px solid var(--lc-line-soft);
 }
+.header-leading {
+  display: flex;
+  align-items: center;
+  gap: var(--lc-sp-2);
+  min-width: 0;
+}
+.sidebar-toggle {
+  flex: 0 0 auto;
+  color: var(--lc-ink-muted);
+}
+.sidebar-toggle:hover {
+  color: var(--lc-brand);
+}
+
 /* 面包屑：父级弱化、当前为墨色加粗 */
 .page-breadcrumb {
   font-size: var(--lc-fs-label);

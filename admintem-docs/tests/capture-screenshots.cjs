@@ -253,7 +253,14 @@ async function shotVisibleDialog(page, name, note) {
   await expandSidebar(page)
   await shot(page, 'desktop-03-home', '工作台（登录后默认进入）')
 
-  // 3.1) 深色主题
+  // 3.1) 左侧导航折叠
+  await page.locator('button.sidebar-toggle').click()
+  await page.waitForTimeout(450)
+  await shot(page, 'desktop-28-sidebar-collapsed', '工作台 · 左侧导航折叠（64px）')
+  await page.locator('button.sidebar-toggle').click()
+  await page.waitForTimeout(450)
+
+  // 3.2) 深色主题
   await page.locator('button.theme-toggle').click()
   await page.waitForTimeout(600)
   await shot(page, 'desktop-19-dark-home', '工作台 · 深色主题')
