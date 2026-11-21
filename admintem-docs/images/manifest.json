@@ -2,7 +2,12 @@
   {
     "name": "desktop-01-login",
     "note": "登录页（/login）",
-    "size": 454594
+    "size": 455774
+  },
+  {
+    "name": "desktop-18-forgot-password",
+    "note": "登录页 · 忘记密码弹层",
+    "size": 20555
   },
   {
     "name": "desktop-02-register",
@@ -12,12 +17,22 @@
   {
     "name": "desktop-03-home",
     "note": "工作台（登录后默认进入）",
-    "size": 109673
+    "size": 113343
+  },
+  {
+    "name": "desktop-19-dark-home",
+    "note": "工作台 · 深色主题",
+    "size": 118209
+  },
+  {
+    "name": "desktop-20-english-home",
+    "note": "工作台 · 英文界面（基础 i18n）",
+    "size": 114005
   },
   {
     "name": "desktop-04-user-list",
     "note": "用户管理（/userInfo）",
-    "size": 92688
+    "size": 105212
   },
   {
     "name": "desktop-05-user-add",
@@ -27,17 +42,17 @@
   {
     "name": "desktop-06-user-assign-role",
     "note": "用户管理 · 分配角色弹层",
-    "size": 15454
+    "size": 15475
   },
   {
     "name": "desktop-07-user-reset-pwd",
     "note": "用户管理 · 重置密码弹层",
-    "size": 13039
+    "size": 13110
   },
   {
     "name": "desktop-08-role-list",
     "note": "角色管理（/roleInfo）",
-    "size": 87014
+    "size": 96032
   },
   {
     "name": "desktop-09-role-assign-perm",
@@ -47,12 +62,12 @@
   {
     "name": "desktop-10-role-add",
     "note": "角色管理 · 新增角色弹层",
-    "size": 16698
+    "size": 19411
   },
   {
     "name": "desktop-11-permission-tree",
     "note": "权限管理（/permissionInfo）",
-    "size": 148687
+    "size": 154265
   },
   {
     "name": "desktop-12-permission-add",
@@ -60,29 +75,64 @@
     "size": 36820
   },
   {
+    "name": "desktop-21-online-session",
+    "note": "在线会话（/onlineSession，多设备令牌）",
+    "size": 103940
+  },
+  {
+    "name": "desktop-22-dept",
+    "note": "部门管理（/dept，树形组织）",
+    "size": 92792
+  },
+  {
+    "name": "desktop-23-sys-config",
+    "note": "系统配置（/sysConfig，键值参数）",
+    "size": 110496
+  },
+  {
+    "name": "desktop-24-sys-dict",
+    "note": "数据字典（/sysDict，字典项维护）",
+    "size": 105934
+  },
+  {
+    "name": "desktop-25-sys-file",
+    "note": "文件中心（/sysFile，附件元数据）",
+    "size": 97067
+  },
+  {
+    "name": "desktop-26-profile",
+    "note": "个人资料弹层（昵称/邮箱/手机/头像）",
+    "size": 27586
+  },
+  {
     "name": "desktop-16-audit-list",
     "note": "操作审计（/auditLog，只读查询）",
-    "size": 145487
+    "size": 146013
   },
   {
     "name": "desktop-17-audit-detail",
     "note": "操作审计 · 明细抽屉（请求/失败原因/traceId）",
-    "size": 202216
+    "size": 204340
+  },
+  {
+    "name": "desktop-27-audit-data-diff",
+    "note": "操作审计 · 数据变更 before/after 对比",
+    "size": 173934
   },
   {
     "name": "desktop-13-403",
     "note": "无权限页（/403）",
-    "size": 380308
+    "size": 371049
   },
   {
     "name": "desktop-14-404",
     "note": "页面不存在（404 兜底）",
-    "size": 376241
+    "size": 369229
   },
   {
     "name": "desktop-15-user-list-test",
     "note": "用户管理 · 受限账号 test（写操作按钮不渲染）",
-    "size": 79016
+    "size": 82319
   },
   {
     "name": "mobile-01-login",
@@ -92,16 +142,21 @@
   {
     "name": "mobile-02-home",
     "note": "移动端首页（#/home）",
-    "size": 179210
+    "size": 172403
   },
   {
     "name": "mobile-03-mine",
     "note": "移动端我的（#/mine）",
-    "size": 236486
+    "size": 187790
   },
   {
     "name": "mobile-04-password",
     "note": "移动端 · 修改密码弹层",
     "size": 38814
+  },
+  {
+    "name": "mobile-05-users",
+    "note": "移动端用户列表（#/users，查询与启停）",
+    "size": 83004
   }
 ]

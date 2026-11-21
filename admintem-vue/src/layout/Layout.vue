@@ -571,7 +571,7 @@ async function handleUploadAvatar(options) {
   height: 60px;
   padding: 0 var(--lc-sp-6);
   /* 半透明白 + 背景虚化：滚动时内容从下方透出，比纯白更"轻" */
-  background: rgba(255, 255, 255, 0.78);
+  background: color-mix(in srgb, var(--lc-paper) 78%, transparent);
   backdrop-filter: blur(12px) saturate(1.1);
   border-bottom: 1px solid var(--lc-line-soft);
 }

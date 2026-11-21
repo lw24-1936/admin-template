@@ -126,6 +126,18 @@ async function waitLoggedIn(page, timeoutMs = 30000) {
   return false
 }
 
+/** 等登录/操作 toast 消失，避免把"登录成功"录进页面截图 */
+async function waitNoToast(page, timeoutMs = 5000) {
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const visible = await page.locator('.el-message, .van-toast').evaluateAll(
+      (nodes) => nodes.some((n) => n.offsetParent !== null)
+    ).catch(() => false)
+    if (!visible) return
+    await page.waitForTimeout(200)
+  }
+}
+
 /** 桌面端登录（真实表单） */
 async function desktopLogin(page, username, password) {
   await page.goto(DESKTOP + '/login', { waitUntil: 'networkidle' })
@@ -135,7 +147,8 @@ async function desktopLogin(page, username, password) {
   if (!(await waitLoggedIn(page))) {
     throw new Error(`桌面端登录失败（${username}）：未取得令牌或仍停留在登录页`)
   }
-  await page.waitForTimeout(800)
+  await page.waitForTimeout(3200)
+  await waitNoToast(page)
 }
 
 /** 展开侧边栏全部分组，保证子菜单可见 */
@@ -184,6 +197,33 @@ async function shotDialog(page, trigger, name, note) {
   await page.waitForTimeout(500)
 }
 
+/** 截图当前已打开的弹层并关闭（用于下拉菜单打开的弹层） */
+async function shotVisibleDialog(page, name, note) {
+  const dialog = page.locator('.el-dialog:visible').first()
+  try {
+    await dialog.waitFor({ state: 'visible', timeout: 4000 })
+  } catch (e) {
+    console.log(`  [跳过] ${name}：弹层未出现`)
+    return
+  }
+  await waitStable(dialog)
+  await hideDevOverlays(page)
+  await parkMouse(page)
+  await page.waitForTimeout(300)
+  const file = path.join(OUT, name + '.png')
+  await dialog.screenshot({ path: file })
+  shotCount++
+  const size = fs.statSync(file).size
+  manifest.push({ name, note, size })
+  console.log(`  [${shotCount}] ${name}.png  ${(size / 1024).toFixed(0)} KB  ${note}`)
+  const cancelBtn = dialog.locator('.el-dialog__footer button:has-text("取消")')
+  const closeBtn = dialog.locator('.el-dialog__headerbtn')
+  if (await cancelBtn.count()) await cancelBtn.first().click()
+  else if (await closeBtn.count()) await closeBtn.first().click()
+  else await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+}
+
 ;(async () => {
   fs.mkdirSync(OUT, { recursive: true })
   const browser = await chromium.launch({ executablePath: EDGE, headless: true })
@@ -200,6 +240,10 @@ async function shotDialog(page, trigger, name, note) {
   await desktopGoto(page, '/login')
   await shot(page, 'desktop-01-login', '登录页（/login）')
 
+  // 1.1) 忘记密码弹层（不提交）
+  await page.locator('button.login-link:has-text("忘记密码")').click()
+  await shotVisibleDialog(page, 'desktop-18-forgot-password', '登录页 · 忘记密码弹层')
+
   // 2) 注册页
   await desktopGoto(page, '/register')
   await shot(page, 'desktop-02-register', '注册页（/register）')
@@ -208,6 +252,22 @@ async function shotDialog(page, trigger, name, note) {
   await desktopLogin(page, 'admin', '12345678')
   await expandSidebar(page)
   await shot(page, 'desktop-03-home', '工作台（登录后默认进入）')
+
+  // 3.1) 深色主题
+  await page.locator('button.theme-toggle').click()
+  await page.waitForTimeout(600)
+  await shot(page, 'desktop-19-dark-home', '工作台 · 深色主题')
+  await page.locator('button.theme-toggle').click()
+  await page.waitForTimeout(500)
+
+  // 3.2) 英文界面（应用外壳 / 菜单 / 工作台）
+  await page.locator('button.locale-switch').click()
+  await page.locator('.el-dropdown-menu__item:has-text("English")').click()
+  await page.waitForTimeout(700)
+  await shot(page, 'desktop-20-english-home', '工作台 · 英文界面（基础 i18n）')
+  await page.locator('button.locale-switch').click()
+  await page.locator('.el-dropdown-menu__item:has-text("简体中文")').click()
+  await page.waitForTimeout(600)
 
   // 4) 用户管理：列表 + 三个弹层
   await desktopGoto(page, '/userInfo')
@@ -227,12 +287,42 @@ async function shotDialog(page, trigger, name, note) {
   await shot(page, 'desktop-11-permission-tree', '权限管理（/permissionInfo）')
   await shotDialog(page, page.locator('button:has-text("新增顶级权限")'), 'desktop-12-permission-add', '权限管理 · 新增权限弹层')
 
-  // 6.1) 操作审计（V1.0.7）：列表 + 明细抽屉
+  // 6.1) 在线会话 / 部门 / 系统配置 / 数据字典 / 文件中心
+  await desktopGoto(page, '/onlineSession')
+  const sessionFilter = page.locator('input[placeholder="按账号/昵称过滤"]')
+  if (await sessionFilter.count()) {
+    await sessionFilter.fill('test')
+    await page.waitForTimeout(500)
+  }
+  await shot(page, 'desktop-21-online-session', '在线会话（/onlineSession，多设备令牌）')
+  await desktopGoto(page, '/dept')
+  await shot(page, 'desktop-22-dept', '部门管理（/dept，树形组织）')
+  await desktopGoto(page, '/sysConfig')
+  await shot(page, 'desktop-23-sys-config', '系统配置（/sysConfig，键值参数）')
+  await desktopGoto(page, '/sysDict')
+  await shot(page, 'desktop-24-sys-dict', '数据字典（/sysDict，字典项维护）')
+  await desktopGoto(page, '/sysFile')
+  await shot(page, 'desktop-25-sys-file', '文件中心（/sysFile，附件元数据）')
+
+  // 6.2) 个人资料弹层（右上角用户菜单）
+  await desktopGoto(page, '/HomeView')
+  await page.locator('.user-entry').click()
+  await page.waitForTimeout(300)
+  await page.locator('.el-dropdown-menu__item:has-text("个人资料")').click()
+  await shotVisibleDialog(page, 'desktop-26-profile', '个人资料弹层（昵称/邮箱/手机/头像）')
+
+  // 6.3) 操作审计（V1.0.7）：列表 + 明细抽屉
   await desktopGoto(page, '/auditLog')
   await shot(page, 'desktop-16-audit-list', '操作审计（/auditLog，只读查询）')
   await page.locator('button:has-text("查看")').first().click()
   await page.waitForTimeout(600)
   await shot(page, 'desktop-17-audit-detail', '操作审计 · 明细抽屉（请求/失败原因/traceId）')
+
+  // 6.4) 数据变更审计（配置编辑会记录 before/after）
+  await desktopGoto(page, '/auditLog?action=CONFIG_UPDATE')
+  await page.locator('button:has-text("查看")').first().click()
+  await page.waitForTimeout(800)
+  await shot(page, 'desktop-27-audit-data-diff', '操作审计 · 数据变更 before/after 对比')
 
   // 7) 状态页
   await desktopGoto(page, '/403')
@@ -269,7 +359,8 @@ async function shotDialog(page, trigger, name, note) {
   if (!(await waitLoggedIn(m))) {
     throw new Error('移动端登录失败：未取得令牌或仍停留在登录页')
   }
-  await m.waitForTimeout(1200)
+  await m.waitForTimeout(3000)
+  await waitNoToast(m)
   await shot(m, 'mobile-02-home', '移动端首页（#/home）')
 
   await m.click('.van-tabbar-item:has-text("我的")')
@@ -291,6 +382,11 @@ async function shotDialog(page, trigger, name, note) {
     console.log(`  [${shotCount}] mobile-04-password.png  ${(size / 1024).toFixed(0)} KB  移动端 · 修改密码弹层`)
     await m.keyboard.press('Escape')
   }
+
+  // 用户列表（#/users）
+  await m.goto(MOBILE + '/#/users', { waitUntil: 'networkidle' })
+  await m.waitForTimeout(1200)
+  await shot(m, 'mobile-05-users', '移动端用户列表（#/users，查询与启停）')
 
   await mobileCtx.close()
   await browser.close()

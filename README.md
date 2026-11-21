@@ -75,7 +75,11 @@
 | :--: | :--: | :--: |
 | ![角色授权](admintem-docs/images/desktop-09-role-assign-perm.png) | ![审计](admintem-docs/images/desktop-16-audit-list.png) | ![移动端我的](admintem-docs/images/mobile-03-mine.png) |
 
-更多页面（权限树、部门、在线会话、审计明细、403/404、移动端登录/首页/改密）见
+| 系统配置 | 文件中心 | 深色主题 |
+| :--: | :--: | :--: |
+| ![系统配置](admintem-docs/images/desktop-23-sys-config.png) | ![文件中心](admintem-docs/images/desktop-25-sys-file.png) | ![深色主题](admintem-docs/images/desktop-19-dark-home.png) |
+
+更多页面（权限树、部门、在线会话、数据变更审计、个人资料、英文界面、403/404、移动端登录/首页/改密/用户列表）见
 [`admintem-docs/images/`](admintem-docs/images/)，每张截图都有对应页面说明。
 
 ## 技术栈
@@ -340,7 +344,7 @@ admin-template/
 ├── admintem-docs/               01~16 号文档、SQL、截图与测试脚本
 │   ├── db/init/                 基础结构+种子（迁移新增列由 Flyway 管理）
 │   ├── db/changelog/            Flyway V1.0.1 ~ V1.0.16
-│   ├── images/                  21 张页面截图
+│   ├── images/                  32 张页面截图
 │   └── tests/                   接口回归、两端 E2E、检查器、截图脚本
 └── .github/workflows/           CI 与 nightly E2E
 ```
